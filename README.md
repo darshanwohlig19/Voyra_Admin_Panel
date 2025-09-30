@@ -1,1 +1,1 @@
-#PocketStudioAi
+PocketStudioAdminPanel
