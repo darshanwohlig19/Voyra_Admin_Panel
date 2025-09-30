@@ -1,0 +1,333 @@
+@import url('https://fonts.googleapis.com/css2?family=Poppins:wght@100;200;300;400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    --chakra-vh: 100vh;
+  }
+
+  html {
+    font-family: 'Montserrat' !important;
+    font-feature-settings: 'kern' !important;
+    -webkit-font-smoothing: antialiased;
+    letter-spacing: -0.5px;
+  }
+}
+
+input.defaultCheckbox {
+  color: white;
+}
+
+input.defaultCheckbox::before {
+  content: url("data:image/svg+xml,%3Csvg width='16' height='16' viewBox='0 0 16 16' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M6.66662 10.115L12.7946 3.98633L13.7379 4.92899L6.66662 12.0003L2.42395 7.75766L3.36662 6.81499L6.66662 10.115Z' fill='white'/%3E%3C/svg%3E%0A");
+  fill: currentColor;
+  opacity: 0;
+  height: 16px;
+  width: 16px;
+  top: 0;
+  position: absolute;
+  left: 50%;
+  transform: translate(-50%, 0px);
+}
+
+input.defaultCheckbox::before path {
+  fill: currentColor;
+}
+
+input:checked.defaultCheckbox::before {
+  opacity: 1;
+}
+
+input:disabled {
+  opacity: 0.5;
+}
+
+.success-message {
+  @apply text-sm text-green-500;
+}
+
+.error-message {
+  @apply text-sm text-red-500;
+}
+
+.success-message {
+  @apply text-sm text-green-500;
+}
+
+.words-breaks {
+  overflow-wrap: anywhere;
+}
+
+.toast-container {
+  position: fixed;
+  top: 10px;
+  right: 10px;
+  z-index: 9999;
+}
+
+.lds-dual-ring {
+  display: inline-block;
+  width: 80px;
+  height: 80px;
+}
+
+.lds-dual-ring:after {
+  content: ' ';
+  display: block;
+  width: 64px;
+  height: 64px;
+  margin: 8px;
+  border-radius: 50%;
+  border: 6px solid rgba(67, 24, 255, 1);
+  border-color: rgba(67, 24, 255, 1) transparent rgba(67, 24, 255, 1)
+    transparent;
+  animation: lds-dual-ring 1.2s linear infinite;
+}
+
+@keyframes lds-dual-ring {
+  0% {
+    transform: rotate(0deg);
+  }
+
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
+@keyframes sk-bouncedelay {
+  0%,
+  80%,
+  100% {
+    -webkit-transform: scale(0);
+    transform: scale(0);
+  }
+
+  40% {
+    -webkit-transform: scale(1);
+    transform: scale(1);
+  }
+}
+
+.loader {
+  width: 60px;
+  aspect-ratio: 4;
+  --_g: no-repeat radial-gradient(circle closest-side, #4318ff 90%, #0000);
+  background: var(--_g) 0% 50%, var(--_g) 50% 50%, var(--_g) 100% 50%;
+  background-size: calc(100% / 3) 100%;
+  animation: l7 1s infinite linear;
+}
+
+@keyframes l7 {
+  33% {
+    background-size: calc(100% / 3) 0%, calc(100% / 3) 100%, calc(100% / 3) 100%;
+  }
+
+  50% {
+    background-size: calc(100% / 3) 100%, calc(100% / 3) 0%, calc(100% / 3) 100%;
+  }
+
+  66% {
+    background-size: calc(100% / 3) 100%, calc(100% / 3) 100%, calc(100% / 3) 0%;
+  }
+}
+
+.z-dark {
+  z-index: 999;
+}
+
+@media (max-width: 1240px) {
+  .z-index-responsive {
+    z-index: 50 !important;
+  }
+}
+
+.sidebar-toggle-icon {
+  position: fixed;
+  margin-left: 10px;
+  top: 20px;
+  left: 8px;
+  height: 40px;
+  width: 40px;
+  z-index: 50;
+  cursor: pointer;
+  border-radius: 50%;
+  background-color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: left 0.3s ease;
+}
+
+.sidebar-toggle-icon.expanded {
+  left: 293px;
+}
+
+.sidebar-toggle-icon.sidebar-open {
+  left: 8px;
+}
+
+.css-1ixbp0l {
+  z-index: 999 !important;
+}
+
+.ql-toolbar.ql-snow {
+  border: none !important;
+  border-bottom: 1px solid rgb(177, 173, 173) !important;
+  border-radius: 10px 10px 0px 0px;
+}
+
+.ql-container.ql-snow {
+  border: none !important;
+  border-radius: 0px 0px 10px 10px;
+}
+
+.ql-editor.ql-blank {
+  height: 150px;
+}
+
+.search-wrapper.searchWrapper {
+  border: none;
+}
+
+.multiSelectContainer {
+  border-radius: 14px;
+}
+
+.quill {
+  max-width: 100%;
+  /* Ensure the editor doesn't expand beyond its container */
+  word-wrap: break-word;
+  /* Break long words */
+}
+
+.ql-toolbar.ql-snow {
+  padding: 4px !important;
+}
+
+.ql-toolbar.ql-snow .ql-formats {
+  margin-right: 0px !important;
+}
+
+.ql-snow.ql-toolbar button,
+.ql-snow .ql-toolbar button {
+  padding: 3px 8px !important;
+  width: 22px !important;
+}
+
+.ql-editor {
+  white-space: pre-wrap;
+  /* Handle spaces properly */
+  word-break: break-word;
+  /* Break long words */
+
+  min-height: 250px;
+  /* Minimum height */
+  max-height: 500px;
+  /* Maximum height */
+  width: 100%;
+  /* Full width of the container */
+  margin: 0 auto;
+  /* Center the editor horizontally */
+}
+
+/* label filter dropdown  */
+.multi-select-dropdown {
+  position: relative;
+  width: 200px;
+}
+
+.dropdown-container {
+  position: relative;
+}
+
+.dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.darkmode-dropdown-options {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  z-index: 1;
+  background-color: #070f2e;
+  border: 1px solid #ccc;
+  color: white;
+  max-height: 200px;
+  overflow-y: auto;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+  width: 100%;
+}
+
+.darkmode-option:hover {
+  background-color: #172328;
+}
+
+.darkmode-selected {
+  background-color: #172328;
+}
+
+.option:hover {
+  background-color: #f0f0f0;
+}
+
+.selected {
+  background-color: #e6f7ff;
+}
+
+.selected-icon {
+  margin-left: auto;
+  color: #007bff;
+}
+/* .pagination {
+  display: flex;
+  list-style-type: none;
+  padding: 0;
+}
+
+.pagination li {
+  margin: 0 5px;
+}
+
+.pagination .active {
+  font-weight: bold;
+  color: blue;
+} */
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+/* Slim scrollbar */
+.scrollable-form::-webkit-scrollbar {
+  width: 4px; /* Adjust width to make it slimmer */
+}
+
+.scrollable-form::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.scrollable-form::-webkit-scrollbar-thumb {
+  background: #d1d5db; /* Light gray color for the thumb */
+  border-radius: 10px; /* Rounded corners */
+}
+
+.scrollable-form::-webkit-scrollbar-thumb:hover {
+  background: #a1a1aa; /* Darker gray color on hover */
+}
