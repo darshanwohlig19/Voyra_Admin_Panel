@@ -17,6 +17,7 @@ import { IoMdNotificationsOutline } from 'react-icons/io'
 import { BsArrowBarUp } from 'react-icons/bs'
 import TooltipHorizon from 'components/tooltip'
 import { IoIosArrowDropdown } from 'react-icons/io'
+import { clearAuthCookies } from 'common/utils/cookieUtils'
 
 const { TOAST, HEY, SUBSCRIPTION_EXPIRED, KEYCLOAK_INIT } = appConstants
 const apiService = ApiCaller()
@@ -140,11 +141,15 @@ const Navbar = (props) => {
    */
   const handleLogout = async () => {
     try {
-      // Clear all auth data
+      // Clear all auth data from localStorage
       localStorage.removeItem('userData')
       localStorage.removeItem('darkMode')
       localStorage.removeItem('bearerToken')
       localStorage.removeItem('appType')
+      localStorage.removeItem('userName')
+
+      // Clear all auth-related cookies
+      clearAuthCookies()
 
       // Navigate and add a success notification
       navigate('/sign-in')

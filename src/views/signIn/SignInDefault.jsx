@@ -1,5 +1,5 @@
 // import loginImg from 'assets/img/layers/sachai-layers.webp'
-import { useNavigate, useLocation } from 'react-router-dom'
+import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useToaster } from 'common/Toaster'
 import dmsConstants from 'common/config/PocketStudioConstants.js'
 import { useSpinner } from 'common/SpinnerLoader'
@@ -15,7 +15,8 @@ import Checkbox from 'components/checkbox'
 import bgLoginImage from '../../assets/svg/dmslogin.svg'
 import loginBgIcon from '../../assets/svg/login.svg'
 import Capa from '../../assets/img/layers/Capa.webp'
-import Line1 from '../../assets/img/others/login.webp'
+import Logo from '../../assets/webp/logo.webp'
+// import LogoIcon from '../../assets/svg/Line1.svg'
 // import demo from '../../assets/svg/demo.jpg'
 const { TOAST, SIGNIN } = dmsConstants
 const apiService = ApiCaller()
@@ -35,7 +36,13 @@ function SignInDefault() {
       showSpinner()
       const apiUrl = apiConfig.SIGNIN_API
       const response = await apiService.apiCall('post', apiUrl, payload)
-      if (response?.status === 200 && response?.data?.data?.token) {
+
+      // Only navigate if we have a successful response with valid token and user data
+      if (
+        response?.status === 200 &&
+        response?.data?.data?.token &&
+        response?.data?.data?.user
+      ) {
         // Store only encrypted user data (token is handled by backend cookie)
         setEncryptedCookie('userData', response.data.data.user, 7)
         setEncryptedCookie(
@@ -44,20 +51,28 @@ function SignInDefault() {
           7
         )
 
-        navigate('/')
         addToast({
           title: TOAST.MESSAGES.SUCCESS.signInSuccess,
           type: 'success',
         })
-      } else {
+
+        // Navigate only after successful authentication
         navigate('/')
+        return true
+      } else {
         addToast({
           title: TOAST.MESSAGES.ERROR.invalidCredentials,
           type: 'error',
         })
+        return false
       }
     } catch (error) {
       console.error(error)
+      addToast({
+        title: TOAST.MESSAGES.ERROR.invalidCredentials,
+        type: 'error',
+      })
+      return false
     } finally {
       hideSpinner()
     }
@@ -91,13 +106,34 @@ function SignInDefault() {
 
   return (
     <div className="flex h-screen w-full flex-col overflow-hidden md:flex-row">
-      <div className="flex h-full w-full items-center justify-center bg-white p-8 md:w-1/2">
-        {isSignInRoute ? <SignIn onSignIn={handleSignIn} /> : <SignUp />}
+      <div className="flex h-full w-full flex-col bg-white p-8 md:w-1/2">
+        {/* Logo Header */}
+        {/* <div className="mb-8 flex items-center justify-center">
+          <Link to="/" className="group relative flex items-center">
+            <span className="from-indigo-500/10 absolute inset-0 scale-0 rounded-lg bg-gradient-to-r to-purple-500/10 transition-transform duration-300 group-hover:scale-100" />
+            <img
+              src={LogoIcon}
+              alt="Logo"
+              className="relative z-10 cursor-pointer object-contain transition-all duration-300 group-hover:brightness-110"
+              style={{ width: '46px', height: '46px' }}
+              loading="eager"
+            />
+        
+          </Link>
+        </div> */}
+
+        {/* Form Container */}
+        <div className="flex flex-1 items-center justify-center">
+          {isSignInRoute ? <SignIn onSignIn={handleSignIn} /> : <SignUp />}
+        </div>
       </div>
       {/* Left Section (Background & Branding) */}
       <div className="hidden flex-1 items-center justify-center p-6 lg:flex">
-        <div className="relative h-full w-full overflow-hidden rounded-2xl">
-          <img src={Line1} alt="Modern interior design" fill />
+        <div
+          className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl
+ object-cover"
+        >
+          <img src={Logo} alt="Modern interior design" fill />
         </div>
       </div>
     </div>
