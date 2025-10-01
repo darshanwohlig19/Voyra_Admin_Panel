@@ -1,8 +1,10 @@
 import axios from 'axios'
+import { getEncryptedCookie, clearAuthCookies } from '../utils/cookieUtils'
 
 const handle401Error = () => {
   localStorage.clear()
   sessionStorage.clear() // If using sessionStorage
+  clearAuthCookies() // Clear encrypted cookies
   window.location.href = '/sign-in'
 }
 
@@ -10,9 +12,13 @@ const ApiCaller = () => {
   const apiCall = async (httpType, url, data, options = {}) => {
     try {
       let response
+
       const config = {
         ...options,
-        withCredentials: true, // Always ensure cookies are sent with requests
+        withCredentials: true, // Enable cookies for cross-origin requests (backend jwt cookie)
+        headers: {
+          ...options.headers,
+        },
       }
 
       switch (httpType.trim().toLowerCase()) {
