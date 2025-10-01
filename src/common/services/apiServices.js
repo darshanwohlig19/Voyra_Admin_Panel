@@ -2,6 +2,12 @@ import axios from 'axios'
 import { getEncryptedCookie, clearAuthCookies } from '../utils/cookieUtils'
 
 const handle401Error = () => {
+  // Don't redirect if already on sign-in or sign-up page
+  const currentPath = window.location.pathname
+  if (currentPath === '/sign-in' || currentPath === '/sign-up') {
+    return
+  }
+
   localStorage.clear()
   sessionStorage.clear() // If using sessionStorage
   clearAuthCookies() // Clear encrypted cookies

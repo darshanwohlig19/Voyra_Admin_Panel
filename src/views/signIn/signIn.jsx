@@ -76,13 +76,9 @@ function SignInPage({ onSignIn }) {
                   label="Email"
                   placeholder="Email Address"
                   id="email"
-                  type="text"
+                  type="email"
                   registrationProps={register('email', {
                     required: 'Email is required.',
-                    pattern: {
-                      // value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
-                      message: 'Enter a valid email address.',
-                    },
                   })}
                 />
                 {errors.email && (

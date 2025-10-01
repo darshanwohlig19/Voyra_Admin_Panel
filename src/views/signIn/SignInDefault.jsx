@@ -99,6 +99,12 @@ function SignInDefault() {
       }
     } catch (error) {
       console.error(error)
+      addToast({
+        title:
+          error?.response?.data?.error ||
+          TOAST.MESSAGES.ERROR.invalidCredentials,
+        type: 'error',
+      })
     } finally {
       hideSpinner()
     }
@@ -124,7 +130,11 @@ function SignInDefault() {
 
         {/* Form Container */}
         <div className="flex flex-1 items-center justify-center">
-          {isSignInRoute ? <SignIn onSignIn={handleSignIn} /> : <SignUp />}
+          {isSignInRoute ? (
+            <SignIn onSignIn={handleSignIn} />
+          ) : (
+            <SignUp onSignUp={handleSignUp} />
+          )}
         </div>
       </div>
       {/* Left Section (Background & Branding) */}
