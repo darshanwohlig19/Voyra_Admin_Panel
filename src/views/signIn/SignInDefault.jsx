@@ -30,6 +30,7 @@ function SignInDefault() {
   const location = useLocation()
   const isSignInRoute = location.pathname === '/sign-in'
   const isSignUpRoute = location.pathname === '/sign-up'
+
   const handleSignIn = async (email, password) => {
     try {
       const payload = { email: email, password: password }
@@ -44,6 +45,7 @@ function SignInDefault() {
         response?.data?.data?.user
       ) {
         // Store only encrypted user data (token is handled by backend cookie)
+        setEncryptedCookie('bearerToken', response.data.data.token, 7)
         setEncryptedCookie('userData', response.data.data.user, 7)
         setEncryptedCookie(
           'userRole',
@@ -51,13 +53,22 @@ function SignInDefault() {
           7
         )
 
+        // Store userName in localStorage
+        const userName =
+          response.data.data.user.name ||
+          response.data.data.user.username ||
+          response.data.data.user.firstName ||
+          response.data.data.user.email?.split('@')[0] ||
+          'User'
+        localStorage.setItem('userName', userName)
+
         addToast({
           title: TOAST.MESSAGES.SUCCESS.signInSuccess,
           type: 'success',
         })
 
         // Navigate only after successful authentication
-        navigate('/')
+        navigate('/organisations')
         return true
       } else {
         addToast({

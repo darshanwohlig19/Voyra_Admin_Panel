@@ -19,6 +19,9 @@ const ApiCaller = () => {
     try {
       let response
 
+      const token = getEncryptedCookie('bearerToken')
+      console.log('Token from cookie:', token)
+
       const config = {
         ...options,
         withCredentials: true, // Enable cookies for cross-origin requests (backend jwt cookie)
@@ -26,6 +29,12 @@ const ApiCaller = () => {
           ...options.headers,
         },
       }
+
+      if (token) {
+        config.headers.Authorization = token
+      }
+
+      console.log('Request config:', config)
 
       switch (httpType.trim().toLowerCase()) {
         case 'get':

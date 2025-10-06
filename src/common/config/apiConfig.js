@@ -3,6 +3,8 @@ const baseUrl = process.env.REACT_APP_API_BASE_URL
 const config = {
   //Login
   // SIGNUP_API: baseUrl + 'api/signup',
+  GET_ORGANISATIONS: baseUrl + '/api/organizations/getOrganizations',
+
   SIGNIN_API: baseUrl + '/api/userAuth/login',
   IS_LOGIN: baseUrl + 'isLoggedIn',
   IS_LOGOUT: baseUrl + 'refresh/logout',

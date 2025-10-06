@@ -7,20 +7,23 @@ import { SpinnerProvider } from 'common/SpinnerLoader'
 import { ThemeProvider } from './contexts/ThemeContext'
 import { DialogProvider } from 'contexts/DialogProvider'
 import Dialog from 'components/dialog/Dialog'
+import { ChakraProvider, defaultSystem } from '@chakra-ui/react'
 
 const root = ReactDOM.createRoot(document.getElementById('root'))
 
 root.render(
-  <BrowserRouter>
-    <SpinnerProvider>
-      <ToasterProvider>
-        <ThemeProvider>
-          <DialogProvider>
-            <App />
-            <Dialog />
-          </DialogProvider>
-        </ThemeProvider>
-      </ToasterProvider>
-    </SpinnerProvider>
-  </BrowserRouter>
+  <ChakraProvider value={defaultSystem}>
+    <BrowserRouter>
+      <SpinnerProvider>
+        <ToasterProvider>
+          <ThemeProvider>
+            <DialogProvider>
+              <App />
+              <Dialog />
+            </DialogProvider>
+          </ThemeProvider>
+        </ToasterProvider>
+      </SpinnerProvider>
+    </BrowserRouter>
+  </ChakraProvider>
 )

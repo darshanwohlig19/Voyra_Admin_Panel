@@ -180,22 +180,14 @@ const Navbar = (props) => {
           : ''
       }`}
     >
-      <div className="ml-[6px]">
-        <p className="shrink text-[33px] text-navy-700 dark:text-white">
-          <div className="flex items-center">
-            <Link
-              to="#"
-              className="font-montserrat font-semibold hover:cursor-pointer hover:text-blueGray dark:hover:text-white"
-            >
-              {/* {breadcrum &&
-              breadcrum.find((item) => item.serviceName)?.serviceName
-                ? breadcrum.find((item) => item.serviceName).serviceName
-                : breadcrum &&
-                  breadcrum.find((item) => item.projectName)?.projectName
-                ? breadcrum.find((item) => item.projectName).projectName
-                : brandText} */}
-            </Link>
-          </div>
+      <div className="ml-[6px] flex items-center justify-center">
+        <p className="shrink text-[33px] font-bold text-navy-700 dark:text-white">
+          {breadcrum && breadcrum.find((item) => item.serviceName)?.serviceName
+            ? breadcrum.find((item) => item.serviceName).serviceName
+            : breadcrum &&
+              breadcrum.find((item) => item.projectName)?.projectName
+            ? breadcrum.find((item) => item.projectName).projectName
+            : brandText}
         </p>
         <div className="h-6 pt-1 dark:text-white">
           {breadcrum &&

@@ -9,6 +9,7 @@ import { ChartNoAxesCombined } from 'lucide-react'
 import Dashboard from '../src/assets/svg/dashboard.svg'
 import { FaFolderOpen } from 'react-icons/fa'
 import { FaUsers } from 'react-icons/fa'
+import Organisations from 'views/organisations'
 const RoutesComponent = () => {
   const { id } = useParams()
   const [projectName, setProjectName] = useState()
@@ -40,8 +41,15 @@ const RoutesComponent = () => {
         isComing: false,
         isVisible: false,
       },
-
-
+      {
+        name: 'Organisations',
+        path: 'organisations',
+        layout: '/afterLogin',
+        icon: <FaUsers className="h-6 w-6" />,
+        component: <Organisations />,
+        isComing: false,
+        isVisible: true,
+      },
     ])
   }, [])
 

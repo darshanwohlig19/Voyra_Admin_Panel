@@ -2,6 +2,7 @@ import React from 'react'
 import { Navigate } from 'react-router-dom'
 import ApiCaller from 'common/services/apiServices'
 import apiConfig from 'common/config/apiConfig'
+import { getEncryptedCookie } from 'common/utils/cookieUtils'
 /**
  * AuthGuard component for handling authentication.
  *
@@ -10,9 +11,9 @@ import apiConfig from 'common/config/apiConfig'
  * @return {JSX.Element} The rendered child components based on authentication status.
  */
 const AuthGuard = ({ children, ...rest }) => {
-  const isAuthenticated = localStorage.getItem('bearerToken') ? true : false // You should implement your own authentication logic
+  const isAuthenticated = getEncryptedCookie('bearerToken') ? true : false
 
-  return <>{!isAuthenticated ? children : <Navigate to="/sign-in" replace />}</>
+  return <>{isAuthenticated ? children : <Navigate to="/sign-in" replace />}</>
 }
 
 export default AuthGuard
