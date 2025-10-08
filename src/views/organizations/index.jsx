@@ -4,16 +4,17 @@ import { FaEye, FaTrash } from 'react-icons/fa' // FontAwesome icons
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
 import { useSpinner } from '../../common/SpinnerLoader'
-import { useLocation } from 'react-router-dom'
+import { useLocation, useNavigate } from 'react-router-dom'
 import RoutesComponent from '../../routes'
 import DataTable from '../../components/DataTable'
 
-const Organisations = () => {
-  const [organisations, setOrganisations] = useState([])
-  const [pageTitle, setPageTitle] = useState('Organisations')
+const Organizations = () => {
+  const [organizations, setOrganizations] = useState([])
+  const [pageTitle, setPageTitle] = useState('Organizations')
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
   const location = useLocation()
+  const navigate = useNavigate()
   const routes = RoutesComponent()
 
   useEffect(() => {
@@ -27,21 +28,21 @@ const Organisations = () => {
   }, [location, routes])
 
   useEffect(() => {
-    const fetchOrganisations = async () => {
+    const fetchOrganizations = async () => {
       showSpinner()
       try {
-        const response = await apiCall('get', config.GET_ORGANISATIONS)
+        const response = await apiCall('get', config.GET_ORGANIZATIONS)
         if (response.status === 200 && response.data.data) {
-          setOrganisations(response.data.data.orgs)
+          setOrganizations(response.data.data.orgs)
         }
       } catch (error) {
-        console.error('Error fetching organisations:', error)
+        console.error('Error fetching organizations:', error)
       } finally {
         hideSpinner()
       }
     }
 
-    fetchOrganisations()
+    fetchOrganizations()
   }, [])
 
   const getStatusColor = (status) => {
@@ -58,25 +59,24 @@ const Organisations = () => {
   }
 
   const handleEdit = (org) => {
-    console.log('Edit organisation:', org)
+    console.log('Edit organization:', org)
     // Add your edit logic here
   }
 
   const handleDelete = (org) => {
-    console.log('Delete organisation:', org)
+    console.log('Delete organization:', org)
     // Add your delete logic here
   }
 
   const handleView = (org) => {
-    console.log('View organisation:', org)
-    // Add your view logic here
+    navigate(`/organizations/${org._id}`)
   }
 
   // Define table columns configuration
   const columns = [
     {
       key: 'orgName',
-      label: 'Organisation Name',
+      label: 'Organization Name',
       width: '200px',
     },
     {
@@ -174,11 +174,11 @@ const Organisations = () => {
   return (
     <DataTable
       columns={columns}
-      data={organisations}
+      data={organizations}
       rowKey="_id"
-      emptyMessage="No organisations found"
+      emptyMessage="No organizations found"
     />
   )
 }
 
-export default Organisations
+export default Organizations

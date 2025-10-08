@@ -68,7 +68,7 @@ function SignInDefault() {
         })
 
         // Navigate only after successful authentication
-        navigate('/organisations')
+        navigate('/organizations')
         return true
       } else {
         addToast({
