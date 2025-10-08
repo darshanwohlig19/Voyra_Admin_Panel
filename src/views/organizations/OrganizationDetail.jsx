@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Box, Badge, Heading, Button, Flex } from '@chakra-ui/react'
-import { FaArrowLeft, FaEye, FaTrash, FaEdit } from 'react-icons/fa'
+import { Box, Badge, Heading, Flex, IconButton } from '@chakra-ui/react'
+import { FaArrowLeft, FaTrash } from 'react-icons/fa'
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
 import { useSpinner } from '../../common/SpinnerLoader'
@@ -19,18 +19,16 @@ const OrganizationDetail = () => {
     const fetchOrganizationDetails = async () => {
       showSpinner()
       try {
-        // Fetch organization details
-        // TODO: Replace with your actual API endpoint for getting single organization
-        const orgResponse = await apiCall(
-          'get',
-          `${config.GET_ORGANIZATIONS}/${orgId}`
-        )
+        // Fetch all organizations and find the specific one
+        const orgResponse = await apiCall('get', config.GET_ORGANIZATIONS)
         if (orgResponse.status === 200 && orgResponse.data.data) {
-          setOrganization(orgResponse.data.data)
+          const org = orgResponse.data.data.orgs.find((o) => o._id === orgId)
+          if (org) {
+            setOrganization(org)
+          }
         }
 
         // Fetch users for this organization
-        // TODO: Replace with your actual API endpoint for getting organization users
         const usersResponse = await apiCall(
           'get',
           `${config.GET_ORG_USERS}/${orgId}/getOrgUsers`
@@ -63,16 +61,6 @@ const OrganizationDetail = () => {
     }
   }
 
-  const handleViewUser = (user) => {
-    console.log('View user:', user)
-    // Add your view user logic here
-  }
-
-  const handleEditUser = (user) => {
-    console.log('Edit user:', user)
-    // Add your edit user logic here
-  }
-
   const handleDeleteUser = (user) => {
     console.log('Delete user:', user)
     // Add your delete user logic here
@@ -100,11 +88,11 @@ const OrganizationDetail = () => {
       width: '150px',
       render: (_, value) => (
         <Badge
-          colorPalette="blue"
+          colorPalette="gray"
           px={2}
           py={1}
           borderRadius="md"
-          style={{ textTransform: 'capitalize' }}
+          style={{ textTransform: 'capitalize', fontSize: '16px' }}
         >
           {value || 'User'}
         </Badge>
@@ -120,6 +108,7 @@ const OrganizationDetail = () => {
           px={2}
           py={1}
           borderRadius="md"
+          style={{ fontSize: '16px' }}
         >
           {value || 'N/A'}
         </Badge>
@@ -167,43 +156,22 @@ const OrganizationDetail = () => {
   return (
     <Box>
       {/* Header Section */}
-      <Flex
-        mb={6}
-        p={4}
-        bg="white"
-        borderRadius="lg"
-        shadow="sm"
-        alignItems="center"
-        justifyContent="space-between"
-      >
-        <Flex alignItems="center" gap={4}>
-          <Button
-            onClick={handleBack}
-            leftIcon={<FaArrowLeft />}
-            colorPalette="purple"
-            variant="ghost"
-            size="md"
-          >
-            Back
-          </Button>
-          <Box>
-            <Heading size="lg" mb={1}>
-              {organization?.orgName || 'Organization Details'}
-            </Heading>
-            <Flex gap={3} alignItems="center">
-              <Badge colorPalette="purple" px={2} py={1}>
-                Plan: {organization?.planId || 'N/A'}
-              </Badge>
-              <Badge
-                colorPalette={getStatusColor(organization?.status)}
-                px={2}
-                py={1}
-              >
-                {organization?.status || 'N/A'}
-              </Badge>
-            </Flex>
-          </Box>
-        </Flex>
+      <Flex mb={6} alignItems="center" gap={4}>
+        <IconButton
+          onClick={handleBack}
+          colorPalette="purple"
+          variant="outline"
+          size="xl"
+          borderRadius="lg"
+          _hover={{ transform: 'translateX(-4px)', shadow: 'md' }}
+          transition="all 0.2s"
+          fontSize="24px"
+        >
+          <FaArrowLeft />
+        </IconButton>
+        <Heading size="4xl" color="gray.800" fontWeight="bold">
+          {organization?.orgName || 'Organization Details'}
+        </Heading>
       </Flex>
 
       {/* Users Table */}

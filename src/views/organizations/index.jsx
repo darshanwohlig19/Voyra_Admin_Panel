@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { Box, Badge } from '@chakra-ui/react'
-import { FaEye, FaTrash } from 'react-icons/fa' // FontAwesome icons
+import { FaEye, FaTrash, FaBan } from 'react-icons/fa' // FontAwesome icons
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
 import { useSpinner } from '../../common/SpinnerLoader'
@@ -72,6 +72,11 @@ const Organizations = () => {
     navigate(`/organizations/${org._id}`)
   }
 
+  const handleBlock = (org) => {
+    console.log('Block organization:', org)
+    // Add your block logic here
+  }
+
   // Define table columns configuration
   const columns = [
     {
@@ -85,11 +90,11 @@ const Organizations = () => {
       width: '150px',
       render: (_, value) => (
         <Badge
-          colorPalette="purple"
+          colorPalette="gray"
           px={2}
           py={1}
           borderRadius="md"
-          style={{ textTransform: 'capitalize' }}
+          style={{ textTransform: 'capitalize', fontSize: '16px' }}
         >
           {value}
         </Badge>
@@ -105,6 +110,7 @@ const Organizations = () => {
           px={2}
           py={1}
           borderRadius="md"
+          style={{ fontSize: '16px' }}
         >
           {value || 'N/A'}
         </Badge>
@@ -165,6 +171,28 @@ const Organizations = () => {
             title="Delete"
           >
             <FaTrash size={14} />
+          </Box>
+          <Box
+            as="button"
+            display="flex"
+            alignItems="center"
+            justifyContent="center"
+            w="35px"
+            h="35px"
+            borderRadius="lg"
+            bg="orange.50"
+            color="orange.600"
+            cursor="pointer"
+            transition="all 0.2s"
+            _hover={{
+              bg: 'orange.100',
+              transform: 'translateY(-2px)',
+              shadow: 'md',
+            }}
+            onClick={() => handleBlock(row)}
+            title="Block"
+          >
+            <FaBan size={14} />
           </Box>
         </Box>
       ),

@@ -211,7 +211,7 @@ const Navbar = (props) => {
             ))}
         </div>
       </div>
-      <div className="relative mt-[3px] flex h-[61px] w-[200px] flex-grow items-center justify-around gap-2 rounded-full bg-white px-8 py-2 shadow-xl shadow-shadow-500 dark:!bg-darkGrayishBlue dark:shadow-none md:w-[200px] md:flex-grow-0 md:gap-1 xl:w-[150px] xl:gap-2">
+      <div className="relative mt-[3px] flex h-[61px] w-[80px] flex-grow items-center justify-around gap-2 rounded-full bg-white px-4 py-2 shadow-xl shadow-shadow-500 dark:!bg-darkGrayishBlue dark:shadow-none md:w-[80px] md:flex-grow-0 md:gap-1 xl:w-[80px] xl:gap-2">
         {/* start Notification */}
         <span
           className="flex cursor-pointer text-xl text-gray-600 dark:text-white xl:hidden "
@@ -220,7 +220,7 @@ const Navbar = (props) => {
           <FiAlignJustify className="h-5 w-5 hover:font-bold hover:text-navy-700" />
         </span>
 
-        <Dropdown
+        {/* <Dropdown
           button={
             <p className="cursor-pointer ">
               <IoMdNotificationsOutline className="h-4 w-4 text-gray-600 hover:font-bold hover:text-navy-700 dark:text-white" />
@@ -254,9 +254,9 @@ const Navbar = (props) => {
             </div>
           }
           classNames={'py-2 top-4 -left-[90px] md:-left-[440px] w-max'}
-        />
+        /> */}
 
-        <Configurator
+        {/* <Configurator
           mini={props.mini}
           setMini={props.setMini}
           theme={props.theme}
@@ -275,7 +275,7 @@ const Navbar = (props) => {
               localStorage.darkMode = true
             }
           }}
-        ></div>
+        ></div> */}
         {/* Profile & Dropdown */}
         <Dropdown
           button={

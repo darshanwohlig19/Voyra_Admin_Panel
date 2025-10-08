@@ -29,7 +29,7 @@ import {
 const DataTable = ({
   columns = [],
   data = [],
-  headerColor = '#716CF1',
+  headerColor = '#E5E4E2',
   showSerialNumber = true,
   emptyMessage = 'No data available',
   rowKey = '_id',
@@ -42,12 +42,13 @@ const DataTable = ({
             <TableRow style={{ backgroundColor: headerColor }}>
               {showSerialNumber && (
                 <TableColumnHeader
-                  color="white"
+                  color="black"
                   textAlign="center"
                   textTransform="uppercase"
                   fontWeight="semibold"
                   style={{ backgroundColor: headerColor }}
                   width="80px"
+                  fontSize="18px"
                 >
                   Sr No
                 </TableColumnHeader>
@@ -55,12 +56,13 @@ const DataTable = ({
               {columns.map((column) => (
                 <TableColumnHeader
                   key={column.key}
-                  color="white"
+                  color="black"
                   textAlign={column.align || 'center'}
                   textTransform="uppercase"
                   fontWeight="semibold"
                   style={{ backgroundColor: headerColor }}
                   width={column.width}
+                  fontSize="18px"
                 >
                   {column.label}
                 </TableColumnHeader>
@@ -86,7 +88,7 @@ const DataTable = ({
                   _hover={{ bg: 'gray.100' }}
                 >
                   {showSerialNumber && (
-                    <TableCell textAlign="center" width="80px">
+                    <TableCell textAlign="center" width="80px" fontSize="16px">
                       {index + 1}
                     </TableCell>
                   )}
@@ -97,6 +99,7 @@ const DataTable = ({
                         key={column.key}
                         textAlign={column.align || 'center'}
                         width={column.width}
+                        fontSize="16px"
                       >
                         {column.render
                           ? column.render(row, value)
