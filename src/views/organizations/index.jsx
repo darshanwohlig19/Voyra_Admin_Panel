@@ -7,14 +7,10 @@ import { useSpinner } from '../../common/SpinnerLoader'
 import { useLocation, useNavigate } from 'react-router-dom'
 import RoutesComponent from '../../routes'
 import DataTable from '../../components/DataTable'
-import Pagination from '../../components/pagination/pagination'
 
 const Organizations = () => {
   const [organizations, setOrganizations] = useState([])
   const [pageTitle, setPageTitle] = useState('Organizations')
-  const [currentPage, setCurrentPage] = useState(1)
-  const [itemsPerPage, setItemsPerPage] = useState(10)
-  const [totalOrganizations, setTotalOrganizations] = useState(0)
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
   const location = useLocation()
@@ -32,16 +28,12 @@ const Organizations = () => {
   }, [location, routes])
 
   useEffect(() => {
-    const fetchOrganizations = async (page) => {
+    const fetchOrganizations = async () => {
       showSpinner()
       try {
-        const response = await apiCall(
-          'get',
-          `${config.GET_ORGANIZATIONS}?page=${page}&limit=${itemsPerPage}`
-        )
+        const response = await apiCall('get', config.GET_ORGANIZATIONS)
         if (response.status === 200 && response.data.data) {
           setOrganizations(response.data.data.orgs)
-          setTotalOrganizations(response.data.data.total || 0)
         }
       } catch (error) {
         console.error('Error fetching organizations:', error)
@@ -50,12 +42,8 @@ const Organizations = () => {
       }
     }
 
-    fetchOrganizations(currentPage)
-  }, [currentPage])
-
-  const handlePageChange = (page) => {
-    setCurrentPage(page)
-  }
+    fetchOrganizations()
+  }, [])
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -184,20 +172,12 @@ const Organizations = () => {
   ]
 
   return (
-    <Box>
-      <DataTable
-        columns={columns}
-        data={organizations}
-        rowKey="_id"
-        emptyMessage="No organizations found"
-      />
-      <Pagination
-        totalItems={totalOrganizations}
-        itemsPerPage={itemsPerPage}
-        currentPage={currentPage}
-        onPageChange={handlePageChange}
-      />
-    </Box>
+    <DataTable
+      columns={columns}
+      data={organizations}
+      rowKey="_id"
+      emptyMessage="No organizations found"
+    />
   )
 }
 

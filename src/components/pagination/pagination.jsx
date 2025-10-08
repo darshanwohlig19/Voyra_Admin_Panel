@@ -1,17 +1,16 @@
-import React from 'react'
+import React, { useState } from 'react'
 
-const Pagination = ({
-  totalItems,
-  itemsPerPage,
-  currentPage,
-  onPageChange,
-}) => {
-  const totalPages = Math.ceil(totalItems / itemsPerPage) || 1
+const Pagination = () => {
+  const totalImages = 50 // Total number of items
+  const itemsPerPage = 6 // Number of items per page
+  const totalPages = Math.ceil(totalImages / itemsPerPage) // Total pages
+
+  const [currentPage, setCurrentPage] = useState(1)
 
   // Function to handle page changes
   const changePage = (page) => {
     if (page >= 1 && page <= totalPages) {
-      onPageChange(page)
+      setCurrentPage(page)
     }
   }
 
@@ -38,10 +37,6 @@ const Pagination = ({
     }
 
     return pages
-  }
-
-  if (totalPages <= 1) {
-    return null
   }
 
   return (
