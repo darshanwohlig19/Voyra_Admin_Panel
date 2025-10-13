@@ -7,6 +7,7 @@ import { useSpinner } from '../../common/SpinnerLoader'
 import { useLocation, useNavigate } from 'react-router-dom'
 import RoutesComponent from '../../routes'
 import DataTable from '../../components/DataTable'
+import ConfirmationModal from '../../components/modal/ConfirmationModal'
 
 const Organizations = () => {
   const [organizations, setOrganizations] = useState([])
@@ -14,6 +15,9 @@ const Organizations = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(10)
   const [pageTitle, setPageTitle] = useState('Organizations')
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isBlockModalOpen, setIsBlockModalOpen] = useState(false)
+  const [selectedOrg, setSelectedOrg] = useState(null)
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
   const location = useLocation()
@@ -75,8 +79,8 @@ const Organizations = () => {
   }
 
   const handleDelete = (org) => {
-    console.log('Delete organization:', org)
-    // Add your delete logic here
+    setSelectedOrg(org)
+    setIsDeleteModalOpen(true)
   }
 
   const handleView = (org) => {
@@ -84,8 +88,18 @@ const Organizations = () => {
   }
 
   const handleBlock = (org) => {
-    console.log('Block organization:', org)
-    // Add your block logic here
+    setSelectedOrg(org)
+    setIsBlockModalOpen(true)
+  }
+
+  const closeDeleteModal = () => {
+    setIsDeleteModalOpen(false)
+    setSelectedOrg(null)
+  }
+
+  const closeBlockModal = () => {
+    setIsBlockModalOpen(false)
+    setSelectedOrg(null)
   }
 
   // Pagination logic
@@ -219,19 +233,45 @@ const Organizations = () => {
   ]
 
   return (
-    <DataTable
-      columns={columns}
-      data={organizations}
-      rowKey="_id"
-      emptyMessage="No organizations found"
-      startIndex={startIndex}
-      showPagination={true}
-      currentPage={currentPage}
-      totalPages={totalPages}
-      onPageChange={handlePageChange}
-      itemsPerPage={itemsPerPage}
-      totalItems={totalOrganizations}
-    />
+    <>
+      <DataTable
+        columns={columns}
+        data={organizations}
+        rowKey="_id"
+        emptyMessage="No organizations found"
+        startIndex={startIndex}
+        showPagination={true}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        itemsPerPage={itemsPerPage}
+        totalItems={totalOrganizations}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={closeDeleteModal}
+        title="Delete Organization"
+        message={`Are you sure you want to delete "${selectedOrg?.orgName}"?`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmColorScheme="red"
+        icon="delete"
+      />
+
+      {/* Block Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isBlockModalOpen}
+        onClose={closeBlockModal}
+        title="Block Organization"
+        message={`Are you sure you want to block "${selectedOrg?.orgName}"?`}
+        confirmText="Block"
+        cancelText="Cancel"
+        confirmColorScheme="orange"
+        icon="block"
+      />
+    </>
   )
 }
 
