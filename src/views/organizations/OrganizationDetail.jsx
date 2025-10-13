@@ -12,6 +12,9 @@ const OrganizationDetail = () => {
   const navigate = useNavigate()
   const [organization, setOrganization] = useState(null)
   const [users, setUsers] = useState([])
+  const [totalUsers, setTotalUsers] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(10)
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
 
@@ -28,13 +31,14 @@ const OrganizationDetail = () => {
           }
         }
 
-        // Fetch users for this organization
+        // Fetch users for this organization with pagination
         const usersResponse = await apiCall(
           'get',
-          `${config.GET_ORG_USERS}/${orgId}/getOrgUsers`
+          `${config.GET_ORG_USERS}/${orgId}/getOrgUsers?page=${currentPage}&limit=${itemsPerPage}`
         )
         if (usersResponse.status === 200 && usersResponse.data.data) {
           setUsers(usersResponse.data.data.users || [])
+          setTotalUsers(usersResponse.data.data.totalCount || 0)
         }
       } catch (error) {
         console.error('Error fetching organization details:', error)
@@ -46,7 +50,7 @@ const OrganizationDetail = () => {
     if (orgId) {
       fetchOrganizationDetails()
     }
-  }, [orgId])
+  }, [orgId, currentPage, itemsPerPage])
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -68,6 +72,14 @@ const OrganizationDetail = () => {
 
   const handleBack = () => {
     navigate('/organizations')
+  }
+
+  // Pagination logic
+  const totalPages = Math.ceil(totalUsers / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page)
   }
 
   // Define user table columns configuration
@@ -174,12 +186,19 @@ const OrganizationDetail = () => {
         </Heading>
       </Flex>
 
-      {/* Users Table */}
+      {/* Users Table with Pagination */}
       <DataTable
         columns={columns}
         data={users}
         rowKey="_id"
         emptyMessage="No users found for this organization"
+        startIndex={startIndex}
+        showPagination={true}
+        currentPage={currentPage}
+        totalPages={totalPages}
+        onPageChange={handlePageChange}
+        itemsPerPage={itemsPerPage}
+        totalItems={totalUsers}
       />
     </Box>
   )

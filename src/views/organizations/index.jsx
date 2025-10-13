@@ -10,6 +10,9 @@ import DataTable from '../../components/DataTable'
 
 const Organizations = () => {
   const [organizations, setOrganizations] = useState([])
+  const [totalOrganizations, setTotalOrganizations] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(10)
   const [pageTitle, setPageTitle] = useState('Organizations')
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
@@ -31,9 +34,17 @@ const Organizations = () => {
     const fetchOrganizations = async () => {
       showSpinner()
       try {
-        const response = await apiCall('get', config.GET_ORGANIZATIONS)
+        const response = await apiCall(
+          'get',
+          `${config.GET_ORGANIZATIONS}?page=${currentPage}&limit=${itemsPerPage}`
+        )
         if (response.status === 200 && response.data.data) {
-          setOrganizations(response.data.data.orgs)
+          setOrganizations(response.data.data.orgs || [])
+          setTotalOrganizations(
+            response.data.data.totalCount ||
+              response.data.data.orgs?.length ||
+              0
+          )
         }
       } catch (error) {
         console.error('Error fetching organizations:', error)
@@ -43,7 +54,7 @@ const Organizations = () => {
     }
 
     fetchOrganizations()
-  }, [])
+  }, [currentPage, itemsPerPage])
 
   const getStatusColor = (status) => {
     switch (status?.toLowerCase()) {
@@ -75,6 +86,14 @@ const Organizations = () => {
   const handleBlock = (org) => {
     console.log('Block organization:', org)
     // Add your block logic here
+  }
+
+  // Pagination logic
+  const totalPages = Math.ceil(totalOrganizations / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage
+
+  const handlePageChange = (page) => {
+    setCurrentPage(page)
   }
 
   // Define table columns configuration
@@ -205,6 +224,13 @@ const Organizations = () => {
       data={organizations}
       rowKey="_id"
       emptyMessage="No organizations found"
+      startIndex={startIndex}
+      showPagination={true}
+      currentPage={currentPage}
+      totalPages={totalPages}
+      onPageChange={handlePageChange}
+      itemsPerPage={itemsPerPage}
+      totalItems={totalOrganizations}
     />
   )
 }

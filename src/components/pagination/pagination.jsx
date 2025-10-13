@@ -1,108 +1,178 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { Flex, Button, Text, IconButton } from '@chakra-ui/react'
+import {
+  FaAngleDoubleLeft,
+  FaAngleLeft,
+  FaAngleRight,
+  FaAngleDoubleRight,
+} from 'react-icons/fa'
 
-const Pagination = () => {
-  const totalImages = 50 // Total number of items
-  const itemsPerPage = 6 // Number of items per page
-  const totalPages = Math.ceil(totalImages / itemsPerPage) // Total pages
-
-  const [currentPage, setCurrentPage] = useState(1)
-
-  // Function to handle page changes
-  const changePage = (page) => {
-    if (page >= 1 && page <= totalPages) {
-      setCurrentPage(page)
-    }
-  }
-
-  // Function to generate page numbers with dots
+/**
+ * Reusable Pagination Component
+ * @param {number} currentPage - Current active page (1-indexed)
+ * @param {number} totalPages - Total number of pages
+ * @param {function} onPageChange - Callback function when page changes
+ * @param {number} itemsPerPage - Number of items per page
+ * @param {number} totalItems - Total number of items
+ */
+const Pagination = ({
+  currentPage = 1,
+  totalPages = 1,
+  onPageChange,
+  itemsPerPage = 10,
+  totalItems = 0,
+}) => {
+  // Function to generate page numbers with ellipsis
   const generatePageNumbers = () => {
     let pages = []
 
-    if (totalPages <= 5) {
-      // If total pages are less than or equal to 5, show all pages
+    if (totalPages <= 7) {
+      // Show all pages if total is 7 or less
       for (let i = 1; i <= totalPages; i++) {
         pages.push(i)
       }
     } else {
-      // Always show the first page, last page, and the current page
+      // Always show first page
       pages.push(1)
-      if (currentPage > 3) pages.push('...')
-      const start = Math.max(currentPage - 1, 2) // Ensure 1st page is always shown
-      const end = Math.min(currentPage + 1, totalPages - 1) // Ensure last page is always shown
+
+      if (currentPage > 3) {
+        pages.push('...')
+      }
+
+      // Show pages around current page
+      const start = Math.max(currentPage - 1, 2)
+      const end = Math.min(currentPage + 1, totalPages - 1)
+
       for (let i = start; i <= end; i++) {
         pages.push(i)
       }
-      if (currentPage < totalPages - 2) pages.push('...')
+
+      if (currentPage < totalPages - 2) {
+        pages.push('...')
+      }
+
+      // Always show last page
       pages.push(totalPages)
     }
 
     return pages
   }
 
+  const startItem = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0
+  const endItem = Math.min(currentPage * itemsPerPage, totalItems)
+
+  if (totalItems === 0) {
+    return null // Don't show pagination if there's no data
+  }
+
   return (
-    <div className="pagination mt-3.5 flex justify-center">
-      <div className="mb-2 mt-2 flex items-center justify-center px-6">
+    <Flex
+      mt={6}
+      justify="space-between"
+      align="center"
+      wrap="wrap"
+      gap={4}
+      px={2}
+    >
+      {/* Items count info */}
+      <Text color="gray.600" fontSize="sm">
+        Showing {startItem} to {endItem} of {totalItems} entries
+      </Text>
+
+      {/* Pagination controls */}
+      <Flex align="center" gap={1}>
         {/* First page button */}
-        <button
-          className={`h-10 w-10 rounded-full bg-red-600 text-lg text-white transition duration-200 hover:bg-red-600 active:bg-red-600 ${
-            currentPage === 1 ? 'cursor-not-allowed opacity-50' : ''
-          }`}
-          onClick={() => changePage(1)}
+        <IconButton
+          onClick={() => onPageChange(1)}
           disabled={currentPage === 1}
+          variant="ghost"
+          colorPalette="purple"
+          size="sm"
+          _disabled={{
+            opacity: 0.4,
+            cursor: 'not-allowed',
+          }}
+          title="First page"
         >
-          {'<<'}
-        </button>
+          <FaAngleDoubleLeft />
+        </IconButton>
 
         {/* Previous page button */}
-        <button
-          className={`ml-[1px] mr-[1px] h-10 w-10 rounded-full bg-red-600 text-lg text-white transition duration-200 hover:bg-red-600 active:bg-red-600 ${
-            currentPage === 1 ? 'cursor-not-allowed opacity-50' : ''
-          }`}
-          onClick={() => changePage(currentPage - 1)}
+        <IconButton
+          onClick={() => onPageChange(currentPage - 1)}
           disabled={currentPage === 1}
+          variant="ghost"
+          colorPalette="purple"
+          size="sm"
+          _disabled={{
+            opacity: 0.4,
+            cursor: 'not-allowed',
+          }}
+          title="Previous page"
         >
-          {'<'}
-        </button>
+          <FaAngleLeft />
+        </IconButton>
 
-        {/* Page number buttons with dots */}
-        {generatePageNumbers().map((page, index) => (
-          <button
-            key={index}
-            onClick={() => page !== '...' && changePage(page)}
-            className={`h-10 w-10 rounded-full text-lg ${
-              page === currentPage
-                ? 'bg-red-600 text-white'
-                : 'bg-white text-black'
-            } transition duration-200 hover:bg-red-600 hover:text-white`}
-            disabled={page === '...'}
-          >
-            {page}
-          </button>
-        ))}
+        {/* Page number buttons */}
+        {generatePageNumbers().map((page, index) => {
+          if (page === '...') {
+            return (
+              <Text key={`ellipsis-${index}`} px={2} color="gray.500">
+                ...
+              </Text>
+            )
+          }
+
+          return (
+            <Button
+              key={page}
+              onClick={() => onPageChange(page)}
+              variant={currentPage === page ? 'solid' : 'ghost'}
+              colorPalette="purple"
+              size="sm"
+              minW="40px"
+              _hover={{
+                bg: currentPage === page ? 'purple.600' : 'purple.50',
+              }}
+            >
+              {page}
+            </Button>
+          )
+        })}
 
         {/* Next page button */}
-        <button
-          className={`ml-[1px] mr-[1px] h-10 w-10 rounded-full bg-red-600 text-lg text-white transition duration-200 hover:bg-red-600 active:bg-red-600 ${
-            currentPage >= totalPages ? 'cursor-not-allowed opacity-50' : ''
-          }`}
-          onClick={() => changePage(currentPage + 1)}
+        <IconButton
+          onClick={() => onPageChange(currentPage + 1)}
           disabled={currentPage >= totalPages}
+          variant="ghost"
+          colorPalette="purple"
+          size="sm"
+          _disabled={{
+            opacity: 0.4,
+            cursor: 'not-allowed',
+          }}
+          title="Next page"
         >
-          {'>'}
-        </button>
+          <FaAngleRight />
+        </IconButton>
 
         {/* Last page button */}
-        <button
-          className={`h-10 w-10 rounded-full bg-red-600 text-lg text-white transition duration-200 hover:bg-red-600 active:bg-red-600 ${
-            currentPage >= totalPages ? 'cursor-not-allowed opacity-50' : ''
-          }`}
-          onClick={() => changePage(totalPages)}
+        <IconButton
+          onClick={() => onPageChange(totalPages)}
           disabled={currentPage >= totalPages}
+          variant="ghost"
+          colorPalette="purple"
+          size="sm"
+          _disabled={{
+            opacity: 0.4,
+            cursor: 'not-allowed',
+          }}
+          title="Last page"
         >
-          {'>>'}
-        </button>
-      </div>
-    </div>
+          <FaAngleDoubleRight />
+        </IconButton>
+      </Flex>
+    </Flex>
   )
 }
 
