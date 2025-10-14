@@ -15,6 +15,9 @@ const Dashboard = () => {
   const [userActivityStats, setUserActivityStats] = useState(null)
   // Time period state for Revenue
   const [revenueTimePeriod, setRevenueTimePeriod] = useState('month')
+  // Revenue stats from API
+  const [revenueStats, setRevenueStats] = useState(null)
+
   // Sample data for Users
   const [usersData, setUsersData] = useState({
     total: 100,
@@ -263,6 +266,23 @@ const Dashboard = () => {
 
     fetchUserActivityStats()
   }, [activityTimePeriod])
+
+  // Fetch revenue statistics from API
+  useEffect(() => {
+    const fetchRevenueStats = async () => {
+      const { apiCall } = ApiCaller()
+      const response = await apiCall(
+        'get',
+        `${config.GET_REVENUE_STATS}?type=${revenueTimePeriod}`
+      )
+
+      if (response?.data?.stats) {
+        setRevenueStats(response.data.stats)
+      }
+    }
+
+    fetchRevenueStats()
+  }, [revenueTimePeriod])
 
   // Function to get sales data based on time period
   const getSalesData = () => {
@@ -1011,6 +1031,54 @@ const Dashboard = () => {
       },
     }
 
+    // If API data is available, use it
+    if (revenueStats && revenueStats.length > 0) {
+      // Extract categories and data from API response
+      const categories = []
+      const shopifyData = []
+      const googleData = []
+      const websiteData = []
+
+      revenueStats.forEach((item) => {
+        // Determine the category key based on what's in the response
+        let categoryKey = ''
+        if (item.hour !== undefined) categoryKey = 'hour'
+        else if (item.day !== undefined) categoryKey = 'day'
+        else if (item.week !== undefined) categoryKey = 'week'
+        else if (item.month !== undefined) categoryKey = 'month'
+
+        categories.push(item[categoryKey] || '')
+        shopifyData.push(item.shopify || 0)
+        googleData.push(item.google_marketplace || 0)
+        websiteData.push(item.website || 0)
+      })
+
+      return {
+        chartData: [
+          {
+            name: 'Shopify',
+            data: shopifyData,
+          },
+          {
+            name: 'Google',
+            data: googleData,
+          },
+          {
+            name: 'Website',
+            data: websiteData,
+          },
+        ],
+        chartOptions: {
+          ...baseChartOptions,
+          xaxis: {
+            ...baseChartOptions.xaxis,
+            categories: categories,
+          },
+        },
+      }
+    }
+
+    // Fallback data if API hasn't loaded yet
     switch (revenueTimePeriod) {
       case 'day':
         // 4-hour intervals for 1 day
