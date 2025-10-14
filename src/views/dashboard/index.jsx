@@ -11,6 +11,8 @@ const Dashboard = () => {
   const [timePeriod, setTimePeriod] = useState('month')
   // Time period state for User Activity
   const [activityTimePeriod, setActivityTimePeriod] = useState('month')
+  // User activity stats from API
+  const [userActivityStats, setUserActivityStats] = useState(null)
   // Time period state for Revenue
   const [revenueTimePeriod, setRevenueTimePeriod] = useState('month')
   // Sample data for Users
@@ -244,6 +246,23 @@ const Dashboard = () => {
 
     fetchSubscriberStats()
   }, [])
+
+  // Fetch user activity statistics from API
+  useEffect(() => {
+    const fetchUserActivityStats = async () => {
+      const { apiCall } = ApiCaller()
+      const response = await apiCall(
+        'get',
+        `${config.GET_USER_ACTIVITY_STATS}?type=${activityTimePeriod}`
+      )
+
+      if (response?.data?.stats) {
+        setUserActivityStats(response.data.stats)
+      }
+    }
+
+    fetchUserActivityStats()
+  }, [activityTimePeriod])
 
   // Function to get sales data based on time period
   const getSalesData = () => {
@@ -766,6 +785,43 @@ const Dashboard = () => {
       },
     }
 
+    // If API data is available, use it
+    if (userActivityStats && userActivityStats.graphData) {
+      // Extract x-axis labels and y-axis data from API
+      const categories = userActivityStats.graphData.map((item) => {
+        // Get the first key that's not 'users' as the x-axis label
+        const keys = Object.keys(item)
+        const labelKey = keys.find((key) => key !== 'users')
+        return item[labelKey] || ''
+      })
+      const data = userActivityStats.graphData.map((item) => item.users)
+
+      // Calculate dynamic y-axis max based on data
+      const maxValue = Math.max(...data)
+      const yAxisMax = Math.ceil(maxValue * 1.2) // Add 20% buffer
+
+      return {
+        chartData: [
+          {
+            name: 'User Activity',
+            data: data,
+          },
+        ],
+        chartOptions: {
+          ...baseChartOptions,
+          xaxis: {
+            ...baseChartOptions.xaxis,
+            categories: categories,
+          },
+          yaxis: {
+            ...baseChartOptions.yaxis,
+            max: yAxisMax,
+          },
+        },
+      }
+    }
+
+    // Fallback data if API hasn't loaded yet
     switch (activityTimePeriod) {
       case 'day':
         // 4-hour intervals for 1 day

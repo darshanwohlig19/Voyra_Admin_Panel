@@ -11,6 +11,7 @@ const config = {
   // Dashboard APIs
   GET_USER_STATS: baseUrl + '/api/adminDashboard/getUserStats',
   GET_SUBSCRIBER_STATS: baseUrl + '/api/adminDashboard/getSubscriberStats',
+  GET_USER_ACTIVITY_STATS: baseUrl + '/api/adminDashboard/getUserActivityStats',
   IS_LOGIN: baseUrl + 'isLoggedIn',
   IS_LOGOUT: baseUrl + 'refresh/logout',
   BLOCK_USER: baseUrl + 'block_user',
