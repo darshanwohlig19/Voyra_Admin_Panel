@@ -7,6 +7,10 @@ const config = {
   GET_ORG_USERS: baseUrl + '/api/orgUsers',
 
   SIGNIN_API: baseUrl + '/api/userAuth/login',
+
+  // Dashboard APIs
+  GET_USER_STATS: baseUrl + '/api/adminDashboard/getUserStats',
+  GET_SUBSCRIBER_STATS: baseUrl + '/api/adminDashboard/getSubscriberStats',
   IS_LOGIN: baseUrl + 'isLoggedIn',
   IS_LOGOUT: baseUrl + 'refresh/logout',
   BLOCK_USER: baseUrl + 'block_user',

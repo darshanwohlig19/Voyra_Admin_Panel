@@ -54,15 +54,6 @@ const RoutesComponent = () => {
         isVisible: false,
       },
       {
-        name: 'Organizations',
-        path: 'organizations',
-        layout: '/afterLogin',
-        icon: <FaUsers className="h-6 w-6" />,
-        component: <Organizations />,
-        isComing: false,
-        isVisible: isSuperAdmin, // Only visible to superadmin
-      },
-      {
         name: 'Dashboard',
         path: 'dashboard',
         layout: '/afterLogin',
@@ -73,6 +64,16 @@ const RoutesComponent = () => {
         isComing: false,
         isVisible: isSuperAdmin, // Only visible to superadmin
       },
+      {
+        name: 'Organizations',
+        path: 'organizations',
+        layout: '/afterLogin',
+        icon: <FaUsers className="h-6 w-6" />,
+        component: <Organizations />,
+        isComing: false,
+        isVisible: isSuperAdmin, // Only visible to superadmin
+      },
+
       {
         name: 'Organization Details',
         path: 'organizations/:orgId',
