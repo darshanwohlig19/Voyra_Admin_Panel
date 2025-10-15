@@ -17,6 +17,8 @@ const Dashboard = () => {
   const [revenueTimePeriod, setRevenueTimePeriod] = useState('month')
   // Revenue stats from API
   const [revenueStats, setRevenueStats] = useState(null)
+  // Sales count stats from API
+  const [salesStats, setSalesStats] = useState(null)
 
   // Sample data for Users
   const [usersData, setUsersData] = useState({
@@ -283,6 +285,28 @@ const Dashboard = () => {
 
     fetchRevenueStats()
   }, [revenueTimePeriod])
+
+  // Fetch sales count statistics from API
+  useEffect(() => {
+    const fetchSalesStats = async () => {
+      try {
+        const { apiCall } = ApiCaller()
+        const response = await apiCall(
+          'get',
+          `${config.GET_SALES_COUNT}?type=${timePeriod}`
+        )
+
+        if (response?.data) {
+          setSalesStats(response.data)
+        }
+      } catch (error) {
+        console.error('Error fetching sales stats:', error)
+        setSalesStats(null)
+      }
+    }
+
+    fetchSalesStats()
+  }, [timePeriod])
 
   // Function to get sales data based on time period
   const getSalesData = () => {
@@ -572,6 +596,67 @@ const Dashboard = () => {
       },
     }
 
+    // If API data is available, use it
+    if (
+      salesStats &&
+      Array.isArray(salesStats.users) &&
+      salesStats.users.length > 0
+    ) {
+      // Extract categories based on the time period type
+      const categories = salesStats.users.map((item) => {
+        // Check which property exists in the response based on filterType
+        if (item.month !== undefined) return item.month
+        if (item.week !== undefined) return item.week
+        if (item.day !== undefined) return item.day
+        if (item.hour !== undefined) return item.hour
+        return ''
+      })
+
+      const shopifyData = salesStats.users.map((item) => item.shopify || 0)
+      const googleData = salesStats.users.map(
+        (item) => item.google_marketplace || 0
+      )
+      const websiteData = salesStats.users.map((item) => item.website || 0)
+
+      // Calculate dynamic y-axis max based on data
+      const allValues = [
+        ...shopifyData.filter((v) => v > 0),
+        ...googleData.filter((v) => v > 0),
+        ...websiteData.filter((v) => v > 0),
+      ]
+      const maxValue = allValues.length > 0 ? Math.max(...allValues) : 100
+      const yAxisMax = Math.ceil(maxValue * 1.2) // Add 20% buffer
+
+      return {
+        chartData: [
+          {
+            name: 'Shopify',
+            data: shopifyData,
+          },
+          {
+            name: 'Google',
+            data: googleData,
+          },
+          {
+            name: 'Website',
+            data: websiteData,
+          },
+        ],
+        chartOptions: {
+          ...baseChartOptions,
+          xaxis: {
+            ...baseChartOptions.xaxis,
+            categories: categories,
+          },
+          yaxis: {
+            ...baseChartOptions.yaxis,
+            max: yAxisMax,
+          },
+        },
+      }
+    }
+
+    // Fallback data if API hasn't loaded yet
     switch (timePeriod) {
       case 'day':
         // 4-hour intervals for 1 day

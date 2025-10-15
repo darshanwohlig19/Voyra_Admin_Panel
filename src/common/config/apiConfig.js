@@ -14,6 +14,7 @@ const config = {
 
   GET_USER_ACTIVITY_STATS: baseUrl + '/api/adminDashboard/getUserActivityStats',
   GET_REVENUE_STATS: baseUrl + '/api/adminDashboard/getRevenueStats',
+  GET_SALES_COUNT: baseUrl + '/api/adminDashboard/getSalesCount',
   IS_LOGIN: baseUrl + 'isLoggedIn',
   IS_LOGOUT: baseUrl + 'refresh/logout',
   BLOCK_USER: baseUrl + 'block_user',
