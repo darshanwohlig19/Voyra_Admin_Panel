@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { MdOutlineFolderOpen } from 'react-icons/md'
+import { MdOutlineFolderOpen, MdMovie } from 'react-icons/md'
 import SignIn from 'views/signIn/signIn'
 import SignUp from 'views/signIn/signUp'
 import { FiTrash2 } from 'react-icons/fi'
@@ -12,6 +12,8 @@ import { FaUsers } from 'react-icons/fa'
 import Dashboard from 'views/dashboard'
 import Organizations from 'views/organizations'
 import OrganizationDetail from 'views/organizations/OrganizationDetail'
+import ShortType2 from 'views/shortType/ShortType2'
+import Parameters from 'views/parameters/Parameters'
 import { getEncryptedCookie } from 'common/utils/cookieUtils'
 
 const RoutesComponent = () => {
@@ -82,6 +84,33 @@ const RoutesComponent = () => {
         component: <OrganizationDetail />,
         isComing: false,
         isVisible: false,
+      },
+      // {
+      //   name: 'Short Type',
+      //   path: 'short-type',
+      //   layout: '/afterLogin',
+      //   icon: <MdMovie className="h-6 w-6" />,
+      //   component: <ShortType />,
+      //   isComing: false,
+      //   isVisible: true,
+      // },
+      {
+        name: 'Short Type',
+        path: 'short-type',
+        layout: '/afterLogin',
+        icon: <MdMovie className="h-6 w-6" />,
+        component: <ShortType2 />,
+        isComing: false,
+        isVisible: true,
+      },
+      {
+        name: 'Parameters',
+        path: 'parameters',
+        layout: '/afterLogin',
+        icon: <MdOutlineFolderOpen className="h-6 w-6" />,
+        component: <Parameters />,
+        isComing: false,
+        isVisible: true,
       },
     ])
   }, [])

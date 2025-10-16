@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { Box, Badge, Heading, Flex, IconButton } from '@chakra-ui/react'
 import { FaArrowLeft, FaTrash } from 'react-icons/fa'
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
@@ -99,32 +98,31 @@ const OrganizationDetail = () => {
       label: 'Role',
       width: '150px',
       render: (_, value) => (
-        <Badge
-          colorPalette="gray"
-          px={2}
-          py={1}
-          borderRadius="md"
-          style={{ textTransform: 'capitalize', fontSize: '16px' }}
-        >
+        <span className="inline-block rounded-md bg-gray-100 px-2 py-1 text-base capitalize text-gray-800">
           {value || 'User'}
-        </Badge>
+        </span>
       ),
     },
     {
       key: 'status',
       label: 'Status',
       width: '120px',
-      render: (_, value) => (
-        <Badge
-          colorPalette={getStatusColor(value)}
-          px={2}
-          py={1}
-          borderRadius="md"
-          style={{ fontSize: '16px' }}
-        >
-          {value || 'N/A'}
-        </Badge>
-      ),
+      render: (_, value) => {
+        const colorMap = {
+          green: 'bg-green-100 text-green-800',
+          red: 'bg-red-100 text-red-800',
+          orange: 'bg-orange-100 text-orange-800',
+          gray: 'bg-gray-100 text-gray-800',
+        }
+        const colorClass = colorMap[getStatusColor(value)] || colorMap.gray
+        return (
+          <span
+            className={`inline-block rounded-md px-2 py-1 text-base ${colorClass}`}
+          >
+            {value || 'N/A'}
+          </span>
+        )
+      },
     },
     {
       key: 'createdAt',
@@ -137,54 +135,33 @@ const OrganizationDetail = () => {
       label: 'Actions',
       width: '180px',
       render: (row) => (
-        <Box display="flex" gap={2} justifyContent="center" alignItems="center">
-          <Box
-            as="button"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            w="35px"
-            h="35px"
-            borderRadius="lg"
-            bg="red.50"
-            color="red.600"
-            cursor="pointer"
-            transition="all 0.2s"
-            _hover={{
-              bg: 'red.100',
-              transform: 'translateY(-2px)',
-              shadow: 'md',
-            }}
+        <div className="flex items-center justify-center gap-2">
+          <button
+            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-red-50 text-red-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-md"
             onClick={() => handleDeleteUser(row)}
             title="Delete"
           >
             <FaTrash size={14} />
-          </Box>
-        </Box>
+          </button>
+        </div>
       ),
     },
   ]
 
   return (
-    <Box>
+    <div className="mt-5 h-full w-full px-4">
       {/* Header Section */}
-      <Flex mb={6} alignItems="center" gap={4}>
-        <IconButton
+      <div className="mb-6 flex items-center gap-4">
+        <button
           onClick={handleBack}
-          colorPalette="purple"
-          variant="outline"
-          size="xl"
-          borderRadius="lg"
-          _hover={{ transform: 'translateX(-4px)', shadow: 'md' }}
-          transition="all 0.2s"
-          fontSize="24px"
+          className="flex h-10 w-10 items-center justify-center rounded-lg border-2 border-gray-300 bg-white text-base text-gray-800 transition-all duration-200 hover:-translate-x-1 hover:shadow-md"
         >
           <FaArrowLeft />
-        </IconButton>
-        <Heading size="4xl" color="gray.800" fontWeight="bold">
+        </button>
+        <h1 className="text-[18px] font-bold text-gray-800">
           {organization?.orgName || 'Organization Details'}
-        </Heading>
-      </Flex>
+        </h1>
+      </div>
 
       {/* Users Table with Pagination */}
       <DataTable
@@ -200,7 +177,7 @@ const OrganizationDetail = () => {
         itemsPerPage={itemsPerPage}
         totalItems={totalUsers}
       />
-    </Box>
+    </div>
   )
 }
 

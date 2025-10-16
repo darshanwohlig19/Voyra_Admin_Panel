@@ -10,6 +10,7 @@ import RoutesComponent from './routes'
 import { useSpinner } from 'common/SpinnerLoader'
 import { useToaster } from 'common/Toaster'
 import dmsConstants from 'common/config/PocketStudioConstants.js'
+import NotFound from 'views/others/404'
 
 const App = () => {
   const routes = RoutesComponent()
@@ -94,6 +95,8 @@ const App = () => {
             </SignInGuard>
           }
         />
+        {/* 404 Catch-all route */}
+        <Route path="*" element={<NotFound />} />
       </Routes>
     </>
   )

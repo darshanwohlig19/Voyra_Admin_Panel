@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { Box, Flex, Text } from '@chakra-ui/react'
 import { FaUsers, FaCreditCard } from 'react-icons/fa'
 import StatCard from './components/StatCard'
 import { DonutChart, BarChart, AreaChart } from 'components/chart'
@@ -1305,12 +1304,12 @@ const Dashboard = () => {
   const revenueData = getRevenueData()
 
   return (
-    <Box mt={5} h="full" w="full">
-      <Flex direction="column" gap={5} w="full" h="full">
+    <div className="mt-5 h-full w-full px-4">
+      <div className="flex h-full w-full flex-col gap-5">
         {/* Users, Subscriptions and Revenue Row */}
-        <Flex gap={6} flexWrap="wrap">
+        <div className="flex flex-wrap gap-6">
           {/* Left Side - Users and Subscriptions Stacked */}
-          <Flex direction="column" gap={6} minW="280px" maxW="350px">
+          <div className="flex min-w-[280px] max-w-[350px] flex-col gap-6">
             {/* Users Card */}
             <StatCard
               title="Users"
@@ -1344,27 +1343,14 @@ const Dashboard = () => {
                 />
               }
             />
-          </Flex>
+          </div>
 
           {/* Right Side - Sales Dynamics Chart */}
-          <Box
-            flex="1"
-            minW="500px"
-            bg="white"
-            borderRadius="20px"
-            p={6}
-            shadow="md"
-            _dark={{ bg: 'navy.800' }}
-          >
-            <Flex justify="space-between" align="center" mb={6}>
-              <Text
-                fontSize="xl"
-                fontWeight="bold"
-                color="navy.700"
-                _dark={{ color: 'white' }}
-              >
+          <div className="min-w-[500px] flex-1 rounded-[20px] bg-white p-6 shadow-md dark:bg-navy-800">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-navy-700 dark:text-white">
                 Sales dynamics
-              </Text>
+              </h2>
               <select
                 value={timePeriod}
                 onChange={(e) => setTimePeriod(e.target.value)}
@@ -1375,36 +1361,23 @@ const Dashboard = () => {
                 <option value="month">Month</option>
                 <option value="year">Year</option>
               </select>
-            </Flex>
+            </div>
             <BarChart
               chartData={sourceTrafficData.chartData}
               chartOptions={sourceTrafficData.chartOptions}
               height="580px"
             />
-          </Box>
-        </Flex>
+          </div>
+        </div>
 
         {/* Revenue and Overall User Activity - Side by Side */}
-        <Flex gap={6} flexWrap="wrap">
+        <div className="flex flex-wrap gap-6">
           {/* Revenue Chart */}
-          <Box
-            flex="1"
-            minW="400px"
-            bg="white"
-            borderRadius="20px"
-            p={6}
-            shadow="md"
-            _dark={{ bg: 'navy.800' }}
-          >
-            <Flex justify="space-between" align="center" mb={6}>
-              <Text
-                fontSize="xl"
-                fontWeight="bold"
-                color="navy.700"
-                _dark={{ color: 'white' }}
-              >
+          <div className="min-w-[400px] flex-1 rounded-[20px] bg-white p-6 shadow-md dark:bg-navy-800">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-navy-700 dark:text-white">
                 Revenue
-              </Text>
+              </h2>
               <select
                 value={revenueTimePeriod}
                 onChange={(e) => setRevenueTimePeriod(e.target.value)}
@@ -1415,33 +1388,20 @@ const Dashboard = () => {
                 <option value="month">Month</option>
                 <option value="year">Year</option>
               </select>
-            </Flex>
+            </div>
             <BarChart
               chartData={revenueData.chartData}
               chartOptions={revenueData.chartOptions}
               height="350px"
             />
-          </Box>
+          </div>
 
           {/* Overall User Activity */}
-          <Box
-            flex="1"
-            minW="400px"
-            bg="white"
-            borderRadius="20px"
-            p={6}
-            shadow="md"
-            _dark={{ bg: 'navy.800' }}
-          >
-            <Flex justify="space-between" align="center" mb={6}>
-              <Text
-                fontSize="xl"
-                fontWeight="bold"
-                color="navy.700"
-                _dark={{ color: 'white' }}
-              >
+          <div className="min-w-[400px] flex-1 rounded-[20px] bg-white p-6 shadow-md dark:bg-navy-800">
+            <div className="mb-6 flex items-center justify-between">
+              <h2 className="text-xl font-bold text-navy-700 dark:text-white">
                 Overall User Activity
-              </Text>
+              </h2>
               <select
                 value={activityTimePeriod}
                 onChange={(e) => setActivityTimePeriod(e.target.value)}
@@ -1452,16 +1412,16 @@ const Dashboard = () => {
                 <option value="month">Month</option>
                 <option value="year">Year</option>
               </select>
-            </Flex>
+            </div>
             <AreaChart
               chartData={userActivityData.chartData}
               chartOptions={userActivityData.chartOptions}
               height="350px"
             />
-          </Box>
-        </Flex>
-      </Flex>
-    </Box>
+          </div>
+        </div>
+      </div>
+    </div>
   )
 }
 

@@ -52,7 +52,16 @@ export function SidebarLinks(props) {
     ) {
       return true
     }
-    return pathname.includes(routeName) && pathname !== '/'
+
+    // Exact match check to avoid partial matching (e.g., short-type vs short-type-2)
+    const pathSegments = pathname.split('/').filter(Boolean)
+    const routeSegments = routeName.split('/').filter(Boolean)
+
+    // Check if the last segment of pathname exactly matches the last segment of routeName
+    return (
+      pathSegments[pathSegments.length - 1] ===
+      routeSegments[routeSegments.length - 1]
+    )
   }
 
   const createLinks = (routes) => {

@@ -205,31 +205,23 @@ const AfterLoginLayout = (props) => {
         >
           {/* Routes */}
           <div>
-            <Portal>
-              <Navbar
-                onOpenSidenav={() => setOpen(!open)}
-                brandText={currentRoute}
-                breadCrumbs={breadCrumbs}
-                secondary={getActiveNavbar(routes)}
-                theme={props.theme}
-                setTheme={props.setTheme}
-                hovered={hovered}
-                mini={props.mini}
-                setMini={props.setMini}
-                isExpand={isExpand}
-                {...rest}
-              />
-            </Portal>
+            <Navbar
+              onOpenSidenav={() => setOpen(!open)}
+              brandText={currentRoute}
+              breadCrumbs={breadCrumbs}
+              secondary={getActiveNavbar(routes)}
+              theme={props.theme}
+              setTheme={props.setTheme}
+              hovered={hovered}
+              mini={props.mini}
+              setMini={props.setMini}
+              isExpand={isExpand}
+              {...rest}
+            />
             <div
               className={`mx-auto p-2 ${
-                location.pathname.includes('/not-found')
-                  ? '!pt-2.5'
-                  : '!pt-[150px] sm:!pt-[200px]'
-              } md:p-2 ${
-                location.pathname.includes('/not-found')
-                  ? '!pt-0'
-                  : 'md:!pt-[72px]'
-              }`}
+                location.pathname.includes('/not-found') ? '!pt-2.5' : '!pt-4'
+              } md:p-2`}
             >
               <Routes>
                 {getRoutes(routes)}

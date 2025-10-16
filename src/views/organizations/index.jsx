@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react'
-import { Box, Badge } from '@chakra-ui/react'
 import { FaEye, FaTrash, FaBan } from 'react-icons/fa' // FontAwesome icons
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
@@ -122,32 +121,31 @@ const Organizations = () => {
       label: 'Plan',
       width: '150px',
       render: (_, value) => (
-        <Badge
-          colorPalette="gray"
-          px={2}
-          py={1}
-          borderRadius="md"
-          style={{ textTransform: 'capitalize', fontSize: '16px' }}
-        >
+        <span className="inline-block rounded-md bg-gray-100 px-2 py-1 text-base capitalize text-gray-800">
           {value}
-        </Badge>
+        </span>
       ),
     },
     {
       key: 'status',
       label: 'Status',
       width: '120px',
-      render: (_, value) => (
-        <Badge
-          colorPalette={getStatusColor(value)}
-          px={2}
-          py={1}
-          borderRadius="md"
-          style={{ fontSize: '16px' }}
-        >
-          {value || 'N/A'}
-        </Badge>
-      ),
+      render: (_, value) => {
+        const colorMap = {
+          green: 'bg-green-100 text-green-800',
+          red: 'bg-red-100 text-red-800',
+          orange: 'bg-orange-100 text-orange-800',
+          gray: 'bg-gray-100 text-gray-800',
+        }
+        const colorClass = colorMap[getStatusColor(value)] || colorMap.gray
+        return (
+          <span
+            className={`inline-block rounded-md px-2 py-1 text-base ${colorClass}`}
+          >
+            {value || 'N/A'}
+          </span>
+        )
+      },
     },
     {
       key: 'createdAt',
@@ -160,80 +158,35 @@ const Organizations = () => {
       label: 'Actions',
       width: '150px',
       render: (row) => (
-        <Box display="flex" gap={2} justifyContent="center" alignItems="center">
-          <Box
-            as="button"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            w="35px"
-            h="35px"
-            borderRadius="lg"
-            bg="blue.50"
-            color="blue.600"
-            cursor="pointer"
-            transition="all 0.2s"
-            _hover={{
-              bg: 'blue.100',
-              transform: 'translateY(-2px)',
-              shadow: 'md',
-            }}
+        <div className="flex items-center justify-center gap-2">
+          <button
+            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-100 hover:shadow-md"
             onClick={() => handleView(row)}
             title="View"
           >
             <FaEye size={16} />
-          </Box>
-          <Box
-            as="button"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            w="35px"
-            h="35px"
-            borderRadius="lg"
-            bg="red.50"
-            color="red.600"
-            cursor="pointer"
-            transition="all 0.2s"
-            _hover={{
-              bg: 'red.100',
-              transform: 'translateY(-2px)',
-              shadow: 'md',
-            }}
+          </button>
+          <button
+            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-red-50 text-red-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-md"
             onClick={() => handleDelete(row)}
             title="Delete"
           >
             <FaTrash size={14} />
-          </Box>
-          <Box
-            as="button"
-            display="flex"
-            alignItems="center"
-            justifyContent="center"
-            w="35px"
-            h="35px"
-            borderRadius="lg"
-            bg="orange.50"
-            color="orange.600"
-            cursor="pointer"
-            transition="all 0.2s"
-            _hover={{
-              bg: 'orange.100',
-              transform: 'translateY(-2px)',
-              shadow: 'md',
-            }}
+          </button>
+          <button
+            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-orange-50 text-orange-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-orange-100 hover:shadow-md"
             onClick={() => handleBlock(row)}
             title="Block"
           >
             <FaBan size={14} />
-          </Box>
-        </Box>
+          </button>
+        </div>
       ),
     },
   ]
 
   return (
-    <>
+    <div className="mt-5 h-full w-full px-4">
       <DataTable
         columns={columns}
         data={organizations}
@@ -271,7 +224,7 @@ const Organizations = () => {
         confirmColorScheme="orange"
         icon="block"
       />
-    </>
+    </div>
   )
 }
 

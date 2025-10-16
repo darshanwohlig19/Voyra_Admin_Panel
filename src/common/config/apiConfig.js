@@ -31,5 +31,11 @@ const config = {
   DELETE_FILES: baseUrl + 'delete_file/{file_id}',
   GET_ALL_DELETED_FILES: baseUrl + 'get_all_deleted_files',
   IS_LOGOUT: baseUrl + 'refresh/logout',
+
+  // Short Type API
+  ADD_SHORT_TYPE: baseUrl + '/api/adminShotType/addShotType',
+
+  // Parameters API
+  ADD_PARAMETERS: baseUrl + '/api/adminParameters/addParameters',
 }
 export default config

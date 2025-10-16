@@ -47,11 +47,8 @@ function SignInDefault() {
         // Store only encrypted user data (token is handled by backend cookie)
         setEncryptedCookie('bearerToken', response.data.data.token, 7)
         setEncryptedCookie('userData', response.data.data.user, 7)
-        setEncryptedCookie(
-          'userRole',
-          response.data.data.user.organizations[0]?.role,
-          7
-        )
+        const userRole = response.data.data.user.organizations[0]?.role
+        setEncryptedCookie('userRole', userRole, 7)
 
         // Store userName in localStorage
         const userName =
@@ -67,8 +64,12 @@ function SignInDefault() {
           type: 'success',
         })
 
-        // Navigate only after successful authentication
-        navigate('/organizations')
+        // Navigate based on user role
+        if (userRole === 'superadmin') {
+          navigate('/dashboard')
+        } else {
+          navigate('/organizations')
+        }
         return true
       } else {
         addToast({
