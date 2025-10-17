@@ -598,11 +598,12 @@ const Dashboard = () => {
     // If API data is available, use it
     if (
       salesStats &&
-      Array.isArray(salesStats.users) &&
-      salesStats.users.length > 0
+      salesStats.users &&
+      Array.isArray(salesStats.users.salesAnalytics) &&
+      salesStats.users.salesAnalytics.length > 0
     ) {
       // Extract categories based on the time period type
-      const categories = salesStats.users.map((item) => {
+      const categories = salesStats.users.salesAnalytics.map((item) => {
         // Check which property exists in the response based on filterType
         if (item.month !== undefined) return item.month
         if (item.week !== undefined) return item.week
@@ -611,11 +612,15 @@ const Dashboard = () => {
         return ''
       })
 
-      const shopifyData = salesStats.users.map((item) => item.shopify || 0)
-      const googleData = salesStats.users.map(
+      const shopifyData = salesStats.users.salesAnalytics.map(
+        (item) => item.shopify || 0
+      )
+      const googleData = salesStats.users.salesAnalytics.map(
         (item) => item.google_marketplace || 0
       )
-      const websiteData = salesStats.users.map((item) => item.website || 0)
+      const websiteData = salesStats.users.salesAnalytics.map(
+        (item) => item.website || 0
+      )
 
       // Calculate dynamic y-axis max based on data
       const allValues = [
@@ -1116,14 +1121,18 @@ const Dashboard = () => {
     }
 
     // If API data is available, use it
-    if (revenueStats && revenueStats.length > 0) {
+    if (
+      revenueStats &&
+      Array.isArray(revenueStats.revenueStats) &&
+      revenueStats.revenueStats.length > 0
+    ) {
       // Extract categories and data from API response
       const categories = []
       const shopifyData = []
       const googleData = []
       const websiteData = []
 
-      revenueStats.forEach((item) => {
+      revenueStats.revenueStats.forEach((item) => {
         // Determine the category key based on what's in the response
         let categoryKey = ''
         if (item.hour !== undefined) categoryKey = 'hour'
@@ -1348,9 +1357,16 @@ const Dashboard = () => {
           {/* Right Side - Sales Dynamics Chart */}
           <div className="min-w-[500px] flex-1 rounded-[20px] bg-white p-6 shadow-md dark:bg-navy-800">
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-navy-700 dark:text-white">
-                Sales dynamics
-              </h2>
+              <div className="flex flex-col gap-1">
+                <h2 className="text-xl font-bold text-navy-700 dark:text-white">
+                  Sales dynamics
+                </h2>
+                {salesStats?.users?.totalSales && (
+                  <span className="text-3xl font-bold text-navy-700 dark:text-white">
+                    {salesStats.users.totalSales.toLocaleString()}
+                  </span>
+                )}
+              </div>
               <select
                 value={timePeriod}
                 onChange={(e) => setTimePeriod(e.target.value)}
@@ -1375,9 +1391,16 @@ const Dashboard = () => {
           {/* Revenue Chart */}
           <div className="min-w-[400px] flex-1 rounded-[20px] bg-white p-6 shadow-md dark:bg-navy-800">
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-navy-700 dark:text-white">
-                Revenue
-              </h2>
+              <div className="flex flex-col gap-1">
+                <h2 className="text-xl font-bold text-navy-700 dark:text-white">
+                  Revenue
+                </h2>
+                {revenueStats?.totalrevenue && (
+                  <span className="text-3xl font-bold text-navy-700 dark:text-white">
+                    ${revenueStats.totalrevenue.toLocaleString()}
+                  </span>
+                )}
+              </div>
               <select
                 value={revenueTimePeriod}
                 onChange={(e) => setRevenueTimePeriod(e.target.value)}
@@ -1399,9 +1422,16 @@ const Dashboard = () => {
           {/* Overall User Activity */}
           <div className="min-w-[400px] flex-1 rounded-[20px] bg-white p-6 shadow-md dark:bg-navy-800">
             <div className="mb-6 flex items-center justify-between">
-              <h2 className="text-xl font-bold text-navy-700 dark:text-white">
-                Overall User Activity
-              </h2>
+              <div className="flex flex-col gap-1">
+                <h2 className="text-xl font-bold text-navy-700 dark:text-white">
+                  Overall User Activity
+                </h2>
+                {userActivityStats?.totalUsers && (
+                  <span className="text-3xl font-bold text-navy-700 dark:text-white">
+                    {userActivityStats.totalUsers.toLocaleString()}
+                  </span>
+                )}
+              </div>
               <select
                 value={activityTimePeriod}
                 onChange={(e) => setActivityTimePeriod(e.target.value)}
