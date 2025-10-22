@@ -1,116 +1,206 @@
-import React, { useCallback, useState } from 'react'
-import { useDropzone } from 'react-dropzone'
-import { FiUpload } from 'react-icons/fi'
+import React, { useState, useEffect } from 'react'
+import { FaPlus, FaImage } from 'react-icons/fa'
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
 import { useSpinner } from '../../common/SpinnerLoader'
 import { useToaster } from '../../common/Toaster'
+import ConfirmationModal from '../../components/modal/ConfirmationModal'
+import ShortTypeCard from '../../components/shortType/ShortTypeCard'
+import AddShortTypeModal from '../../components/shortType/AddShortTypeModal'
 
-const ShortType2 = () => {
+const ShortTypeManagement = () => {
+  // State management
+  const [shotTypes, setShotTypes] = useState([])
+  const [totalItems, setTotalItems] = useState(0)
+  const [currentPage, setCurrentPage] = useState(1)
+  const [itemsPerPage] = useState(10)
+
+  // Modal states
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [selectedShotType, setSelectedShotType] = useState(null)
+  const [editData, setEditData] = useState(null)
+
+  // Hooks
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
   const { addToast } = useToaster()
 
-  // Shared form data for title and subtitle
-  const [formData, setFormData] = useState({
-    title: '',
-    subtitle: '',
-  })
+  // Fetch shot types on mount and page change
+  useEffect(() => {
+    fetchShotTypes()
+  }, [currentPage])
 
-  // On-Model state
-  const [onModelFiles, setOnModelFiles] = useState([])
+  const fetchShotTypes = async () => {
+    showSpinner()
+    try {
+      const response = await apiCall('get', config.GET_SHOT_TYPE_DATA)
 
-  // Creative state
-  const [creativeFiles, setCreativeFiles] = useState([])
+      // Check if request was successful
+      if (!response || response.status !== 200) {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: `Failed to fetch data. Status: ${
+            response?.status || 'Unknown'
+          }`,
+          duration: 3000,
+        })
+        return
+      }
 
-  // On-Model Dropzone configuration
-  const onDropOnModel = useCallback((acceptedFiles) => {
-    setOnModelFiles(acceptedFiles)
-    console.log('On-Model files:', acceptedFiles)
-  }, [])
+      // Handle different possible response structures
+      let apiData = null
 
-  // Creative Dropzone configuration
-  const onDropCreative = useCallback((acceptedFiles) => {
-    setCreativeFiles(acceptedFiles)
-    console.log('Creative files:', acceptedFiles)
-  }, [])
+      // Check if response has the structure: { code, msg, data, error }
+      if (
+        response?.data?.code === 2000 ||
+        response?.data?.status_code === 200
+      ) {
+        apiData = response.data.data
+      }
+      // Check if response.data itself is the data
+      else if (response?.data?._id) {
+        apiData = response.data
+      }
+      // Check if it's an array of shot types
+      else if (Array.isArray(response?.data)) {
+        // If it's an array, take the first one or handle multiple
+        apiData = response.data[0]
+      }
 
-  const getImagePreview = (file) => {
-    return URL.createObjectURL(file)
-  }
+      // Check if data is null or empty
+      if (!apiData) {
+        // Show empty state - no data available yet
+        setShotTypes([])
+        setTotalItems(0)
+        return
+      }
 
-  const {
-    getRootProps: getRootPropsOnModel,
-    getInputProps: getInputPropsOnModel,
-    isDragActive: isDragActiveOnModel,
-    open: openOnModel,
-  } = useDropzone({
-    onDrop: onDropOnModel,
-    accept: {
-      'image/jpeg': ['.jpg', '.jpeg'],
-      'image/png': ['.png'],
-      'image/webp': ['.webp'],
-    },
-    noClick: true,
-    noKeyboard: true,
-  })
+      // Check if the data has the expected structure
+      if (apiData._id) {
+        // Transform the API response to match the expected format
+        const transformedData = {
+          _id: apiData._id,
+          title: apiData.title || 'Shot Type',
+          subtitle: apiData.subtitle || '',
+          items: apiData.items || [],
+          createdAt: apiData.createdAt,
+          updatedAt: apiData.updatedAt,
+        }
 
-  const {
-    getRootProps: getRootPropsCreative,
-    getInputProps: getInputPropsCreative,
-    isDragActive: isDragActiveCreative,
-    open: openCreative,
-  } = useDropzone({
-    onDrop: onDropCreative,
-    accept: {
-      'image/jpeg': ['.jpg', '.jpeg'],
-      'image/png': ['.png'],
-      'image/webp': ['.webp'],
-    },
-    noClick: true,
-    noKeyboard: true,
-  })
-
-  const handleInputChange = (e) => {
-    const { name, value } = e.target
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
-  const handleSubmit = async (e) => {
-    e.preventDefault()
-
-    // Validate that at least one image is uploaded
-    if (onModelFiles.length === 0 && creativeFiles.length === 0) {
+        // Wrap in array since the component expects an array of shot types
+        setShotTypes([transformedData])
+        setTotalItems(1)
+      } else {
+        setShotTypes([])
+        setTotalItems(0)
+      }
+    } catch (error) {
+      console.error('Error fetching shot types:', error)
       addToast({
         type: 'error',
-        title: 'Validation Error',
-        description: 'Please upload at least one image',
+        title: 'Error',
+        description: error?.message || 'Failed to fetch shot types',
         duration: 3000,
       })
-      return
+    } finally {
+      hideSpinner()
     }
+  }
 
+  const handleAddShotType = async (formData) => {
     showSpinner()
     try {
       const submitData = new FormData()
-      submitData.append('title', formData.title)
-      submitData.append('subtitle', formData.subtitle)
 
-      if (onModelFiles.length > 0) {
-        submitData.append('onModel', onModelFiles[0])
+      // Prepare metadata with title, subtitle, and items
+      const metadata = {
+        title: formData.title,
+        subtitle: formData.subtitle,
+        items: formData.items.map((item, index) => ({
+          name: item.name,
+          typesubtitle: item.typesubtitle || '',
+          imageKey: `shotType_${Date.now()}_${index}`, // Generate unique imageKey
+        })),
       }
+      submitData.append('metadata', JSON.stringify(metadata))
 
-      if (creativeFiles.length > 0) {
-        submitData.append('creative', creativeFiles[0])
+      // Append image files with their corresponding imageKeys
+      formData.items.forEach((item, index) => {
+        if (item.file) {
+          const imageKey = `shotType_${Date.now()}_${index}`
+          submitData.append(imageKey, item.file)
+        }
+      })
+
+      const response = await apiCall('post', config.ADD_SHOT_TYPE, submitData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+
+      if (response.status === 200 || response.status === 201) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Shot type added successfully!',
+          duration: 3000,
+        })
+        setIsAddModalOpen(false)
+        fetchShotTypes() // Refresh list
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to add shot type',
+          duration: 3000,
+        })
       }
+    } catch (error) {
+      console.error('Error adding shot type:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description:
+          error?.message || 'An error occurred while adding shot type',
+        duration: 3000,
+      })
+    } finally {
+      hideSpinner()
+    }
+  }
 
-      // Make API call
+  const handleEditShotType = async (formData) => {
+    showSpinner()
+    try {
+      const submitData = new FormData()
+
+      // Prepare metadata with title, subtitle, and items
+      const metadata = {
+        title: formData.title,
+        subtitle: formData.subtitle,
+        items: formData.items.map((item, index) => ({
+          name: item.name,
+          typesubtitle: item.typesubtitle || '',
+          imageKey: item.file ? `shotType_${Date.now()}_${index}` : null, // Only generate new key if new file
+          existingImage: item.image, // Keep existing image URL if no new file
+        })),
+      }
+      submitData.append('metadata', JSON.stringify(metadata))
+
+      // Append new image files with their corresponding imageKeys
+      formData.items.forEach((item, index) => {
+        if (item.file) {
+          const imageKey = `shotType_${Date.now()}_${index}`
+          submitData.append(imageKey, item.file)
+        }
+      })
+
       const response = await apiCall(
-        'post',
-        config.ADD_SHORT_TYPE,
+        'put',
+        `${config.UPDATE_SHOT_TYPE}/${selectedShotType._id}`,
         submitData,
         {
           headers: {
@@ -119,31 +209,32 @@ const ShortType2 = () => {
         }
       )
 
-      if (response.status === 200 || response.status === 201) {
+      if (response.status === 200) {
         addToast({
           type: 'success',
           title: 'Success',
-          description: 'Short type added successfully!',
+          description: 'Shot type updated successfully!',
           duration: 3000,
         })
-        // Reset form
-        setFormData({ title: '', subtitle: '' })
-        setOnModelFiles([])
-        setCreativeFiles([])
+        setIsEditModalOpen(false)
+        setEditData(null)
+        setSelectedShotType(null)
+        fetchShotTypes() // Refresh list
       } else {
         addToast({
           type: 'error',
           title: 'Error',
-          description: 'Failed to add short type. Please try again.',
+          description: response?.data?.message || 'Failed to update shot type',
           duration: 3000,
         })
       }
     } catch (error) {
-      console.error('Error submitting form:', error)
+      console.error('Error updating shot type:', error)
       addToast({
         type: 'error',
         title: 'Error',
-        description: 'An error occurred. Please try again.',
+        description:
+          error?.message || 'An error occurred while updating shot type',
         duration: 3000,
       })
     } finally {
@@ -151,165 +242,268 @@ const ShortType2 = () => {
     }
   }
 
+  const handleDelete = (shotType) => {
+    setSelectedShotType(shotType)
+    setIsDeleteModalOpen(true)
+  }
+
+  const confirmDelete = async () => {
+    showSpinner()
+    try {
+      const response = await apiCall(
+        'delete',
+        `${config.DELETE_SHOT_TYPE}/${selectedShotType._id}`
+      )
+
+      if (response.status === 200 && response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Shot type deleted successfully!',
+          duration: 3000,
+        })
+        setIsDeleteModalOpen(false)
+        setSelectedShotType(null)
+        fetchShotTypes() // Refresh list
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.msg || 'Failed to delete shot type',
+          duration: 3000,
+        })
+      }
+    } catch (error) {
+      console.error('Error deleting shot type:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description:
+          error?.message || 'An error occurred while deleting shot type',
+        duration: 3000,
+      })
+    } finally {
+      hideSpinner()
+    }
+  }
+
+  const handleEdit = (shotType) => {
+    setSelectedShotType(shotType)
+    setEditData(shotType)
+    setIsEditModalOpen(true)
+  }
+
+  // Pagination
+  const totalPages = Math.ceil(totalItems / itemsPerPage)
+  const startIndex = (currentPage - 1) * itemsPerPage + 1
+  const endIndex = Math.min(currentPage * itemsPerPage, totalItems)
+
+  const handlePageChange = (page) => {
+    if (page >= 1 && page <= totalPages) {
+      setCurrentPage(page)
+    }
+  }
+
+  const renderPagination = () => {
+    if (totalPages <= 1) return null
+
+    const pages = []
+    const maxPagesToShow = 5
+    let startPage = Math.max(1, currentPage - Math.floor(maxPagesToShow / 2))
+    let endPage = Math.min(totalPages, startPage + maxPagesToShow - 1)
+
+    if (endPage - startPage < maxPagesToShow - 1) {
+      startPage = Math.max(1, endPage - maxPagesToShow + 1)
+    }
+
+    for (let i = startPage; i <= endPage; i++) {
+      pages.push(
+        <button
+          key={i}
+          onClick={() => handlePageChange(i)}
+          className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-semibold transition-all ${
+            currentPage === i
+              ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/30'
+              : 'border border-gray-300 bg-white text-gray-700 shadow-sm hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700'
+          }`}
+        >
+          {i}
+        </button>
+      )
+    }
+
+    return (
+      <div className="mt-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
+        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
+          <div className="flex items-center gap-3 text-sm">
+            <span className="text-gray-600">Showing</span>
+            <span className="rounded-md bg-blue-50 px-2.5 py-1 font-semibold text-blue-700">
+              {startIndex} - {endIndex}
+            </span>
+            <span className="text-gray-600">of</span>
+            <span className="font-bold text-gray-900">{totalItems}</span>
+          </div>
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => handlePageChange(currentPage - 1)}
+              disabled={currentPage === 1}
+              className="flex h-9 items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-gray-300 disabled:hover:bg-white disabled:hover:text-gray-700"
+            >
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M15 19l-7-7 7-7"
+                />
+              </svg>
+              Prev
+            </button>
+            <div className="flex items-center gap-1">{pages}</div>
+            <button
+              onClick={() => handlePageChange(currentPage + 1)}
+              disabled={currentPage === totalPages}
+              className="flex h-9 items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-gray-300 disabled:hover:bg-white disabled:hover:text-gray-700"
+            >
+              Next
+              <svg
+                className="h-4 w-4"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M9 5l7 7-7 7"
+                />
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+    )
+  }
+
   return (
-    <div className="mt-5 h-full w-full px-4">
-      <div className="flex h-full w-full flex-col gap-6">
-        <form onSubmit={handleSubmit} className="space-y-8">
-          {/* Single Form Container */}
-          <div className="rounded-[20px] border border-gray-100 bg-white p-8 shadow-sm">
-            <div className="flex flex-col gap-6">
-              {/* Title Input */}
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-gray-700">
-                  Title
-                </label>
-                <input
-                  type="text"
-                  name="title"
-                  value={formData.title}
-                  onChange={handleInputChange}
-                  placeholder="Enter title"
-                  className="w-full rounded-[10px] border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all duration-200 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-0"
-                  required
+    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-50 to-blue-50/30 px-4 py-6">
+      <div className="mx-auto max-w-7xl">
+        {/* Header Section */}
+        <div className="mb-6">
+          {/* Header Content */}
+          <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+            <div>
+              <h1 className="text-2xl font-bold text-gray-900">Shot Type</h1>
+              <p className="mt-1 flex items-center gap-2 text-sm text-gray-500">
+                Manage your photography shot types
+                <span className="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
+                  <span className="h-1.5 w-1.5 rounded-full bg-blue-500"></span>
+                  {totalItems} Total
+                </span>
+              </p>
+            </div>
+
+            <button
+              onClick={() => setIsAddModalOpen(true)}
+              className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
+            >
+              <FaPlus className="text-sm" />
+              Add Shot Type
+            </button>
+          </div>
+        </div>
+
+        {/* Shot Types Grid */}
+        {shotTypes.length > 0 ? (
+          <>
+            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
+              {shotTypes.map((shotType) => (
+                <ShortTypeCard
+                  key={shotType._id}
+                  shotType={shotType}
+                  onEdit={handleEdit}
+                  onDelete={handleDelete}
                 />
-              </div>
+              ))}
+            </div>
 
-              {/* Subtitle Input */}
-              <div className="flex flex-col gap-2">
-                <label className="text-sm font-semibold text-gray-700">
-                  Subtitle
-                </label>
-                <input
-                  type="text"
-                  name="subtitle"
-                  value={formData.subtitle}
-                  onChange={handleInputChange}
-                  placeholder="Enter subtitle"
-                  className="w-full rounded-[10px] border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 transition-all duration-200 focus:border-purple-500 focus:bg-white focus:outline-none focus:ring-0"
-                  required
-                />
-              </div>
-
-              {/* Two Image Upload Sections in Row */}
-              <div className="mt-6 grid grid-cols-1 gap-6 lg:grid-cols-2">
-                {/* On-Model Image Upload */}
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold text-gray-700">
-                    On-Model Image
-                  </label>
-                  <div
-                    {...getRootPropsOnModel()}
-                    className={`relative flex h-[300px] cursor-pointer items-center justify-center rounded-xl border-2 border-dashed transition-all duration-200 ${
-                      isDragActiveOnModel
-                        ? 'border-purple-400 bg-purple-50'
-                        : 'border-gray-300 bg-gray-50'
-                    }`}
-                  >
-                    <input {...getInputPropsOnModel()} />
-
-                    {onModelFiles.length > 0 ? (
-                      <div className="h-full w-full p-4">
-                        <div className="relative flex h-full w-full items-center justify-center">
-                          <img
-                            src={getImagePreview(onModelFiles[0])}
-                            alt={onModelFiles[0].name}
-                            className="max-h-full max-w-full rounded-lg object-contain"
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-3 p-6">
-                        <div className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-purple-100">
-                          <FiUpload className="text-[24px] text-purple-600" />
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <p className="text-base font-semibold text-gray-800">
-                            Drop file or Browse
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            JPG, PNG, WebP
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={openOnModel}
-                          className="flex h-10 items-center gap-2 rounded-lg bg-[#5B58EB] px-6 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#4A47D1] active:bg-[#3936B7]"
-                        >
-                          <FiUpload />
-                          Browse
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                </div>
-
-                {/* Creative & Editorial Image Upload */}
-                <div className="flex flex-col gap-2">
-                  <label className="text-sm font-semibold text-gray-700">
-                    Creative & Editorial Image
-                  </label>
-                  <div
-                    {...getRootPropsCreative()}
-                    className={`relative flex h-[300px] cursor-pointer items-center justify-center rounded-xl border-2 border-dashed transition-all duration-200 ${
-                      isDragActiveCreative
-                        ? 'border-purple-400 bg-purple-50'
-                        : 'border-gray-300 bg-gray-50'
-                    }`}
-                  >
-                    <input {...getInputPropsCreative()} />
-
-                    {creativeFiles.length > 0 ? (
-                      <div className="h-full w-full p-4">
-                        <div className="relative flex h-full w-full items-center justify-center">
-                          <img
-                            src={getImagePreview(creativeFiles[0])}
-                            alt={creativeFiles[0].name}
-                            className="max-h-full max-w-full rounded-lg object-contain"
-                          />
-                        </div>
-                      </div>
-                    ) : (
-                      <div className="flex flex-col items-center gap-3 p-6">
-                        <div className="flex h-[60px] w-[60px] items-center justify-center rounded-full bg-purple-100">
-                          <FiUpload className="text-[24px] text-purple-600" />
-                        </div>
-                        <div className="flex flex-col items-center gap-1">
-                          <p className="text-base font-semibold text-gray-800">
-                            Drop file or Browse
-                          </p>
-                          <p className="text-xs text-gray-500">
-                            JPG, PNG, WebP
-                          </p>
-                        </div>
-                        <button
-                          type="button"
-                          onClick={openCreative}
-                          className="flex h-10 items-center gap-2 rounded-lg bg-[#5B58EB] px-6 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#4A47D1] active:bg-[#3936B7]"
-                        >
-                          <FiUpload />
-                          Browse
-                        </button>
-                      </div>
-                    )}
-                  </div>
+            {/* Pagination */}
+            {renderPagination()}
+          </>
+        ) : (
+          /* Empty State */
+          <div className="flex min-h-[450px] items-center justify-center">
+            <div className="max-w-md rounded-xl border border-gray-200 bg-white p-10 text-center shadow-sm">
+              <div className="mb-5 flex justify-center">
+                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-50 to-blue-100">
+                  <FaImage className="text-4xl text-blue-500" />
                 </div>
               </div>
-
-              {/* Submit Button */}
-              <div className="mt-4 flex justify-end">
-                <button
-                  type="submit"
-                  className="h-12 rounded-lg bg-[#5B58EB] px-8 text-sm font-semibold text-white transition-all duration-200 hover:bg-[#4A47D1] active:bg-[#3936B7]"
-                >
-                  Submit
-                </button>
-              </div>
+              <h3 className="mb-2 text-xl font-bold text-gray-900">
+                No Shot Types Yet
+              </h3>
+              <p className="mb-6 text-sm leading-relaxed text-gray-500">
+                Create your first shot type to start organizing your photography
+                options.
+              </p>
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40"
+              >
+                <FaPlus />
+                Create First Shot Type
+              </button>
             </div>
           </div>
-        </form>
+        )}
       </div>
+
+      {/* Add Short Type Modal */}
+      <AddShortTypeModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={handleAddShotType}
+      />
+
+      {/* Edit Short Type Modal */}
+      <AddShortTypeModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false)
+          setEditData(null)
+          setSelectedShotType(null)
+        }}
+        onSubmit={handleEditShotType}
+        editData={editData}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isDeleteModalOpen}
+        onClose={() => {
+          setIsDeleteModalOpen(false)
+          setSelectedShotType(null)
+        }}
+        title="Delete Shot Type"
+        message={`Are you sure you want to delete "${
+          selectedShotType?.title || 'this shot type'
+        }" with ${
+          selectedShotType?.items?.length || 0
+        } option(s)? This action cannot be undone.`}
+        confirmText="Delete"
+        cancelText="Cancel"
+        confirmColorScheme="red"
+        icon="delete"
+        onConfirm={confirmDelete}
+      />
     </div>
   )
 }
 
-export default ShortType2
+export default ShortTypeManagement

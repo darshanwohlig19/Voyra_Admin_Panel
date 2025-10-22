@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { FaUsers, FaCreditCard } from 'react-icons/fa'
-import StatCard from './components/StatCard'
+import StatCard from '../../components/dashboard/StatCard'
 import { DonutChart, BarChart, AreaChart } from 'components/chart'
 import ApiCaller from 'common/services/apiServices'
 import config from 'common/config/apiConfig'

@@ -12,7 +12,7 @@ import { FaUsers } from 'react-icons/fa'
 import Dashboard from 'views/dashboard'
 import Organizations from 'views/organizations'
 import OrganizationDetail from 'views/organizations/OrganizationDetail'
-import ShortType2 from 'views/shortType/ShortType2'
+import ShortType from 'views/shortType'
 import Parameters from 'views/parameters/Parameters'
 import { getEncryptedCookie } from 'common/utils/cookieUtils'
 
@@ -85,21 +85,12 @@ const RoutesComponent = () => {
         isComing: false,
         isVisible: false,
       },
-      // {
-      //   name: 'Short Type',
-      //   path: 'short-type',
-      //   layout: '/afterLogin',
-      //   icon: <MdMovie className="h-6 w-6" />,
-      //   component: <ShortType />,
-      //   isComing: false,
-      //   isVisible: true,
-      // },
       {
         name: 'Short Type',
         path: 'short-type',
         layout: '/afterLogin',
         icon: <MdMovie className="h-6 w-6" />,
-        component: <ShortType2 />,
+        component: <ShortType />,
         isComing: false,
         isVisible: true,
       },

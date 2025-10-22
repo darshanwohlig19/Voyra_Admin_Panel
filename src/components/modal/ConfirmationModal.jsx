@@ -7,6 +7,7 @@ import { FaExclamationTriangle, FaTrash, FaBan } from 'react-icons/fa'
  * Enhanced Confirmation Modal Component
  * @param {boolean} isOpen - Whether the modal is open
  * @param {function} onClose - Function to close the modal
+ * @param {function} onConfirm - Function to execute on confirmation
  * @param {string} title - Modal title
  * @param {string} message - Confirmation message
  * @param {string} confirmText - Text for confirm button (default: "OK")
@@ -17,6 +18,7 @@ import { FaExclamationTriangle, FaTrash, FaBan } from 'react-icons/fa'
 const ConfirmationModal = ({
   isOpen,
   onClose,
+  onConfirm,
   title = 'Confirm Action',
   message = 'Are you sure you want to proceed?',
   confirmText = 'OK',
@@ -211,7 +213,11 @@ const ConfirmationModal = ({
           <Button
             colorPalette={confirmColorScheme}
             size="lg"
-            onClick={onClose}
+            onClick={() => {
+              if (onConfirm) {
+                onConfirm()
+              }
+            }}
             flex={1}
             fontWeight="bold"
             borderRadius="xl"
