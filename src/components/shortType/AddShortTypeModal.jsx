@@ -184,18 +184,17 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
                     <h3 className="text-sm font-bold text-gray-900">
                       Shot Type Options
                     </h3>
-                    <p className="mt-0.5 text-xs text-gray-500">
-                      Add different shot type options
-                    </p>
                   </div>
-                  <button
-                    type="button"
-                    onClick={addNewItem}
-                    className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-3 py-1.5 text-xs font-semibold text-white shadow-md transition-all hover:shadow-lg"
-                  >
-                    <FaPlus />
-                    Add Option
-                  </button>
+                  {!editData && (
+                    <button
+                      type="button"
+                      onClick={addNewItem}
+                      className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-3 py-1.5 text-xs font-semibold text-white shadow-md transition-all hover:shadow-lg"
+                    >
+                      <FaPlus />
+                      Add Option
+                    </button>
+                  )}
                 </div>
 
                 {/* Items List */}
@@ -312,10 +311,10 @@ const ItemInput = ({
           />
         </div>
 
-        {/* Subtitle Input */}
+        {/* Description Input */}
         <div>
           <label className="mb-2 block text-sm font-semibold text-gray-700">
-            Subtitle <span className="text-xs text-gray-400">(Optional)</span>
+            Description
           </label>
           <input
             type="text"

@@ -115,22 +115,31 @@ const ShortTypeManagement = () => {
     try {
       const submitData = new FormData()
 
+      // Generate imageKey from item name (convert to camelCase and remove spaces)
+      const generateImageKey = (name) => {
+        return name
+          .trim()
+          .replace(/\s+(.)/g, (_, char) => char.toUpperCase())
+          .replace(/\s/g, '')
+          .replace(/^(.)/, (char) => char.toLowerCase())
+      }
+
       // Prepare metadata with title, subtitle, and items
       const metadata = {
         title: formData.title,
         subtitle: formData.subtitle,
-        items: formData.items.map((item, index) => ({
+        items: formData.items.map((item) => ({
           name: item.name,
           typesubtitle: item.typesubtitle || '',
-          imageKey: `shotType_${Date.now()}_${index}`, // Generate unique imageKey
+          imageKey: generateImageKey(item.name),
         })),
       }
       submitData.append('metadata', JSON.stringify(metadata))
 
       // Append image files with their corresponding imageKeys
-      formData.items.forEach((item, index) => {
+      formData.items.forEach((item) => {
         if (item.file) {
-          const imageKey = `shotType_${Date.now()}_${index}`
+          const imageKey = generateImageKey(item.name)
           submitData.append(imageKey, item.file)
         }
       })
@@ -177,23 +186,32 @@ const ShortTypeManagement = () => {
     try {
       const submitData = new FormData()
 
+      // Generate imageKey from item name (convert to camelCase and remove spaces)
+      const generateImageKey = (name) => {
+        return name
+          .trim()
+          .replace(/\s+(.)/g, (_, char) => char.toUpperCase())
+          .replace(/\s/g, '')
+          .replace(/^(.)/, (char) => char.toLowerCase())
+      }
+
       // Prepare metadata with title, subtitle, and items
       const metadata = {
         title: formData.title,
         subtitle: formData.subtitle,
-        items: formData.items.map((item, index) => ({
+        items: formData.items.map((item) => ({
           name: item.name,
           typesubtitle: item.typesubtitle || '',
-          imageKey: item.file ? `shotType_${Date.now()}_${index}` : null, // Only generate new key if new file
+          imageKey: item.file ? generateImageKey(item.name) : null, // Only generate new key if new file
           existingImage: item.image, // Keep existing image URL if no new file
         })),
       }
       submitData.append('metadata', JSON.stringify(metadata))
 
       // Append new image files with their corresponding imageKeys
-      formData.items.forEach((item, index) => {
+      formData.items.forEach((item) => {
         if (item.file) {
-          const imageKey = `shotType_${Date.now()}_${index}`
+          const imageKey = generateImageKey(item.name)
           submitData.append(imageKey, item.file)
         }
       })
