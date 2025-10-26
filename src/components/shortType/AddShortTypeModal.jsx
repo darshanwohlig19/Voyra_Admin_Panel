@@ -1,8 +1,8 @@
 import React, { useState, useCallback, useEffect } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { FiUpload, FiX } from 'react-icons/fi'
-import { FaPlus, FaTrash, FaCheckCircle, FaImage } from 'react-icons/fa'
-import { MdPhotoCamera, MdClose } from 'react-icons/md'
+import { FiUpload } from 'react-icons/fi'
+import { FaTrash } from 'react-icons/fa'
+import { MdClose } from 'react-icons/md'
 
 const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
   const [title, setTitle] = useState('')
@@ -54,13 +54,6 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
     updatedItems[index].file = file
     updatedItems[index].imageUrl = file ? URL.createObjectURL(file) : null
     setItems(updatedItems)
-  }
-
-  const addNewItem = () => {
-    setItems([
-      ...items,
-      { name: '', typesubtitle: '', image: '', file: null, imageUrl: null },
-    ])
   }
 
   const removeItem = (index) => {
@@ -179,22 +172,10 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
 
               {/* Shot Type Items Section */}
               <div>
-                <div className="mb-4 flex items-center justify-between">
-                  <div>
-                    <h3 className="text-sm font-bold text-gray-900">
-                      Shot Type Options
-                    </h3>
-                  </div>
-                  {!editData && (
-                    <button
-                      type="button"
-                      onClick={addNewItem}
-                      className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-3 py-1.5 text-xs font-semibold text-white shadow-md transition-all hover:shadow-lg"
-                    >
-                      <FaPlus />
-                      Add Option
-                    </button>
-                  )}
+                <div className="mb-4">
+                  <h3 className="text-sm font-bold text-gray-900">
+                    Shot Type Options
+                  </h3>
                 </div>
 
                 {/* Items List */}
@@ -274,16 +255,8 @@ const ItemInput = ({
 
   return (
     <div className="rounded-xl border-2 border-gray-200 bg-gradient-to-br from-white to-gray-50 p-4">
-      <div className="mb-3 flex items-start justify-between">
-        <div className="flex items-center gap-2">
-          <div className="flex h-7 w-7 items-center justify-center rounded-lg bg-blue-100 text-xs font-bold text-blue-700">
-            {index + 1}
-          </div>
-          <span className="text-sm font-semibold text-gray-700">
-            Option {index + 1}
-          </span>
-        </div>
-        {canRemove && (
+      {canRemove && (
+        <div className="mb-3 flex items-start justify-end">
           <button
             type="button"
             onClick={() => onRemove(index)}
@@ -292,8 +265,8 @@ const ItemInput = ({
           >
             <FaTrash className="text-xs" />
           </button>
-        )}
-      </div>
+        </div>
+      )}
 
       <div className="flex flex-col gap-4">
         {/* Name Input */}

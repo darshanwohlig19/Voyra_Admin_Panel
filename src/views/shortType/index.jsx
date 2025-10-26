@@ -20,6 +20,7 @@ const ShortTypeManagement = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedShotType, setSelectedShotType] = useState(null)
+  const [selectedItem, setSelectedItem] = useState(null)
   const [editData, setEditData] = useState(null)
 
   // Hooks
@@ -35,10 +36,19 @@ const ShortTypeManagement = () => {
   const fetchShotTypes = async () => {
     showSpinner()
     try {
+      // Try GET_SHOT_TYPE_DATA endpoint
       const response = await apiCall('get', config.GET_SHOT_TYPE_DATA)
 
       // Check if request was successful
       if (!response || response.status !== 200) {
+        // If 404, it means no data exists yet - show empty state without error
+        if (response?.status === 404 || response?.data?.code === 4004) {
+          setShotTypes([])
+          setTotalItems(0)
+          return
+        }
+
+        // For other errors, show error toast
         addToast({
           type: 'error',
           title: 'Error',
@@ -92,7 +102,8 @@ const ShortTypeManagement = () => {
 
         // Wrap in array since the component expects an array of shot types
         setShotTypes([transformedData])
-        setTotalItems(1)
+        // Set total items based on the number of items in the array, not the shot type count
+        setTotalItems(transformedData.items?.length || 0)
       } else {
         setShotTypes([])
         setTotalItems(0)
@@ -163,7 +174,10 @@ const ShortTypeManagement = () => {
         addToast({
           type: 'error',
           title: 'Error',
-          description: response?.data?.message || 'Failed to add shot type',
+          description:
+            response?.data?.msg ||
+            response?.data?.message ||
+            'Failed to add shot type',
           duration: 3000,
         })
       }
@@ -199,12 +213,16 @@ const ShortTypeManagement = () => {
       const metadata = {
         title: formData.title,
         subtitle: formData.subtitle,
-        items: formData.items.map((item) => ({
-          name: item.name,
-          typesubtitle: item.typesubtitle || '',
-          imageKey: item.file ? generateImageKey(item.name) : null, // Only generate new key if new file
-          existingImage: item.image, // Keep existing image URL if no new file
-        })),
+        items: formData.items.map((item) => {
+          const imageKey = generateImageKey(item.name)
+          return {
+            name: item.name,
+            typesubtitle: item.typesubtitle || '',
+            imageKey: imageKey,
+            // If there's an existing image and no new file, keep the existing image URL
+            ...(item.image && !item.file ? { image: item.image } : {}),
+          }
+        }),
       }
       submitData.append('metadata', JSON.stringify(metadata))
 
@@ -227,7 +245,8 @@ const ShortTypeManagement = () => {
         }
       )
 
-      if (response.status === 200) {
+      // Check if status is 200 or 201 (successful)
+      if (response.status === 200 || response.status === 201) {
         addToast({
           type: 'success',
           title: 'Success',
@@ -242,7 +261,10 @@ const ShortTypeManagement = () => {
         addToast({
           type: 'error',
           title: 'Error',
-          description: response?.data?.message || 'Failed to update shot type',
+          description:
+            response?.data?.msg ||
+            response?.data?.message ||
+            'Failed to update shot type',
           duration: 3000,
         })
       }
@@ -260,44 +282,50 @@ const ShortTypeManagement = () => {
     }
   }
 
-  const handleDelete = (shotType) => {
+  const handleDelete = (shotType, item) => {
     setSelectedShotType(shotType)
+    setSelectedItem(item)
     setIsDeleteModalOpen(true)
   }
 
   const confirmDelete = async () => {
     showSpinner()
     try {
+      // Use the item's _id from the items array for deletion
       const response = await apiCall(
         'delete',
-        `${config.DELETE_SHOT_TYPE}/${selectedShotType._id}`
+        `${config.DELETE_SHOT_TYPE}/${selectedItem._id}`
       )
 
-      if (response.status === 200 && response?.data?.code === 2000) {
+      // Check if status is 200 (successful)
+      if (response.status === 200) {
         addToast({
           type: 'success',
           title: 'Success',
-          description: 'Shot type deleted successfully!',
+          description: 'Item deleted successfully!',
           duration: 3000,
         })
         setIsDeleteModalOpen(false)
         setSelectedShotType(null)
+        setSelectedItem(null)
         fetchShotTypes() // Refresh list
       } else {
         addToast({
           type: 'error',
           title: 'Error',
-          description: response?.data?.msg || 'Failed to delete shot type',
+          description:
+            response?.data?.msg ||
+            response?.data?.message ||
+            'Failed to delete item',
           duration: 3000,
         })
       }
     } catch (error) {
-      console.error('Error deleting shot type:', error)
+      console.error('Error deleting item:', error)
       addToast({
         type: 'error',
         title: 'Error',
-        description:
-          error?.message || 'An error occurred while deleting shot type',
+        description: error?.message || 'An error occurred while deleting item',
         duration: 3000,
       })
     } finally {
@@ -440,16 +468,47 @@ const ShortTypeManagement = () => {
         {/* Shot Types Grid */}
         {shotTypes.length > 0 ? (
           <>
-            <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
-              {shotTypes.map((shotType) => (
-                <ShortTypeCard
-                  key={shotType._id}
-                  shotType={shotType}
-                  onEdit={handleEdit}
-                  onDelete={handleDelete}
-                />
-              ))}
-            </div>
+            {/* Check if there are any items to display */}
+            {shotTypes.some((st) => st.items && st.items.length > 0) ? (
+              <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
+                {shotTypes.map((shotType) =>
+                  shotType.items.map((item, index) => (
+                    <ShortTypeCard
+                      key={`${shotType._id}-${index}`}
+                      shotType={shotType}
+                      item={item}
+                      onEdit={handleEdit}
+                      onDelete={handleDelete}
+                    />
+                  ))
+                )}
+              </div>
+            ) : (
+              /* Shot type exists but no items - Show different empty state */
+              <div className="flex min-h-[450px] items-center justify-center">
+                <div className="max-w-md rounded-xl border border-gray-200 bg-white p-10 text-center shadow-sm">
+                  <div className="mb-5 flex justify-center">
+                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-50 to-blue-100">
+                      <FaImage className="text-4xl text-blue-500" />
+                    </div>
+                  </div>
+                  <h3 className="mb-2 text-xl font-bold text-gray-900">
+                    No Items in Shot Type
+                  </h3>
+                  <p className="mb-6 text-sm leading-relaxed text-gray-500">
+                    The shot type "{shotTypes[0]?.title}" exists but has no
+                    items. Edit it to add items.
+                  </p>
+                  <button
+                    onClick={() => handleEdit(shotTypes[0])}
+                    className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40"
+                  >
+                    <FaPlus />
+                    Edit Shot Type
+                  </button>
+                </div>
+              </div>
+            )}
 
             {/* Pagination */}
             {renderPagination()}
@@ -507,13 +566,14 @@ const ShortTypeManagement = () => {
         onClose={() => {
           setIsDeleteModalOpen(false)
           setSelectedShotType(null)
+          setSelectedItem(null)
         }}
-        title="Delete Shot Type"
+        title="Delete Item"
         message={`Are you sure you want to delete "${
+          selectedItem?.name || 'this item'
+        }" from "${
           selectedShotType?.title || 'this shot type'
-        }" with ${
-          selectedShotType?.items?.length || 0
-        } option(s)? This action cannot be undone.`}
+        }"? This action cannot be undone.`}
         confirmText="Delete"
         cancelText="Cancel"
         confirmColorScheme="red"
