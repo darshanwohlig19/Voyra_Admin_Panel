@@ -3,19 +3,17 @@ import { useDropzone } from 'react-dropzone'
 import { FiUpload } from 'react-icons/fi'
 import { FaTrash } from 'react-icons/fa'
 import { MdClose } from 'react-icons/md'
+import { useToaster } from '../../common/Toaster'
 
 const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
-  const [title, setTitle] = useState('')
-  const [subtitle, setSubtitle] = useState('')
   const [items, setItems] = useState([
     { name: '', typesubtitle: '', image: '', file: null, imageUrl: null },
   ])
+  const { addToast } = useToaster()
 
   // Populate form when editing
   useEffect(() => {
     if (editData) {
-      setTitle(editData.title || '')
-      setSubtitle(editData.subtitle || '')
       if (editData.items && editData.items.length > 0) {
         setItems(
           editData.items.map((item) => ({
@@ -29,8 +27,6 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
       }
     } else {
       // Reset for add mode
-      setTitle('')
-      setSubtitle('')
       setItems([
         { name: '', typesubtitle: '', image: '', file: null, imageUrl: null },
       ])
@@ -67,22 +63,43 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
     e.preventDefault()
 
     // Validation
-    if (!title.trim()) {
-      alert('Please provide a title')
-      return
-    }
-
     for (let i = 0; i < items.length; i++) {
+      // Check name
       if (!items[i].name.trim()) {
-        alert(`Please provide a name for item ${i + 1}`)
+        addToast({
+          type: 'error',
+          title: 'Validation Error',
+          description: `Please provide a name for item ${i + 1}`,
+          duration: 3000,
+        })
+        return
+      }
+
+      // Check description
+      if (!items[i].typesubtitle?.trim()) {
+        addToast({
+          type: 'error',
+          title: 'Validation Error',
+          description: `Please provide a description for item ${i + 1}`,
+          duration: 3000,
+        })
+        return
+      }
+
+      // Check image (must have either new file or existing image)
+      if (!items[i].file && !items[i].image) {
+        addToast({
+          type: 'error',
+          title: 'Validation Error',
+          description: `Please upload an image for item ${i + 1}`,
+          duration: 3000,
+        })
         return
       }
     }
 
     // Prepare data for submission
     const submitData = {
-      title: title.trim(),
-      subtitle: subtitle.trim(),
       items: items.map((item) => ({
         name: item.name.trim(),
         typesubtitle: item.typesubtitle?.trim() || '',
@@ -95,8 +112,6 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
   }
 
   const resetForm = () => {
-    setTitle('')
-    setSubtitle('')
     setItems([
       { name: '', typesubtitle: '', image: '', file: null, imageUrl: null },
     ])
@@ -111,15 +126,15 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="relative max-h-[90vh] w-full max-w-2xl overflow-hidden rounded-xl bg-white shadow-2xl">
+      <div className="relative max-h-[75vh] w-full max-w-2xl overflow-hidden rounded-xl bg-white shadow-2xl">
         {/* Modal Header */}
-        <div className="border-b border-gray-200 bg-white px-6 py-5">
+        <div className="border-b border-gray-200 bg-white px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
-              <h2 className="text-lg font-bold text-gray-900">
+              <h2 className="text-base font-bold text-gray-900">
                 {editData ? 'Edit Shot Type' : 'Add New Shot Type'}
               </h2>
-              <p className="mt-0.5 text-sm text-gray-500">
+              <p className="mt-0.5 text-xs text-gray-500">
                 {editData
                   ? 'Update shot type configuration'
                   : 'Configure a new shot type option'}
@@ -135,51 +150,23 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
         </div>
 
         {/* Modal Body */}
-        <div className="max-h-[calc(90vh-140px)] overflow-y-auto bg-white">
-          <form onSubmit={handleSubmit} className="p-6">
-            <div className="space-y-6">
-              {/* Title and Subtitle Section */}
-              <div className="space-y-4">
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Title <span className="text-red-500">*</span>
-                  </label>
-                  <input
-                    type="text"
-                    value={title}
-                    onChange={(e) => setTitle(e.target.value)}
-                    placeholder="e.g., Choose Your Primary Shot Type"
-                    className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                    required
-                  />
-                </div>
-
-                <div>
-                  <label className="mb-2 block text-sm font-semibold text-gray-700">
-                    Subtitle
-                  </label>
-                  <input
-                    type="text"
-                    value={subtitle}
-                    onChange={(e) => setSubtitle(e.target.value)}
-                    placeholder="e.g., Select the type of photography style that best matches your vision"
-                    className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                  />
-                </div>
-              </div>
-
-              <hr className="border-gray-200" />
-
+        <div className="max-h-[calc(75vh-130px)] overflow-y-auto bg-white">
+          <form onSubmit={handleSubmit} className="p-5">
+            <div className="space-y-5">
               {/* Shot Type Items Section */}
               <div>
                 <div className="mb-4">
                   <h3 className="text-sm font-bold text-gray-900">
                     Shot Type Options
                   </h3>
+                  <p className="mt-1 text-xs text-gray-500">
+                    Add individual shot type items. Title and subtitle can be
+                    edited separately.
+                  </p>
                 </div>
 
                 {/* Items List */}
-                <div className="space-y-4">
+                <div className="space-y-3">
                   {items.map((item, index) => (
                     <ItemInput
                       key={index}
@@ -254,9 +241,9 @@ const ItemInput = ({
   })
 
   return (
-    <div className="rounded-xl border-2 border-gray-200 bg-gradient-to-br from-white to-gray-50 p-4">
+    <div className="rounded-xl border-2 border-gray-200 bg-gradient-to-br from-white to-gray-50 p-3">
       {canRemove && (
-        <div className="mb-3 flex items-start justify-end">
+        <div className="mb-2 flex items-start justify-end">
           <button
             type="button"
             onClick={() => onRemove(index)}
@@ -268,7 +255,7 @@ const ItemInput = ({
         </div>
       )}
 
-      <div className="flex flex-col gap-4">
+      <div className="flex flex-col gap-3">
         {/* Name Input */}
         <div>
           <label className="mb-2 block text-sm font-semibold text-gray-700">
@@ -287,7 +274,7 @@ const ItemInput = ({
         {/* Description Input */}
         <div>
           <label className="mb-2 block text-sm font-semibold text-gray-700">
-            Description
+            Description <span className="text-red-500">*</span>
           </label>
           <input
             type="text"
@@ -295,17 +282,18 @@ const ItemInput = ({
             onChange={(e) => onSubtitleChange(index, e.target.value)}
             placeholder="e.g., Professional Still-life Photography"
             className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+            required
           />
         </div>
 
         {/* Image Upload */}
         <div>
           <label className="mb-2 block text-sm font-semibold text-gray-700">
-            Image Upload
+            Image Upload <span className="text-red-500">*</span>
           </label>
           <div
             {...getRootProps()}
-            className={`relative flex h-40 cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-all ${
+            className={`relative flex h-32 cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-all ${
               isDragActive
                 ? 'border-blue-500 bg-blue-50 shadow-lg shadow-blue-500/20'
                 : 'border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100 hover:border-blue-400 hover:bg-blue-50'

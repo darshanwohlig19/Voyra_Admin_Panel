@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FaPlus, FaImage } from 'react-icons/fa'
+import { FaPlus, FaImage, FaEdit } from 'react-icons/fa'
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
 import { useSpinner } from '../../common/SpinnerLoader'
@@ -7,6 +7,7 @@ import { useToaster } from '../../common/Toaster'
 import ConfirmationModal from '../../components/modal/ConfirmationModal'
 import ShortTypeCard from '../../components/shortType/ShortTypeCard'
 import AddShortTypeModal from '../../components/shortType/AddShortTypeModal'
+import EditTitleSubtitleModal from '../../components/shortType/EditTitleSubtitleModal'
 
 const ShortTypeManagement = () => {
   // State management
@@ -19,6 +20,8 @@ const ShortTypeManagement = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
+  const [isTitleSubtitleModalOpen, setIsTitleSubtitleModalOpen] =
+    useState(false)
   const [selectedShotType, setSelectedShotType] = useState(null)
   const [selectedItem, setSelectedItem] = useState(null)
   const [editData, setEditData] = useState(null)
@@ -135,10 +138,14 @@ const ShortTypeManagement = () => {
           .replace(/^(.)/, (char) => char.toLowerCase())
       }
 
+      // Get current title and subtitle from existing data, or use defaults
+      const currentTitle = shotTypes[0]?.title || 'Shot Type'
+      const currentSubtitle = shotTypes[0]?.subtitle || ''
+
       // Prepare metadata with title, subtitle, and items
       const metadata = {
-        title: formData.title,
-        subtitle: formData.subtitle,
+        title: currentTitle,
+        subtitle: currentSubtitle,
         items: formData.items.map((item) => ({
           name: item.name,
           typesubtitle: item.typesubtitle || '',
@@ -209,10 +216,14 @@ const ShortTypeManagement = () => {
           .replace(/^(.)/, (char) => char.toLowerCase())
       }
 
+      // Keep existing title and subtitle (don't change them)
+      const currentTitle = selectedShotType?.title || 'Shot Type'
+      const currentSubtitle = selectedShotType?.subtitle || ''
+
       // Prepare metadata with title, subtitle, and items
       const metadata = {
-        title: formData.title,
-        subtitle: formData.subtitle,
+        title: currentTitle,
+        subtitle: currentSubtitle,
         items: formData.items.map((item) => {
           const imageKey = generateImageKey(item.name)
           return {
@@ -337,6 +348,89 @@ const ShortTypeManagement = () => {
     setSelectedShotType(shotType)
     setEditData(shotType)
     setIsEditModalOpen(true)
+  }
+
+  const handleUpdateTitleSubtitle = async (data) => {
+    showSpinner()
+    try {
+      if (!shotTypes[0]?._id) {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: 'No shot type data found to update',
+          duration: 3000,
+        })
+        return
+      }
+
+      const submitData = new FormData()
+
+      // Generate imageKey from item name (convert to camelCase and remove spaces)
+      const generateImageKey = (name) => {
+        return name
+          .trim()
+          .replace(/\s+(.)/g, (_, char) => char.toUpperCase())
+          .replace(/\s/g, '')
+          .replace(/^(.)/, (char) => char.toLowerCase())
+      }
+
+      // Prepare metadata with updated title, subtitle, and existing items
+      const metadata = {
+        title: data.title,
+        subtitle: data.subtitle,
+        items: shotTypes[0].items.map((item) => ({
+          name: item.name,
+          typesubtitle: item.typesubtitle || '',
+          imageKey: generateImageKey(item.name),
+          image: item.image, // Keep existing images
+        })),
+      }
+      submitData.append('metadata', JSON.stringify(metadata))
+
+      const response = await apiCall(
+        'put',
+        `${config.UPDATE_SHOT_TYPE}/${shotTypes[0]._id}`,
+        submitData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+
+      if (response.status === 200 || response.status === 201) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Title and subtitle updated successfully!',
+          duration: 3000,
+        })
+        setIsTitleSubtitleModalOpen(false)
+        fetchShotTypes() // Refresh list
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.msg ||
+            response?.data?.message ||
+            'Failed to update title and subtitle',
+          duration: 3000,
+        })
+      }
+    } catch (error) {
+      console.error('Error updating title/subtitle:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description:
+          error?.message ||
+          'An error occurred while updating title and subtitle',
+        duration: 3000,
+      })
+    } finally {
+      hideSpinner()
+    }
   }
 
   // Pagination
@@ -465,6 +559,55 @@ const ShortTypeManagement = () => {
           </div>
         </div>
 
+        {/* Title & Subtitle Display Section */}
+        {shotTypes.length > 0 && shotTypes[0] && (
+          <div className="mb-6 rounded-xl border border-gray-200 bg-white shadow-sm">
+            <table className="w-full">
+              <thead>
+                <tr className="border-b border-gray-200 bg-gray-50">
+                  <th
+                    className="px-6 py-4 text-left text-sm font-semibold text-gray-700"
+                    style={{ width: '150px' }}
+                  >
+                    Title
+                  </th>
+                  <th
+                    className="px-6 py-4 text-left text-sm font-semibold text-gray-700"
+                    style={{ width: '150px' }}
+                  >
+                    Subtitle
+                  </th>
+                  <th
+                    className="px-6 py-4 text-right text-sm font-semibold text-gray-700"
+                    style={{ width: '100px' }}
+                  >
+                    Action
+                  </th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr className="hover:bg-gray-50">
+                  <td className="px-6 py-4 text-base font-semibold text-gray-900">
+                    {shotTypes[0].title || 'Shot Type'}
+                  </td>
+                  <td className="px-6 py-4 text-base text-gray-900">
+                    {shotTypes[0].subtitle || '-'}
+                  </td>
+                  <td className="px-6 py-4 text-right">
+                    <button
+                      onClick={() => setIsTitleSubtitleModalOpen(true)}
+                      className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50"
+                    >
+                      <FaEdit className="text-xs" />
+                      Edit
+                    </button>
+                  </td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        )}
+
         {/* Shot Types Grid */}
         {shotTypes.length > 0 ? (
           <>
@@ -572,6 +715,15 @@ const ShortTypeManagement = () => {
         confirmColorScheme="red"
         icon="delete"
         onConfirm={confirmDelete}
+      />
+
+      {/* Edit Title & Subtitle Modal */}
+      <EditTitleSubtitleModal
+        isOpen={isTitleSubtitleModalOpen}
+        onClose={() => setIsTitleSubtitleModalOpen(false)}
+        onSubmit={handleUpdateTitleSubtitle}
+        currentTitle={shotTypes[0]?.title || ''}
+        currentSubtitle={shotTypes[0]?.subtitle || ''}
       />
     </div>
   )

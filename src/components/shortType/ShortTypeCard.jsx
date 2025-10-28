@@ -2,37 +2,24 @@ import React from 'react'
 import { FaEdit, FaTrash, FaImage } from 'react-icons/fa'
 
 const ShortTypeCard = ({ shotType, item, onEdit, onDelete }) => {
-  const { title, subtitle } = shotType
-
   return (
-    <div className="overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
-      {/* Header */}
-      <div className="border-b border-gray-200 bg-gray-50/50 px-6 py-4">
-        <div className="flex items-start justify-between gap-4">
-          <div className="flex-1">
-            <h3 className="text-sm font-semibold text-gray-500">{title}</h3>
-            {subtitle && (
-              <p className="mt-1 text-xs text-gray-400">{subtitle}</p>
-            )}
-          </div>
-
-          <div className="flex gap-2">
-            <button
-              onClick={() => onEdit(shotType)}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm transition-all hover:border-gray-400 hover:shadow"
-              title="Edit Shot Type"
-            >
-              <FaEdit className="text-xs" />
-            </button>
-            <button
-              onClick={() => onDelete(shotType, item)}
-              className="flex h-8 w-8 items-center justify-center rounded-lg border border-gray-300 bg-white text-gray-700 shadow-sm transition-all hover:border-gray-400 hover:shadow"
-              title="Delete Item"
-            >
-              <FaTrash className="text-xs" />
-            </button>
-          </div>
-        </div>
+    <div className="relative overflow-hidden rounded-xl border border-gray-200 bg-white shadow-sm transition-shadow hover:shadow-md">
+      {/* Action Buttons */}
+      <div className="absolute right-4 top-4 z-10 flex gap-2">
+        <button
+          onClick={() => onEdit(shotType)}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 bg-white/95 text-gray-700 shadow-lg backdrop-blur-sm transition-all hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 hover:shadow-xl"
+          title="Edit Shot Type"
+        >
+          <FaEdit className="text-sm" />
+        </button>
+        <button
+          onClick={() => onDelete(shotType, item)}
+          className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 bg-white/95 text-gray-700 shadow-lg backdrop-blur-sm transition-all hover:border-red-500 hover:bg-red-50 hover:text-red-700 hover:shadow-xl"
+          title="Delete Item"
+        >
+          <FaTrash className="text-sm" />
+        </button>
       </div>
 
       {/* Image */}
