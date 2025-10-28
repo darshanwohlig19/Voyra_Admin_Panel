@@ -115,6 +115,10 @@ const Organizations = () => {
       key: 'orgName',
       label: 'Organization Name',
       width: '200px',
+      render: (_, value) => {
+        if (!value) return 'N/A'
+        return value.charAt(0).toUpperCase() + value.slice(1)
+      },
     },
     {
       key: 'planId',
