@@ -104,7 +104,7 @@ const OrganizationDetail = () => {
       ),
     },
     {
-      key: 'status',
+      key: 'userStatus',
       label: 'Status',
       width: '120px',
       render: (_, value) => {
@@ -129,6 +129,11 @@ const OrganizationDetail = () => {
       label: 'Joined Date',
       width: '150px',
       render: (_, value) => new Date(value).toLocaleDateString(),
+    },
+    {
+      key: 'type',
+      label: 'Type',
+      width: '100px',
     },
     {
       key: 'actions',
