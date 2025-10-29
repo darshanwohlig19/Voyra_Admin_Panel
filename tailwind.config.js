@@ -11,6 +11,19 @@ module.exports = {
       },
       animation: {
         'fade-in': 'fadeIn .5s ease-in-out',
+        slideIn: 'slideIn 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)',
+      },
+      keyframes: {
+        slideIn: {
+          from: {
+            transform: 'scale(0.9) translateY(-20px)',
+            opacity: '0',
+          },
+          to: {
+            transform: 'scale(1) translateY(0)',
+            opacity: '1',
+          },
+        },
       },
       height: {
         '68vh': '68vh',

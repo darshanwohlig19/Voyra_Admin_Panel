@@ -126,7 +126,7 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="relative max-h-[75vh] w-full max-w-2xl overflow-hidden rounded-xl bg-white shadow-2xl">
+      <div className="relative max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-xl bg-white shadow-2xl">
         {/* Modal Header */}
         <div className="border-b border-gray-200 bg-white px-6 py-4">
           <div className="flex items-center justify-between">
@@ -150,7 +150,7 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
         </div>
 
         {/* Modal Body */}
-        <div className="max-h-[calc(75vh-130px)] overflow-y-auto bg-white">
+        <div className="max-h-[calc(85vh-130px)] overflow-y-auto bg-white">
           <form onSubmit={handleSubmit} className="p-5">
             <div className="space-y-5">
               {/* Shot Type Items Section */}
@@ -160,8 +160,8 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
                     Shot Type Options
                   </h3>
                   <p className="mt-1 text-xs text-gray-500">
-                    Add individual shot type items. Title and subtitle can be
-                    edited separately.
+                    Add individual shot type items with name, description and
+                    image.
                   </p>
                 </div>
 
@@ -219,6 +219,8 @@ const ItemInput = ({
   onRemove,
   canRemove,
 }) => {
+  const { addToast } = useToaster()
+
   const onDrop = useCallback(
     (acceptedFiles) => {
       if (acceptedFiles.length > 0) {
@@ -228,8 +230,23 @@ const ItemInput = ({
     [index, onImageChange]
   )
 
+  const onDropRejected = useCallback(
+    (rejectedFiles) => {
+      if (rejectedFiles.length > 0) {
+        addToast({
+          type: 'error',
+          title: 'Invalid File Format',
+          description: 'Only PNG, JPG, and WebP formats are allowed',
+          duration: 3000,
+        })
+      }
+    },
+    [addToast]
+  )
+
   const { getRootProps, getInputProps, isDragActive, open } = useDropzone({
     onDrop,
+    onDropRejected,
     accept: {
       'image/jpeg': ['.jpg', '.jpeg'],
       'image/png': ['.png'],
@@ -293,7 +310,7 @@ const ItemInput = ({
           </label>
           <div
             {...getRootProps()}
-            className={`relative flex h-32 cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-all ${
+            className={`relative flex h-64 cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-all ${
               isDragActive
                 ? 'border-blue-500 bg-blue-50 shadow-lg shadow-blue-500/20'
                 : 'border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100 hover:border-blue-400 hover:bg-blue-50'
@@ -340,9 +357,7 @@ const ItemInput = ({
                   {isDragActive ? 'Drop image here' : 'Drag & drop your image'}
                 </p>
                 <p className="mt-1 text-xs text-gray-500">or click to browse</p>
-                <p className="mt-2 text-xs text-gray-400">
-                  PNG, JPG, WebP (Max 5MB)
-                </p>
+                <p className="mt-2 text-xs text-gray-400">PNG, JPG, WebP</p>
               </div>
             )}
           </div>

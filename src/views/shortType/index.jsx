@@ -7,7 +7,7 @@ import { useToaster } from '../../common/Toaster'
 import ConfirmationModal from '../../components/modal/ConfirmationModal'
 import ShortTypeCard from '../../components/shortType/ShortTypeCard'
 import AddShortTypeModal from '../../components/shortType/AddShortTypeModal'
-import EditTitleSubtitleModal from '../../components/shortType/EditTitleSubtitleModal'
+import AddHeadingModal from '../../components/shortType/AddHeadingModal'
 
 const ShortTypeManagement = () => {
   // State management
@@ -20,8 +20,7 @@ const ShortTypeManagement = () => {
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
-  const [isTitleSubtitleModalOpen, setIsTitleSubtitleModalOpen] =
-    useState(false)
+  const [isHeadingModalOpen, setIsHeadingModalOpen] = useState(false)
   const [selectedShotType, setSelectedShotType] = useState(null)
   const [selectedItem, setSelectedItem] = useState(null)
   const [editData, setEditData] = useState(null)
@@ -96,12 +95,14 @@ const ShortTypeManagement = () => {
         // Transform the API response to match the expected format
         const transformedData = {
           _id: apiData._id,
-          title: apiData.title || 'Shot Type',
+          title: apiData.title || '',
           subtitle: apiData.subtitle || '',
           items: apiData.items || [],
           createdAt: apiData.createdAt,
           updatedAt: apiData.updatedAt,
         }
+
+        console.log('Fetched shot type data:', transformedData)
 
         // Wrap in array since the component expects an array of shot types
         setShotTypes([transformedData])
@@ -138,14 +139,15 @@ const ShortTypeManagement = () => {
           .replace(/^(.)/, (char) => char.toLowerCase())
       }
 
-      // Get current title and subtitle from existing data, or use defaults
-      const currentTitle = shotTypes[0]?.title || 'Shot Type'
-      const currentSubtitle = shotTypes[0]?.subtitle || ''
+      // Get existing title and subtitle from shotTypes, or use empty strings
+      const existingTitle = shotTypes.length > 0 ? shotTypes[0].title || '' : ''
+      const existingSubtitle =
+        shotTypes.length > 0 ? shotTypes[0].subtitle || '' : ''
 
-      // Prepare metadata with title, subtitle, and items
+      // Prepare metadata with title, subtitle, and items from form data
       const metadata = {
-        title: currentTitle,
-        subtitle: currentSubtitle,
+        title: existingTitle,
+        subtitle: existingSubtitle,
         items: formData.items.map((item) => ({
           name: item.name,
           typesubtitle: item.typesubtitle || '',
@@ -216,14 +218,14 @@ const ShortTypeManagement = () => {
           .replace(/^(.)/, (char) => char.toLowerCase())
       }
 
-      // Keep existing title and subtitle (don't change them)
-      const currentTitle = selectedShotType?.title || 'Shot Type'
-      const currentSubtitle = selectedShotType?.subtitle || ''
+      // Preserve existing title and subtitle from selectedShotType
+      const existingTitle = selectedShotType?.title || ''
+      const existingSubtitle = selectedShotType?.subtitle || ''
 
-      // Prepare metadata with title, subtitle, and items
+      // Prepare metadata with title, subtitle, and items from form data
       const metadata = {
-        title: currentTitle,
-        subtitle: currentSubtitle,
+        title: existingTitle,
+        subtitle: existingSubtitle,
         items: formData.items.map((item) => {
           const imageKey = generateImageKey(item.name)
           return {
@@ -350,19 +352,9 @@ const ShortTypeManagement = () => {
     setIsEditModalOpen(true)
   }
 
-  const handleUpdateTitleSubtitle = async (data) => {
+  const handleAddHeading = async (formData) => {
     showSpinner()
     try {
-      if (!shotTypes[0]?._id) {
-        addToast({
-          type: 'error',
-          title: 'Error',
-          description: 'No shot type data found to update',
-          duration: 3000,
-        })
-        return
-      }
-
       const submitData = new FormData()
 
       // Generate imageKey from item name (convert to camelCase and remove spaces)
@@ -374,39 +366,61 @@ const ShortTypeManagement = () => {
           .replace(/^(.)/, (char) => char.toLowerCase())
       }
 
-      // Prepare metadata with updated title, subtitle, and existing items
+      // Get existing items from shotTypes, or use empty array
+      const existingItems =
+        shotTypes.length > 0 && shotTypes[0].items ? shotTypes[0].items : []
+
+      // Prepare metadata with new title and subtitle, and existing items
       const metadata = {
-        title: data.title,
-        subtitle: data.subtitle,
-        items: shotTypes[0].items.map((item) => ({
+        title: formData.title,
+        subtitle: formData.subtitle,
+        items: existingItems.map((item) => ({
           name: item.name,
           typesubtitle: item.typesubtitle || '',
           imageKey: generateImageKey(item.name),
-          image: item.image, // Keep existing images
+          ...(item.image ? { image: item.image } : {}),
         })),
       }
+
+      console.log('Sending heading metadata:', metadata)
       submitData.append('metadata', JSON.stringify(metadata))
 
-      const response = await apiCall(
-        'put',
-        `${config.UPDATE_SHOT_TYPE}/${shotTypes[0]._id}`,
-        submitData,
-        {
+      // Check if we're updating existing data or creating new
+      const shotTypeId = shotTypes.length > 0 ? shotTypes[0]._id : null
+
+      let response
+      if (shotTypeId) {
+        // Update existing shot type
+        response = await apiCall(
+          'put',
+          `${config.UPDATE_SHOT_TYPE}/${shotTypeId}`,
+          submitData,
+          {
+            headers: {
+              'Content-Type': 'multipart/form-data',
+            },
+          }
+        )
+      } else {
+        // Create new shot type with just title and subtitle
+        response = await apiCall('post', config.ADD_SHOT_TYPE, submitData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
-        }
-      )
+        })
+      }
+
+      console.log('Heading update response:', response)
 
       if (response.status === 200 || response.status === 201) {
         addToast({
           type: 'success',
           title: 'Success',
-          description: 'Title and subtitle updated successfully!',
+          description: 'Heading saved successfully!',
           duration: 3000,
         })
-        setIsTitleSubtitleModalOpen(false)
-        fetchShotTypes() // Refresh list
+        setIsHeadingModalOpen(false)
+        await fetchShotTypes() // Refresh list
       } else {
         addToast({
           type: 'error',
@@ -414,18 +428,16 @@ const ShortTypeManagement = () => {
           description:
             response?.data?.msg ||
             response?.data?.message ||
-            'Failed to update title and subtitle',
+            'Failed to save heading',
           duration: 3000,
         })
       }
     } catch (error) {
-      console.error('Error updating title/subtitle:', error)
+      console.error('Error saving heading:', error)
       addToast({
         type: 'error',
         title: 'Error',
-        description:
-          error?.message ||
-          'An error occurred while updating title and subtitle',
+        description: error?.message || 'An error occurred while saving heading',
         duration: 3000,
       })
     } finally {
@@ -549,64 +561,70 @@ const ShortTypeManagement = () => {
               </p>
             </div>
 
-            <button
-              onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
-            >
-              <FaPlus className="text-sm" />
-              Add Shot Type
-            </button>
+            <div className="flex items-center gap-3">
+              {/* Only show Add Heading button if no heading exists */}
+              {!(
+                shotTypes.length > 0 &&
+                (shotTypes[0].title || shotTypes[0].subtitle)
+              ) && (
+                <button
+                  onClick={() => setIsHeadingModalOpen(true)}
+                  className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
+                >
+                  <FaPlus className="text-sm" />
+                  Add Heading
+                </button>
+              )}
+              <button
+                onClick={() => setIsAddModalOpen(true)}
+                className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
+              >
+                <FaPlus className="text-sm" />
+                Add Shot Type
+              </button>
+            </div>
           </div>
         </div>
 
-        {/* Title & Subtitle Display Section */}
-        {shotTypes.length > 0 && shotTypes[0] && (
-          <div className="mb-6 rounded-xl border border-gray-200 bg-white shadow-sm">
-            <table className="w-full">
-              <thead>
-                <tr className="border-b border-gray-200 bg-gray-50">
-                  <th
-                    className="px-6 py-4 text-left text-sm font-semibold text-gray-700"
-                    style={{ width: '150px' }}
+        {/* Title and Subtitle Display Card */}
+        {shotTypes.length > 0 &&
+          (shotTypes[0].title || shotTypes[0].subtitle) && (
+            <div className="mb-6">
+              <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-white to-blue-50/20 p-6 shadow-sm">
+                <div className="flex items-start justify-between gap-4">
+                  <div className="flex min-w-0 flex-1 flex-col gap-4">
+                    {shotTypes[0].title && (
+                      <div className="overflow-hidden">
+                        <div className="mb-1 text-sm font-semibold text-gray-500">
+                          Title
+                        </div>
+                        <h2 className="overflow-hidden text-ellipsis break-all text-xl font-bold text-gray-900">
+                          {shotTypes[0].title}
+                        </h2>
+                      </div>
+                    )}
+                    {shotTypes[0].subtitle && (
+                      <div className="overflow-hidden">
+                        <div className="mb-1 text-sm font-semibold text-gray-500">
+                          Subtitle
+                        </div>
+                        <p className="overflow-hidden text-ellipsis break-all text-base font-bold text-gray-900 ">
+                          {shotTypes[0].subtitle}
+                        </p>
+                      </div>
+                    )}
+                  </div>
+                  <button
+                    onClick={() => setIsHeadingModalOpen(true)}
+                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600 transition-all hover:bg-blue-200 hover:shadow-md"
+                    title="Edit Heading"
                   >
-                    Title
-                  </th>
-                  <th
-                    className="px-6 py-4 text-left text-sm font-semibold text-gray-700"
-                    style={{ width: '150px' }}
-                  >
-                    Subtitle
-                  </th>
-                  <th
-                    className="px-6 py-4 text-right text-sm font-semibold text-gray-700"
-                    style={{ width: '100px' }}
-                  >
-                    Action
-                  </th>
-                </tr>
-              </thead>
-              <tbody>
-                <tr className="hover:bg-gray-50">
-                  <td className="px-6 py-4 text-base font-semibold text-gray-900">
-                    {shotTypes[0].title || 'Shot Type'}
-                  </td>
-                  <td className="px-6 py-4 text-base text-gray-900">
-                    {shotTypes[0].subtitle || '-'}
-                  </td>
-                  <td className="px-6 py-4 text-right">
-                    <button
-                      onClick={() => setIsTitleSubtitleModalOpen(true)}
-                      className="inline-flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 py-2 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50"
-                    >
-                      <FaEdit className="text-xs" />
-                      Edit
-                    </button>
-                  </td>
-                </tr>
-              </tbody>
-            </table>
-          </div>
-        )}
+                    <FaEdit size={14} />
+                  </button>
+                </div>
+              </div>
+            </div>
+          )}
 
         {/* Shot Types Grid */}
         {shotTypes.length > 0 ? (
@@ -639,8 +657,7 @@ const ShortTypeManagement = () => {
                     No Items in Shot Type
                   </h3>
                   <p className="mb-1 text-sm leading-relaxed text-gray-500">
-                    The shot type "{shotTypes[0]?.title}" exists but has no
-                    items. Edit it to add items.
+                    No items found. Add items to get started.
                   </p>
                 </div>
               </div>
@@ -696,6 +713,21 @@ const ShortTypeManagement = () => {
         editData={editData}
       />
 
+      {/* Add Heading Modal */}
+      <AddHeadingModal
+        isOpen={isHeadingModalOpen}
+        onClose={() => setIsHeadingModalOpen(false)}
+        onSubmit={handleAddHeading}
+        existingData={
+          shotTypes.length > 0
+            ? {
+                title: shotTypes[0].title || '',
+                subtitle: shotTypes[0].subtitle || '',
+              }
+            : null
+        }
+      />
+
       {/* Delete Confirmation Modal */}
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
@@ -707,23 +739,12 @@ const ShortTypeManagement = () => {
         title="Delete Item"
         message={`Are you sure you want to delete "${
           selectedItem?.name || 'this item'
-        }" from "${
-          selectedShotType?.title || 'this shot type'
         }"? This action cannot be undone.`}
         confirmText="Delete"
         cancelText="Cancel"
         confirmColorScheme="red"
         icon="delete"
         onConfirm={confirmDelete}
-      />
-
-      {/* Edit Title & Subtitle Modal */}
-      <EditTitleSubtitleModal
-        isOpen={isTitleSubtitleModalOpen}
-        onClose={() => setIsTitleSubtitleModalOpen(false)}
-        onSubmit={handleUpdateTitleSubtitle}
-        currentTitle={shotTypes[0]?.title || ''}
-        currentSubtitle={shotTypes[0]?.subtitle || ''}
       />
     </div>
   )
