@@ -101,7 +101,7 @@ const DataTable = ({
                   fontWeight="semibold"
                   style={{ backgroundColor: headerColor }}
                   width="80px"
-                  fontSize="18px"
+                  fontSize="16px"
                 >
                   Sr No
                 </TableColumnHeader>
@@ -115,7 +115,7 @@ const DataTable = ({
                   fontWeight="semibold"
                   style={{ backgroundColor: headerColor }}
                   width={column.width}
-                  fontSize="18px"
+                  fontSize="16px"
                 >
                   {column.label}
                 </TableColumnHeader>

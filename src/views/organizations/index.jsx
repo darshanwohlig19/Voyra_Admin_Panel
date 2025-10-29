@@ -112,18 +112,27 @@ const Organizations = () => {
   // Define table columns configuration
   const columns = [
     {
-      key: 'orgName',
-      label: 'Organization Name',
-      width: '200px',
+      key: 'username',
+      label: 'Username',
+      width: '150px',
       render: (_, value) => {
         if (!value) return 'N/A'
         return value.charAt(0).toUpperCase() + value.slice(1)
       },
     },
     {
+      key: 'email',
+      label: 'Email',
+      width: '150px',
+      render: (_, value) => (
+        <span className="text-base text-gray-900">{value || 'N/A'}</span>
+      ),
+    },
+
+    {
       key: 'planId',
       label: 'Plan',
-      width: '150px',
+      width: '80px',
       render: (_, value) => (
         <span className="inline-block rounded-md bg-gray-100 px-2 py-1 text-base capitalize text-gray-800">
           {value}
@@ -133,7 +142,7 @@ const Organizations = () => {
     {
       key: 'status',
       label: 'Status',
-      width: '120px',
+      width: '80px',
       render: (_, value) => {
         const colorMap = {
           green: 'bg-green-100 text-green-800',
@@ -154,13 +163,22 @@ const Organizations = () => {
     {
       key: 'createdAt',
       label: 'Created At',
-      width: '150px',
+      width: '130px',
       render: (_, value) => new Date(value).toLocaleDateString(),
+    },
+    {
+      key: 'sourceType',
+      label: 'Source Type',
+      width: '130px',
+      render: (_, value) => {
+        if (!value) return 'N/A'
+        return value.charAt(0).toUpperCase() + value.slice(1)
+      },
     },
     {
       key: 'actions',
       label: 'Actions',
-      width: '150px',
+      width: '80px',
       render: (row) => (
         <div className="flex items-center justify-center gap-2">
           <button

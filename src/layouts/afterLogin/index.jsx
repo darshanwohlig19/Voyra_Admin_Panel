@@ -183,21 +183,7 @@ const AfterLoginLayout = (props) => {
       <div className="font-dm h-full  w-full dark:bg-veryDarkBlueGray">
         {/* Main Content */}
         <main
-          className={`bg-confixaBg mx-2.5 min-h-screen flex-none transition-all dark:bg-veryDarkBlueGray ${
-            props.mini === false &&
-            !isExpand &&
-            location.pathname.includes('/observabilitys')
-              ? '!important xl:ml-[0px]'
-              : props.mini === false && !isExpand
-              ? 'xl:ml-[90px]'
-              : props.mini === true && hovered === true
-              ? 'xl:ml-[313px]'
-              : sideBar
-              ? '!important xl:ml-[270px]'
-              : isExpand
-              ? 'xl:ml-[313px]'
-              : 'xl:ml-[313px]'
-          }  ${
+          className={`bg-confixaBg mx-2.5 min-h-screen flex-none transition-all dark:bg-veryDarkBlueGray xl:ml-[230px] ${
             location.pathname.includes('/observabilitys')
               ? ''
               : 'md:p-6 md:pr-2'

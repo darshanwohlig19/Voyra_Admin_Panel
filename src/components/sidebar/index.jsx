@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from 'react'
 import { Link, useLocation } from 'react-router-dom'
 import { HiX } from 'react-icons/hi'
-import { RxHamburgerMenu } from 'react-icons/rx'
 import { FaArrowLeft, FaArrowRight } from 'react-icons/fa'
 import { Scrollbars } from 'react-custom-scrollbars-2'
 import { IoSearchOutline } from 'react-icons/io5'
@@ -98,9 +97,7 @@ function Sidebar(props) {
         )}
       </div>
       <div
-        className={`sm:none ${
-          isExpand ? 'w-[285px]' : 'w-[86px]'
-        } fixed min-h-full transition-all duration-300 ease-in-out ${
+        className={`sm:none fixed min-h-full w-[230px] transition-all duration-300 ease-in-out ${
           variant === 'auth' ? 'xl:hidden' : 'xl:block '
         }  ${open ? '' : '-translate-x-[115%]'} ${
           isSmallScreen ? 'z-index-responsive' : ''
@@ -129,23 +126,11 @@ function Sidebar(props) {
                 >
                   <HiX />
                 </span>
-                <span
-                  className="absolute right-4 top-4 block hidden cursor-pointer xl:block"
-                  onClick={onExpand}
-                >
-                  <RxHamburgerMenu className="transition hover:scale-110 hover:text-brand-500 dark:hover:text-white" />
-                </span>
                 <div className={`flex h-[74px] items-center `}>
                   <Link to="/" className="ml-4 flex items-center">
-                    {isExpand ? (
-                      <span className="text-[30px] font-xs text-vividSkyBlue dark:text-white">
-                        PocketStudio.ai
-                      </span>
-                    ) : (
-                      <span className="text-[45px] font-medium text-vividSkyBlue dark:text-white">
-                        P
-                      </span>
-                    )}
+                    <span className="font-xs text-[30px] text-vividSkyBlue dark:text-white">
+                      PocketStudio.ai
+                    </span>
                   </Link>
                 </div>
                 <div className="mb-5 h-px bg-gray-200 dark:bg-white/10" />
