@@ -678,17 +678,10 @@ const ShortTypeManagement = () => {
               <h3 className="mb-2 text-xl font-bold text-gray-900">
                 No Shot Types Yet
               </h3>
-              <p className="mb-6 text-sm leading-relaxed text-gray-500">
+              <p className="mb-1 text-sm leading-relaxed text-gray-500">
                 Create your first shot type to start organizing your photography
                 options.
               </p>
-              <button
-                onClick={() => setIsAddModalOpen(true)}
-                className="inline-flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40"
-              >
-                <FaPlus />
-                Create First Shot Type
-              </button>
             </div>
           </div>
         )}
