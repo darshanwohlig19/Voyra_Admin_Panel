@@ -4,6 +4,9 @@ const config = {
   //Login
   // SIGNUP_API: baseUrl + 'api/signup',
   GET_ORGANIZATIONS: baseUrl + '/api/organizations/getOrganizations',
+  CHANGE_ORGANIZATION_STATUS:
+    baseUrl + '/api/organizations/changeOrganizationStatus',
+  DELETE_ORGANIZATION: baseUrl + '/api/organizations/deleteOrganization',
   GET_ORG_USERS: baseUrl + '/api/orgUsers',
 
   SIGNIN_API: baseUrl + '/api/userAuth/login',
@@ -44,6 +47,9 @@ const config = {
   DELETE_SHOT_TYPE: baseUrl + '/api/adminShotType/deleteShotType',
 
   // Parameters API
+  GET_PARAMETERS: baseUrl + '/api/adminParameters/getParameters',
   ADD_PARAMETERS: baseUrl + '/api/adminParameters/addParameters',
+  UPDATE_PARAMETER: baseUrl + '/api/adminParameters/UpdateParameter',
+  DELETE_PARAMETER: baseUrl + '/api/adminParameters/deleteParameter',
 }
 export default config

@@ -1,0 +1,108 @@
+import React, { useState, useEffect } from 'react'
+import { MdClose } from 'react-icons/md'
+import { useToaster } from '../../common/Toaster'
+
+const AddCategoryModal = ({ isOpen, onClose, onSubmit }) => {
+  const [categoryName, setCategoryName] = useState('')
+  const { addToast } = useToaster()
+
+  // Reset form when modal closes
+  useEffect(() => {
+    if (!isOpen) {
+      setCategoryName('')
+    }
+  }, [isOpen])
+
+  const handleSubmit = (e) => {
+    e.preventDefault()
+
+    // Validation
+    if (!categoryName.trim()) {
+      addToast({
+        type: 'error',
+        title: 'Validation Error',
+        description: 'Please enter a category name',
+        duration: 3000,
+      })
+      return
+    }
+
+    // Submit data
+    onSubmit({ categoryName: categoryName.trim() })
+    setCategoryName('')
+  }
+
+  const handleClose = () => {
+    setCategoryName('')
+    onClose()
+  }
+
+  if (!isOpen) return null
+
+  return (
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
+      <div className="relative w-full max-w-md overflow-hidden rounded-xl bg-white shadow-2xl">
+        {/* Modal Header */}
+        <div className="border-b border-gray-200 bg-white px-6 py-4">
+          <div className="flex items-center justify-between">
+            <div>
+              <h2 className="text-base font-bold text-gray-900">
+                Add New Category
+              </h2>
+              <p className="mt-0.5 text-xs text-gray-500">
+                Create a new category for parameters
+              </p>
+            </div>
+            <button
+              onClick={handleClose}
+              className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-all hover:bg-red-50 hover:text-red-600"
+            >
+              <MdClose className="text-xl" />
+            </button>
+          </div>
+        </div>
+
+        {/* Modal Body */}
+        <div className="bg-white p-6">
+          <form onSubmit={handleSubmit}>
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-gray-700">
+                Category Name <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={categoryName}
+                onChange={(e) => setCategoryName(e.target.value)}
+                placeholder="e.g., Part of Model to Feature"
+                className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                required
+              />
+            </div>
+          </form>
+        </div>
+
+        {/* Modal Footer */}
+        <div className="flex items-center justify-end border-t border-gray-200 bg-gradient-to-r from-gray-50 to-white px-6 py-4">
+          <div className="flex gap-3">
+            <button
+              type="button"
+              onClick={handleClose}
+              className="rounded-lg border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-400 hover:bg-gray-50"
+            >
+              Cancel
+            </button>
+            <button
+              type="submit"
+              onClick={handleSubmit}
+              className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40"
+            >
+              Save
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
+export default AddCategoryModal

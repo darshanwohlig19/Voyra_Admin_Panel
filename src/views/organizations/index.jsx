@@ -3,6 +3,7 @@ import { FaEye, FaTrash, FaBan } from 'react-icons/fa' // FontAwesome icons
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
 import { useSpinner } from '../../common/SpinnerLoader'
+import { useToaster } from '../../common/Toaster'
 import { useLocation, useNavigate } from 'react-router-dom'
 import RoutesComponent from '../../routes'
 import DataTable from '../../components/DataTable'
@@ -19,6 +20,7 @@ const Organizations = () => {
   const [selectedOrg, setSelectedOrg] = useState(null)
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
+  const { addToast } = useToaster()
   const location = useLocation()
   const navigate = useNavigate()
   const routes = RoutesComponent()
@@ -96,9 +98,127 @@ const Organizations = () => {
     setSelectedOrg(null)
   }
 
+  const confirmDeleteOrganization = async () => {
+    if (!selectedOrg) return
+
+    showSpinner()
+    try {
+      // Call API to delete organization
+      const response = await apiCall(
+        'delete',
+        `${config.DELETE_ORGANIZATION}/${selectedOrg._id}`
+      )
+
+      if (response.status === 200 || response.status === 204) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: `Organization "${selectedOrg.orgName}" deleted successfully`,
+          duration: 3000,
+        })
+
+        // Refresh organizations list after successful delete
+        const fetchResponse = await apiCall(
+          'get',
+          `${config.GET_ORGANIZATIONS}?page=${currentPage}&limit=${itemsPerPage}`
+        )
+        if (fetchResponse.status === 200 && fetchResponse.data.data) {
+          setOrganizations(fetchResponse.data.data.orgs || [])
+          setTotalOrganizations(
+            fetchResponse.data.data.totalCount ||
+              fetchResponse.data.data.orgs?.length ||
+              0
+          )
+        }
+
+        // Close modal
+        closeDeleteModal()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.msg ||
+            response?.data?.message ||
+            'Failed to delete organization',
+          duration: 3000,
+        })
+      }
+    } catch (error) {
+      console.error('Error deleting organization:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: error?.message || 'Failed to delete organization',
+        duration: 3000,
+      })
+    } finally {
+      hideSpinner()
+    }
+  }
+
   const closeBlockModal = () => {
     setIsBlockModalOpen(false)
     setSelectedOrg(null)
+  }
+
+  const confirmBlockOrganization = async () => {
+    if (!selectedOrg) return
+
+    showSpinner()
+    try {
+      // Call API to change organization status (block/unblock)
+      const response = await apiCall(
+        'put',
+        `${config.CHANGE_ORGANIZATION_STATUS}/${selectedOrg._id}`
+      )
+
+      if (response.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: `Organization "${selectedOrg.orgName}" status changed successfully`,
+          duration: 3000,
+        })
+
+        // Refresh organizations list after successful block
+        const fetchResponse = await apiCall(
+          'get',
+          `${config.GET_ORGANIZATIONS}?page=${currentPage}&limit=${itemsPerPage}`
+        )
+        if (fetchResponse.status === 200 && fetchResponse.data.data) {
+          setOrganizations(fetchResponse.data.data.orgs || [])
+          setTotalOrganizations(
+            fetchResponse.data.data.totalCount ||
+              fetchResponse.data.data.orgs?.length ||
+              0
+          )
+        }
+
+        // Close modal
+        closeBlockModal()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.msg ||
+            response?.data?.message ||
+            'Failed to change organization status',
+          duration: 3000,
+        })
+      }
+    } catch (error) {
+      console.error('Error changing organization status:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: error?.message || 'Failed to change organization status',
+        duration: 3000,
+      })
+    } finally {
+      hideSpinner()
+    }
   }
 
   // Pagination logic
@@ -233,6 +353,7 @@ const Organizations = () => {
         cancelText="Cancel"
         confirmColorScheme="red"
         icon="delete"
+        onConfirm={confirmDeleteOrganization}
       />
 
       {/* Block Confirmation Modal */}
@@ -245,6 +366,7 @@ const Organizations = () => {
         cancelText="Cancel"
         confirmColorScheme="orange"
         icon="block"
+        onConfirm={confirmBlockOrganization}
       />
     </div>
   )

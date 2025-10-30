@@ -13,7 +13,7 @@ import Dashboard from 'views/dashboard'
 import Organizations from 'views/organizations'
 import OrganizationDetail from 'views/organizations/OrganizationDetail'
 import ShortType from 'views/shortType'
-import Parameters from 'views/parameters/Parameters'
+import Parameters from 'views/parameters'
 import { getEncryptedCookie } from 'common/utils/cookieUtils'
 
 const RoutesComponent = () => {
