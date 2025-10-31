@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react'
 import Dropdown from 'components/dropdown'
-import { FiAlignJustify } from 'react-icons/fi'
 import Configurator from './Configurator'
 import { IoMdLogOut } from 'react-icons/io'
 import { IoWalletOutline } from 'react-icons/io5'
@@ -213,13 +212,6 @@ const Navbar = (props) => {
       </div>
       <div className="relative mt-[3px] flex h-[61px] w-[80px] flex-grow items-center justify-around gap-2 rounded-full bg-white px-4 py-2 shadow-xl shadow-shadow-500 dark:!bg-darkGrayishBlue dark:shadow-none md:w-[80px] md:flex-grow-0 md:gap-1 xl:w-[80px] xl:gap-2">
         {/* start Notification */}
-        <span
-          className="flex cursor-pointer text-xl text-gray-600 dark:text-white xl:hidden "
-          onClick={onOpenSidenav}
-        >
-          <FiAlignJustify className="h-5 w-5 hover:font-bold hover:text-navy-700" />
-        </span>
-
         {/* <Dropdown
           button={
             <p className="cursor-pointer ">

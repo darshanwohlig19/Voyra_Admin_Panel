@@ -25,6 +25,10 @@ const ShortTypeManagement = () => {
   const [selectedItem, setSelectedItem] = useState(null)
   const [editData, setEditData] = useState(null)
 
+  // Service dropdown state
+  const [serviceItems, setServiceItems] = useState([])
+  const [selectedService, setSelectedService] = useState('')
+
   // Hooks
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
@@ -34,6 +38,45 @@ const ShortTypeManagement = () => {
   useEffect(() => {
     fetchShotTypes()
   }, [currentPage])
+
+  // Fetch services on mount
+  useEffect(() => {
+    fetchServices()
+  }, [])
+
+  const fetchServices = async () => {
+    try {
+      const response = await apiCall('get', config.GET_SERVICE_TYPES)
+
+      if (
+        response.status === 200 &&
+        response.data?.success &&
+        response.data?.data
+      ) {
+        const dataArray = response.data.data
+        const data =
+          Array.isArray(dataArray) && dataArray.length > 0
+            ? dataArray[0]
+            : dataArray
+
+        if (data && data.services && Array.isArray(data.services)) {
+          const services = data.services.map((service) => ({
+            name: service.name,
+          }))
+          console.log('Service Items extracted:', services)
+          setServiceItems(services)
+          // Keep selectedService empty to show placeholder
+        }
+      } else if (response?.status === 404) {
+        // No services found - set empty array
+        setServiceItems([])
+      }
+    } catch (error) {
+      console.error('Error fetching services:', error)
+      // Don't show error toast, just log it
+      setServiceItems([])
+    }
+  }
 
   const fetchShotTypes = async () => {
     showSpinner()
@@ -562,6 +605,26 @@ const ShortTypeManagement = () => {
             </div>
 
             <div className="flex items-center gap-3">
+              {/* Services Dropdown */}
+              <select
+                value={selectedService}
+                onChange={(e) => setSelectedService(e.target.value)}
+                className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+              >
+                <option value="">Select Services</option>
+                {serviceItems.length > 0 ? (
+                  serviceItems.map((item, index) => (
+                    <option key={index} value={item.name}>
+                      {item.name}
+                    </option>
+                  ))
+                ) : (
+                  <option value="" disabled>
+                    No services available
+                  </option>
+                )}
+              </select>
+
               {/* Only show Add Heading button if no heading exists */}
               {!(
                 shotTypes.length > 0 &&

@@ -110,7 +110,7 @@ const AddElementModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="relative w-full max-w-md overflow-hidden rounded-xl bg-white shadow-2xl">
+      <div className="relative w-full max-w-6xl overflow-hidden rounded-xl bg-white shadow-2xl">
         {/* Modal Header */}
         <div className="border-b border-gray-200 bg-white px-6 py-4">
           <div className="flex items-center justify-between">
@@ -134,11 +134,11 @@ const AddElementModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
         </div>
 
         {/* Modal Body */}
-        <div className="bg-white p-6">
+        <div className="bg-white p-8">
           <form onSubmit={handleSubmit}>
             {/* Element Name Input */}
-            <div className="mb-4">
-              <label className="mb-2 block text-sm font-semibold text-gray-700">
+            <div className="mb-6">
+              <label className="mb-2 block text-base font-semibold text-gray-700">
                 Element Name <span className="text-red-500">*</span>
               </label>
               <input
@@ -146,19 +146,19 @@ const AddElementModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
                 value={elementName}
                 onChange={(e) => setElementName(e.target.value)}
                 placeholder="e.g., Full Body Shot"
-                className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                className="block w-full rounded-lg border border-gray-300 bg-white px-5 py-3 text-base font-medium text-gray-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
                 required
               />
             </div>
 
             {/* Image Upload */}
             <div>
-              <label className="mb-2 block text-sm font-semibold text-gray-700">
+              <label className="mb-2 block text-base font-semibold text-gray-700">
                 Image Upload <span className="text-red-500">*</span>
               </label>
               <div
                 {...getRootProps()}
-                className={`relative flex h-64 cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-all ${
+                className={`relative flex h-96 cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-all ${
                   isDragActive
                     ? 'border-blue-500 bg-blue-50 shadow-lg shadow-blue-500/20'
                     : 'border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100 hover:border-blue-400 hover:bg-blue-50'

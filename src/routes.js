@@ -14,6 +14,7 @@ import Organizations from 'views/organizations'
 import OrganizationDetail from 'views/organizations/OrganizationDetail'
 import ShortType from 'views/shortType'
 import Parameters from 'views/parameters'
+import Projects from 'views/projects'
 import { getEncryptedCookie } from 'common/utils/cookieUtils'
 
 const RoutesComponent = () => {
@@ -84,6 +85,15 @@ const RoutesComponent = () => {
         component: <OrganizationDetail />,
         isComing: false,
         isVisible: false,
+      },
+      {
+        name: 'Projects',
+        path: 'projects',
+        layout: '/afterLogin',
+        icon: <FaFolderOpen className="h-6 w-6" />,
+        component: <Projects />,
+        isComing: false,
+        isVisible: true,
       },
       {
         name: 'Short Type',
