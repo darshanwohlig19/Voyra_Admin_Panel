@@ -113,7 +113,7 @@ const Organizations = () => {
         addToast({
           type: 'success',
           title: 'Success',
-          description: `Organization "${selectedOrg.orgName}" deleted successfully`,
+          description: `Organization "${selectedOrg.username}" deleted successfully`,
           duration: 3000,
         })
 
@@ -177,7 +177,7 @@ const Organizations = () => {
         addToast({
           type: 'success',
           title: 'Success',
-          description: `Organization "${selectedOrg.orgName}" status changed successfully`,
+          description: `Organization "${selectedOrg.username}" status changed successfully`,
           duration: 3000,
         })
 
@@ -348,7 +348,7 @@ const Organizations = () => {
         isOpen={isDeleteModalOpen}
         onClose={closeDeleteModal}
         title="Delete Organization"
-        message={`Are you sure you want to delete "${selectedOrg?.orgName}"?`}
+        message={`Are you sure you want to delete "${selectedOrg?.username}"?`}
         confirmText="Delete"
         cancelText="Cancel"
         confirmColorScheme="red"
@@ -361,9 +361,9 @@ const Organizations = () => {
         isOpen={isBlockModalOpen}
         onClose={closeBlockModal}
         title="Block Organization"
-        message={`Are you sure you want to block "${selectedOrg?.orgName}"?`}
+        message={`Are you sure you want to block "${selectedOrg?.username}"?`}
         confirmText="Block"
-        cancelText="Cancel"
+        cancelText="Unblock"
         confirmColorScheme="orange"
         icon="block"
         onConfirm={confirmBlockOrganization}

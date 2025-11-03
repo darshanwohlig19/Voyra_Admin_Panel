@@ -66,7 +66,7 @@ function SignInDefault() {
 
         // Navigate based on user role
         if (userRole === 'superadmin') {
-          navigate('/dashboard')
+          navigate('/')
         } else {
           navigate('/organizations')
         }
