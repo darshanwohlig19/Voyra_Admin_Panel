@@ -88,7 +88,17 @@ const AfterLoginLayout = (props) => {
           return collapseActiveRoute
         }
       } else {
-        if (window.location.href.indexOf(routes[i].path) !== -1) {
+        // Handle empty path (dashboard) - only match exact root path
+        if (routes[i].path === '') {
+          if (location.pathname === '/' || location.pathname === '') {
+            let breadCrumb = routes[i].parentTitle
+              ? `${routes[i].parentTitle} / ${routes[i].name}`
+              : routes[i].name
+            setCurrentRoute(routes[i].name)
+            setBreadCrumbs(breadCrumb)
+            return routes[i].name
+          }
+        } else if (window.location.href.indexOf(routes[i].path) !== -1) {
           let breadCrumb = routes[i].parentTitle
             ? `${routes[i].parentTitle} / ${routes[i].name}`
             : routes[i].name
@@ -115,7 +125,12 @@ const AfterLoginLayout = (props) => {
           return collapseActiveNavbar
         }
       } else {
-        if (window.location.href.indexOf(routes[i].path) !== -1) {
+        // Handle empty path (dashboard) - only match exact root path
+        if (routes[i].path === '') {
+          if (location.pathname === '/' || location.pathname === '') {
+            return routes[i].secondary
+          }
+        } else if (window.location.href.indexOf(routes[i].path) !== -1) {
           return routes[i].secondary
         }
       }

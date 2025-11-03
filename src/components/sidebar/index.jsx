@@ -129,7 +129,7 @@ function Sidebar(props) {
                 <div className={`flex h-[74px] items-center `}>
                   <Link to="/" className="ml-4 flex items-center">
                     <span className="font-xs text-[30px] text-vividSkyBlue dark:text-white">
-                      PocketStudio.ai
+                      Pocket Studio
                     </span>
                   </Link>
                 </div>

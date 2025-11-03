@@ -447,7 +447,7 @@ const Projects = () => {
   const columns = [
     {
       key: 'name',
-      label: 'Service Name',
+      label: 'Project Name',
       width: '180px',
       render: (_, value) => (
         <span className="text-base font-semibold capitalize text-gray-900">
@@ -458,22 +458,68 @@ const Projects = () => {
     {
       key: 'schema',
       label: 'Categories',
-      width: '250px',
-      render: (_, value) => (
-        <span className="text-sm text-gray-700">
-          {getSchemaCategories(value)}
-        </span>
-      ),
+      width: '180px',
+      render: (_, value) => {
+        if (!value) return <span className="text-sm text-gray-500">N/A</span>
+        const serviceType = Object.keys(value)[0]
+        if (!value[serviceType])
+          return <span className="text-sm text-gray-500">N/A</span>
+        const categories = Object.keys(value[serviceType])
+
+        if (categories.length === 0) {
+          return <span className="text-sm text-gray-500">N/A</span>
+        }
+
+        return (
+          <select
+            defaultValue={categories[0]}
+            className="w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-200"
+          >
+            {categories.map((cat, idx) => (
+              <option key={idx} value={cat}>
+                {cat}
+              </option>
+            ))}
+          </select>
+        )
+      },
     },
     {
       key: 'schema',
       label: 'Subcategories',
-      width: '250px',
-      render: (_, value) => (
-        <span className="text-sm text-gray-700">
-          {getSchemaSubcategories(value)}
-        </span>
-      ),
+      width: '180px',
+      render: (_, value) => {
+        if (!value) return <span className="text-sm text-gray-500">N/A</span>
+        const serviceType = Object.keys(value)[0]
+        if (!value[serviceType])
+          return <span className="text-sm text-gray-500">N/A</span>
+
+        const subcategories = []
+        Object.values(value[serviceType]).forEach((val) => {
+          if (Array.isArray(val)) {
+            subcategories.push(...val)
+          } else if (val) {
+            subcategories.push(val)
+          }
+        })
+
+        if (subcategories.length === 0) {
+          return <span className="text-sm text-gray-500">N/A</span>
+        }
+
+        return (
+          <select
+            defaultValue={subcategories[0]}
+            className="w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-200"
+          >
+            {subcategories.map((sub, idx) => (
+              <option key={idx} value={sub}>
+                {sub}
+              </option>
+            ))}
+          </select>
+        )
+      },
     },
     {
       key: 'createdAt',
@@ -513,8 +559,8 @@ const Projects = () => {
   return (
     <div className="mt-5 h-full w-full px-4">
       {/* Header with Add Button */}
-      <div className="mb-5 flex items-center justify-between">
-        <h1 className="text-2xl font-bold text-gray-900">Service Types</h1>
+      <div className="mb-5 flex items-center justify-end">
+        {/* <h1 className="text-2xl font-bold text-gray-900">Service Types</h1> */}
         <button
           onClick={() => setIsAddModalOpen(true)}
           className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"

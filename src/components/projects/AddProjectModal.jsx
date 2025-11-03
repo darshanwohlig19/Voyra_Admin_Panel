@@ -263,6 +263,11 @@ const AddProjectModal = ({
             </div>
           </div>
 
+          {/* Divider */}
+          {metadataFields.length > 0 && (
+            <div className="-mx-6 my-6 border-t border-gray-200"></div>
+          )}
+
           {/* Display Metadata Fields */}
           {metadataFields.length > 0 && (
             <div className="space-y-3">
@@ -273,16 +278,29 @@ const AddProjectModal = ({
                 >
                   {/* Array Values - Display with Category in first row only */}
                   <div className="space-y-3">
-                    {/* Column Headers - Only show if there are values */}
+                    {/* Add Subcategory Button at Top */}
                     {field.value.length > 0 && (
-                      <div className="grid grid-cols-[1fr_1fr_auto_auto] gap-3">
+                      <div className="flex justify-end">
+                        <button
+                          onClick={() => addArrayValue(field.id)}
+                          className="flex h-[42px] items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                          title="Add subcategory"
+                        >
+                          <FaPlus size={12} />
+                          Add Subcategory
+                        </button>
+                      </div>
+                    )}
+
+                    {/* Column Headers */}
+                    {field.value.length > 0 && (
+                      <div className="grid grid-cols-[1fr_1fr_auto] gap-3">
                         <div className="text-xs font-semibold text-gray-600">
                           Category <span className="text-red-500">*</span>
                         </div>
                         <div className="text-xs font-semibold text-gray-600">
                           Subcategory <span className="text-red-500">*</span>
                         </div>
-                        <div className="w-[38px]"></div>
                         <div className="w-[38px]"></div>
                       </div>
                     )}
@@ -293,7 +311,7 @@ const AddProjectModal = ({
                         key={index}
                         className={`grid gap-3 ${
                           index === 0
-                            ? 'grid-cols-[1fr_1fr_auto_auto]'
+                            ? 'grid-cols-[1fr_1fr_auto]'
                             : 'grid-cols-[1fr_auto]'
                         }`}
                       >
@@ -332,15 +350,6 @@ const AddProjectModal = ({
                               placeholder={`Enter subcategory value`}
                               className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
                             />
-
-                            {/* Add Button - Only on first row */}
-                            <button
-                              onClick={() => addArrayValue(field.id)}
-                              className="flex h-[38px] w-[38px] items-center justify-center rounded-lg border border-blue-200 text-blue-600 transition-colors hover:bg-blue-50"
-                              title="Add subcategory"
-                            >
-                              <FaPlus size={12} />
-                            </button>
 
                             {/* Delete Button */}
                             <button

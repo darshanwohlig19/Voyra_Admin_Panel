@@ -58,7 +58,7 @@ const RoutesComponent = () => {
       },
       {
         name: 'Dashboard',
-        path: 'dashboard',
+        path: '',
         layout: '/afterLogin',
         icon: (
           <img src={DashboardIcon} alt="Dashboard Icon" className="h-6 w-6" />

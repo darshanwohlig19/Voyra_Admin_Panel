@@ -611,7 +611,7 @@ const ShortTypeManagement = () => {
                 onChange={(e) => setSelectedService(e.target.value)}
                 className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
               >
-                <option value="">Select Services</option>
+                <option value="">Select Projects</option>
                 {serviceItems.length > 0 ? (
                   serviceItems.map((item, index) => (
                     <option key={index} value={item.name}>
@@ -620,7 +620,7 @@ const ShortTypeManagement = () => {
                   ))
                 ) : (
                   <option value="" disabled>
-                    No services available
+                    No Projects available
                   </option>
                 )}
               </select>
