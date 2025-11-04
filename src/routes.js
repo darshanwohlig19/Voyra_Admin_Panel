@@ -84,7 +84,7 @@ const RoutesComponent = () => {
         icon: <FaUsers className="h-6 w-6" />,
         component: <OrganizationDetail />,
         isComing: false,
-        isVisible: false,
+        isVisible: isSuperAdmin,
       },
       {
         name: 'Projects',
@@ -93,7 +93,7 @@ const RoutesComponent = () => {
         icon: <FaFolderOpen className="h-6 w-6" />,
         component: <Projects />,
         isComing: false,
-        isVisible: true,
+        isVisible: isSuperAdmin, // Only visible to superadmin
       },
       {
         name: 'Short Type',
@@ -102,7 +102,7 @@ const RoutesComponent = () => {
         icon: <MdMovie className="h-6 w-6" />,
         component: <ShortType />,
         isComing: false,
-        isVisible: true,
+        isVisible: isSuperAdmin, // Only visible to superadmin
       },
       {
         name: 'Parameters',
@@ -111,7 +111,7 @@ const RoutesComponent = () => {
         icon: <MdOutlineFolderOpen className="h-6 w-6" />,
         component: <Parameters />,
         isComing: false,
-        isVisible: true,
+        isVisible: isSuperAdmin, // Only visible to superadmin
       },
     ])
   }, [])
