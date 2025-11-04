@@ -34,10 +34,12 @@ const ShortTypeManagement = () => {
   const { showSpinner, hideSpinner } = useSpinner()
   const { addToast } = useToaster()
 
-  // Fetch shot types on mount and page change
+  // Fetch shot types on mount, page change, and when project is selected
   useEffect(() => {
-    fetchShotTypes()
-  }, [currentPage])
+    if (selectedService) {
+      fetchShotTypes()
+    }
+  }, [currentPage, selectedService])
 
   // Fetch services on mount
   useEffect(() => {
@@ -63,6 +65,7 @@ const ShortTypeManagement = () => {
 
           if (data && data.projects && Array.isArray(data.projects)) {
             const projects = data.projects.map((project) => ({
+              _id: project._id,
               name: project.name,
             }))
             console.log('Project Items extracted:', projects)
@@ -83,8 +86,13 @@ const ShortTypeManagement = () => {
   const fetchShotTypes = async () => {
     showSpinner()
     try {
+      // Build API URL with projectTypeId if selected
+      const apiUrl = selectedService
+        ? `${config.GET_SHOT_TYPE_DATA}?projectTypeId=${selectedService}`
+        : config.GET_SHOT_TYPE_DATA
+
       // Try GET_SHOT_TYPE_DATA endpoint
-      const response = await apiCall('get', config.GET_SHOT_TYPE_DATA)
+      const response = await apiCall('get', apiUrl)
 
       // Check if request was successful
       if (!response || response.status !== 200) {
@@ -173,6 +181,18 @@ const ShortTypeManagement = () => {
   const handleAddShotType = async (formData) => {
     showSpinner()
     try {
+      // Check if project is selected
+      if (!selectedService) {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: 'Please select a project first',
+          duration: 3000,
+        })
+        hideSpinner()
+        return
+      }
+
       const submitData = new FormData()
 
       // Generate imageKey from item name (convert to camelCase and remove spaces)
@@ -209,7 +229,10 @@ const ShortTypeManagement = () => {
         }
       })
 
-      const response = await apiCall('post', config.ADD_SHOT_TYPE, submitData, {
+      // Add projectTypeId as query parameter
+      const apiUrl = `${config.ADD_SHOT_TYPE}?projectTypeId=${selectedService}`
+
+      const response = await apiCall('post', apiUrl, submitData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -292,16 +315,16 @@ const ShortTypeManagement = () => {
         }
       })
 
-      const response = await apiCall(
-        'put',
-        `${config.UPDATE_SHOT_TYPE}/${selectedShotType._id}`,
-        submitData,
-        {
-          headers: {
-            'Content-Type': 'multipart/form-data',
-          },
-        }
-      )
+      // Add projectTypeId as query parameter
+      const apiUrl = selectedService
+        ? `${config.UPDATE_SHOT_TYPE}/${selectedShotType._id}?projectTypeId=${selectedService}`
+        : `${config.UPDATE_SHOT_TYPE}/${selectedShotType._id}`
+
+      const response = await apiCall('put', apiUrl, submitData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
 
       // Check if status is 200 or 201 (successful)
       if (response.status === 200 || response.status === 201) {
@@ -349,11 +372,13 @@ const ShortTypeManagement = () => {
   const confirmDelete = async () => {
     showSpinner()
     try {
+      // Build API URL with projectTypeId if selected
+      const apiUrl = selectedService
+        ? `${config.DELETE_SHOT_TYPE}/${selectedItem._id}?projectTypeId=${selectedService}`
+        : `${config.DELETE_SHOT_TYPE}/${selectedItem._id}`
+
       // Use the item's _id from the items array for deletion
-      const response = await apiCall(
-        'delete',
-        `${config.DELETE_SHOT_TYPE}/${selectedItem._id}`
-      )
+      const response = await apiCall('delete', apiUrl)
 
       // Check if status is 200 (successful)
       if (response.status === 200) {
@@ -436,19 +461,22 @@ const ShortTypeManagement = () => {
       let response
       if (shotTypeId) {
         // Update existing shot type
-        response = await apiCall(
-          'put',
-          `${config.UPDATE_SHOT_TYPE}/${shotTypeId}`,
-          submitData,
-          {
-            headers: {
-              'Content-Type': 'multipart/form-data',
-            },
-          }
-        )
+        const apiUrl = selectedService
+          ? `${config.UPDATE_SHOT_TYPE}/${shotTypeId}?projectTypeId=${selectedService}`
+          : `${config.UPDATE_SHOT_TYPE}/${shotTypeId}`
+
+        response = await apiCall('put', apiUrl, submitData, {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        })
       } else {
         // Create new shot type with just title and subtitle
-        response = await apiCall('post', config.ADD_SHOT_TYPE, submitData, {
+        const apiUrl = selectedService
+          ? `${config.ADD_SHOT_TYPE}?projectTypeId=${selectedService}`
+          : config.ADD_SHOT_TYPE
+
+        response = await apiCall('post', apiUrl, submitData, {
           headers: {
             'Content-Type': 'multipart/form-data',
           },
@@ -616,7 +644,7 @@ const ShortTypeManagement = () => {
                 <option value="">Select Projects</option>
                 {serviceItems.length > 0 ? (
                   serviceItems.map((item, index) => (
-                    <option key={index} value={item.name}>
+                    <option key={index} value={item._id}>
                       {item.name}
                     </option>
                   ))
