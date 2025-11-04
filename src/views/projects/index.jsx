@@ -55,29 +55,33 @@ const Projects = () => {
           description: 'No service types found for your organization',
           duration: 3000,
         })
-      } else if (
-        response.status === 200 &&
-        response.data?.success &&
-        response.data?.data
-      ) {
-        // Data is an array, get the first element
-        const dataArray = response.data.data
-        const data =
-          Array.isArray(dataArray) && dataArray.length > 0
-            ? dataArray[0]
-            : dataArray
+      } else if (response.status === 200 && response.data) {
+        // Handle both response formats: new format with status_code or old format with success
+        const responseData = response.data.data || response.data
+        const isSuccessful =
+          response.data.status_code === 200 || response.data.success === true
 
-        if (data && data.services) {
-          setOrganizationId(data.organizationId)
+        if (isSuccessful && responseData) {
+          // Handle both array and single object responses
+          let data = responseData
+          if (Array.isArray(responseData) && responseData.length > 0) {
+            data = responseData[0]
+          }
 
-          // Add createdAt to each service from parent data
-          const servicesWithDate = (data.services || []).map((service) => ({
-            ...service,
-            createdAt: data.createdAt,
-            updatedAt: data.updatedAt,
-          }))
+          if (data && data.projects) {
+            setOrganizationId(data.organizationId)
 
-          setServices(servicesWithDate)
+            // Add createdAt to each project from parent data
+            const projectsWithDate = (data.projects || []).map((project) => ({
+              ...project,
+              createdAt: data.createdAt,
+              updatedAt: data.updatedAt,
+            }))
+
+            setServices(projectsWithDate)
+          } else {
+            setServices([])
+          }
         } else {
           setServices([])
         }
@@ -95,37 +99,6 @@ const Projects = () => {
     } finally {
       hideSpinner()
     }
-  }
-
-  const getSchemaCategories = (schema) => {
-    if (!schema) return 'N/A'
-    const serviceType = Object.keys(schema)[0]
-    if (!schema[serviceType]) return 'N/A'
-    const categories = Object.keys(schema[serviceType])
-    return (
-      categories.slice(0, 3).join(', ') + (categories.length > 3 ? '...' : '')
-    )
-  }
-
-  const getSchemaSubcategories = (schema) => {
-    if (!schema) return 'N/A'
-    const serviceType = Object.keys(schema)[0]
-    if (!schema[serviceType]) return 'N/A'
-
-    const subcategories = []
-    Object.values(schema[serviceType]).forEach((value) => {
-      if (Array.isArray(value)) {
-        subcategories.push(...value)
-      } else if (value) {
-        subcategories.push(value)
-      }
-    })
-
-    if (subcategories.length === 0) return 'N/A'
-    return (
-      subcategories.slice(0, 3).join(', ') +
-      (subcategories.length > 3 ? '...' : '')
-    )
   }
 
   const handleDelete = (service) => {
@@ -183,9 +156,18 @@ const Projects = () => {
     }
   }
 
-  const handleEdit = (service) => {
-    setSelectedService(service)
-    setEditData(service)
+  const handleEdit = (project) => {
+    // Convert project data to include schema format for the modal
+    const editDataFormatted = {
+      ...project,
+      schema: {
+        [project.name]: {
+          category: project.category || [],
+        },
+      },
+    }
+    setSelectedService(project)
+    setEditData(editDataFormatted)
     setIsEditModalOpen(true)
   }
 
@@ -206,8 +188,8 @@ const Projects = () => {
 
       // Build form-data payload as shown in Postman
       const formData = new FormData()
-      formData.append('serviceType', serviceType)
-      formData.append(serviceType, JSON.stringify(metaData))
+      formData.append('projectName', serviceType)
+      formData.append('metadata', JSON.stringify(metaData))
 
       // Log the data being sent for debugging
       console.log('Sending data:', {
@@ -343,8 +325,8 @@ const Projects = () => {
 
       // Build form-data payload
       const formData = new FormData()
-      formData.append('serviceType', serviceType)
-      formData.append(serviceType, JSON.stringify(completeMetaData))
+      formData.append('projectName', serviceType)
+      formData.append('metadata', JSON.stringify(completeMetaData))
 
       // Include serviceId to identify which service to update
       if (selectedService && selectedService._id) {
@@ -456,15 +438,15 @@ const Projects = () => {
       ),
     },
     {
-      key: 'schema',
+      key: 'category',
       label: 'Categories',
       width: '180px',
       render: (_, value) => {
-        if (!value) return <span className="text-sm text-gray-500">N/A</span>
-        const serviceType = Object.keys(value)[0]
-        if (!value[serviceType])
+        if (!value || !Array.isArray(value) || value.length === 0) {
           return <span className="text-sm text-gray-500">N/A</span>
-        const categories = Object.keys(value[serviceType])
+        }
+
+        const categories = value.map((cat) => cat.name).filter(Boolean)
 
         if (categories.length === 0) {
           return <span className="text-sm text-gray-500">N/A</span>
@@ -485,21 +467,22 @@ const Projects = () => {
       },
     },
     {
-      key: 'schema',
+      key: 'category',
       label: 'Subcategories',
       width: '180px',
       render: (_, value) => {
-        if (!value) return <span className="text-sm text-gray-500">N/A</span>
-        const serviceType = Object.keys(value)[0]
-        if (!value[serviceType])
+        if (!value || !Array.isArray(value) || value.length === 0) {
           return <span className="text-sm text-gray-500">N/A</span>
+        }
 
         const subcategories = []
-        Object.values(value[serviceType]).forEach((val) => {
-          if (Array.isArray(val)) {
-            subcategories.push(...val)
-          } else if (val) {
-            subcategories.push(val)
+        value.forEach((cat) => {
+          if (cat.subcategory && Array.isArray(cat.subcategory)) {
+            cat.subcategory.forEach((sub) => {
+              if (sub.name) {
+                subcategories.push(sub.name)
+              }
+            })
           }
         })
 
@@ -588,7 +571,7 @@ const Projects = () => {
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={closeDeleteModal}
-        title="Delete Service Type"
+        title="Delete Project Type"
         message={`Are you sure you want to delete "${selectedService?.name}" service? This action cannot be undone.`}
         confirmText="Delete"
         cancelText="Cancel"

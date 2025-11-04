@@ -221,31 +221,33 @@ const Parameters = () => {
     try {
       const response = await apiCall('get', config.GET_SERVICE_TYPES)
 
-      if (
-        response.status === 200 &&
-        response.data?.success &&
-        response.data?.data
-      ) {
-        const dataArray = response.data.data
-        const data =
-          Array.isArray(dataArray) && dataArray.length > 0
-            ? dataArray[0]
-            : dataArray
+      if (response.status === 200 && response.data) {
+        // Handle both response formats: new format with status_code or old format with success
+        const responseData = response.data.data || response.data
+        const isSuccessful =
+          response.data.status_code === 200 || response.data.success === true
 
-        if (data && data.services && Array.isArray(data.services)) {
-          const services = data.services.map((service) => ({
-            name: service.name,
-          }))
-          console.log('Service Items extracted:', services)
-          setServiceItems(services)
-          // Keep selectedService empty to show placeholder
+        if (isSuccessful && responseData) {
+          // Handle both array and single object responses
+          let data = responseData
+          if (Array.isArray(responseData) && responseData.length > 0) {
+            data = responseData[0]
+          }
+
+          if (data && data.projects && Array.isArray(data.projects)) {
+            const projects = data.projects.map((project) => ({
+              name: project.name,
+            }))
+            console.log('Project Items extracted:', projects)
+            setServiceItems(projects)
+          }
         }
       } else if (response?.status === 404) {
-        // No services found - set empty array
+        // No projects found - set empty array
         setServiceItems([])
       }
     } catch (error) {
-      console.error('Error fetching services:', error)
+      console.error('Error fetching projects:', error)
       // Don't show error toast, just log it
       setServiceItems([])
     }
@@ -413,7 +415,7 @@ const Parameters = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-50 to-blue-50/30 px-4 py-6">
-      <div className="mx-auto max-w-7xl">
+      <div className="mx-auto">
         {/* Header Section */}
         <div className="mb-6">
           <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-6 shadow-sm">

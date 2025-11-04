@@ -20,13 +20,33 @@ const AddProjectModal = ({
       // Convert schema to metadata fields format
       if (editData.schema && editData.schema[editData.name]) {
         const schemaData = editData.schema[editData.name]
-        const fields = Object.entries(schemaData).map(([key, value]) => ({
-          id: Date.now() + Math.random(),
-          key: key,
-          type: 'array',
-          value: Array.isArray(value) ? value : [value],
-        }))
-        setMetadataFields(fields)
+
+        // Check if data is in new nested format
+        if (schemaData.category && Array.isArray(schemaData.category)) {
+          // New format: { category: [{ name: "Fashion", subcategory: [{ name: "Shoes" }] }] }
+          const fields = schemaData.category.map((cat) => {
+            const subcategoryValues = cat.subcategory
+              ? cat.subcategory.map((sub) => sub.name || sub)
+              : []
+
+            return {
+              id: Date.now() + Math.random(),
+              key: cat.name,
+              type: 'array',
+              value: subcategoryValues.length > 0 ? subcategoryValues : [''],
+            }
+          })
+          setMetadataFields(fields)
+        } else {
+          // Old format: { "Fashion": ["Shoes", "Bags"] }
+          const fields = Object.entries(schemaData).map(([key, value]) => ({
+            id: Date.now() + Math.random(),
+            key: key,
+            type: 'array',
+            value: Array.isArray(value) ? value : [value],
+          }))
+          setMetadataFields(fields)
+        }
       }
     } else if (isOpen && !editData) {
       // Reset form for add mode
@@ -152,34 +172,45 @@ const AddProjectModal = ({
       return
     }
 
-    // Build metadata object from fields
-    const metaData = {}
+    // Build metadata object in nested format
+    const categories = []
+
     metadataFields.forEach((field) => {
       // Filter out empty strings from array
       const filteredValues = field.value.filter((v) => v.trim() !== '')
 
-      // If only one value, send as string; otherwise send as array
-      if (filteredValues.length === 1) {
-        metaData[field.key] = filteredValues[0]
-      } else if (filteredValues.length > 1) {
-        metaData[field.key] = filteredValues
+      if (filteredValues.length > 0 && field.key.trim() !== '') {
+        // Create subcategory array with name objects
+        const subcategories = filteredValues.map((value) => ({
+          name: value,
+        }))
+
+        // Add category with its subcategories
+        categories.push({
+          name: field.key.trim(),
+          subcategory: subcategories,
+        })
       }
-      // If no values, don't add the field
     })
 
-    // Validate that we have at least one field with values
-    if (Object.keys(metaData).length === 0) {
+    // Validate that we have at least one category with values
+    if (categories.length === 0) {
       if (addToast) {
         addToast({
           type: 'error',
           title: 'Validation Error',
-          description: 'Please add at least one sub category value',
+          description: 'Please add at least one category with subcategories',
           duration: 3000,
         })
       } else {
-        alert('Please add at least one sub category value')
+        alert('Please add at least one category with subcategories')
       }
       return
+    }
+
+    // Create final metadata structure
+    const metaData = {
+      category: categories,
     }
 
     console.log('Submitting project with data:', {

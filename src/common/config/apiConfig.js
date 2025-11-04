@@ -53,9 +53,8 @@ const config = {
   DELETE_PARAMETER: baseUrl + '/api/adminParameters/deleteParameter',
 
   // Projects API (Service Types)
-  GET_SERVICE_TYPES: baseUrl + '/api/categoryParameters/ProjectType',
-  ADD_SERVICE_TYPE: baseUrl + '/api/categoryParameters/ProjectType',
-  UPDATE_SERVICE_TYPE: baseUrl + '/api/categoryParameters/ProjectType',
-  DELETE_SERVICE_TYPE: baseUrl + '/api/categoryParameters/deleteServiceType',
+  GET_SERVICE_TYPES: baseUrl + '/api/adminProjectType/ProjectType',
+  ADD_SERVICE_TYPE: baseUrl + '/api/adminProjectType/ProjectType',
+  DELETE_SERVICE_TYPE: baseUrl + '/api/adminProjectType/projectType',
 }
 export default config
