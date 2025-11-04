@@ -21,17 +21,28 @@ const Parameters = () => {
   const { addToast } = useToaster()
 
   useEffect(() => {
-    fetchParameters()
-    fetchShotTypes()
     fetchServices()
   }, [])
 
-  // Set the first shot type as selected when shot types are loaded
+  // Fetch shot types and parameters when project is selected
   useEffect(() => {
-    if (shotTypeItems.length > 0 && !selectedPage) {
-      setSelectedPage(shotTypeItems[0].name)
+    if (selectedService) {
+      fetchShotTypes()
+      fetchParameters()
+    } else {
+      // Clear shot types and parameters when no project is selected
+      setShotTypeItems([])
+      setAllParametersData([])
+      setSelectedPage('')
     }
-  }, [shotTypeItems, selectedPage])
+  }, [selectedService])
+
+  // Optional: Auto-select first shot type (commented out to require manual selection)
+  // useEffect(() => {
+  //   if (shotTypeItems.length > 0 && !selectedPage) {
+  //     setSelectedPage(shotTypeItems[0].name)
+  //   }
+  // }, [shotTypeItems, selectedPage])
 
   // Get the selected shot type item object
   const getSelectedShotTypeItem = () => {
@@ -81,7 +92,12 @@ const Parameters = () => {
         }
       })
 
-      const response = await apiCall('post', config.ADD_PARAMETERS, formData, {
+      // Build API URL with projectTypeId if selected
+      const apiUrl = selectedService
+        ? `${config.ADD_PARAMETERS}?projectTypeId=${selectedService}`
+        : config.ADD_PARAMETERS
+
+      const response = await apiCall('post', apiUrl, formData, {
         headers: {
           'Content-Type': 'multipart/form-data',
         },
@@ -126,7 +142,12 @@ const Parameters = () => {
   const fetchParameters = async () => {
     showSpinner()
     try {
-      const response = await apiCall('get', config.GET_PARAMETERS)
+      // Build API URL with projectTypeId if selected
+      const apiUrl = selectedService
+        ? `${config.GET_PARAMETERS}?projectTypeId=${selectedService}`
+        : config.GET_PARAMETERS
+
+      const response = await apiCall('get', apiUrl)
 
       console.log('GET_PARAMETERS Response:', response)
       console.log('GET_PARAMETERS Data:', response?.data?.data)
@@ -236,6 +257,7 @@ const Parameters = () => {
 
           if (data && data.projects && Array.isArray(data.projects)) {
             const projects = data.projects.map((project) => ({
+              _id: project._id,
               name: project.name,
             }))
             console.log('Project Items extracted:', projects)
@@ -255,7 +277,12 @@ const Parameters = () => {
 
   const fetchShotTypes = async () => {
     try {
-      const response = await apiCall('get', config.GET_SHOT_TYPE_DATA)
+      // Build API URL with projectTypeId if selected
+      const apiUrl = selectedService
+        ? `${config.GET_SHOT_TYPE_DATA}?projectTypeId=${selectedService}`
+        : config.GET_SHOT_TYPE_DATA
+
+      const response = await apiCall('get', apiUrl)
 
       if (response.status === 200 && response.data) {
         let apiData = null
@@ -306,6 +333,28 @@ const Parameters = () => {
   const title = currentPageData?.title || ''
 
   const handleAddCategory = async (formData) => {
+    // Validate project is selected
+    if (!selectedService) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Please select a project first',
+        duration: 3000,
+      })
+      return
+    }
+
+    // Validate shot type is selected
+    if (!selectedPage) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Please select a shot type first',
+        duration: 3000,
+      })
+      return
+    }
+
     const selectedItem = getSelectedShotTypeItem()
     const pageType = selectedPage
 
@@ -313,9 +362,11 @@ const Parameters = () => {
       addToast({
         type: 'error',
         title: 'Error',
-        description: 'Please select a shot type first',
+        description: 'Please select a valid shot type',
         duration: 3000,
       })
+      console.error('Selected page:', selectedPage)
+      console.error('Shot type items:', shotTypeItems)
       return
     }
 
@@ -364,6 +415,28 @@ const Parameters = () => {
   }
 
   const handleAddHeading = async (formData) => {
+    // Validate project is selected
+    if (!selectedService) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Please select a project first',
+        duration: 3000,
+      })
+      return
+    }
+
+    // Validate shot type is selected
+    if (!selectedPage) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Please select a shot type first',
+        duration: 3000,
+      })
+      return
+    }
+
     const selectedItem = getSelectedShotTypeItem()
     const pageType = selectedPage
 
@@ -371,9 +444,11 @@ const Parameters = () => {
       addToast({
         type: 'error',
         title: 'Error',
-        description: 'Please select a shot type first',
+        description: 'Please select a valid shot type',
         duration: 3000,
       })
+      console.error('Selected page:', selectedPage)
+      console.error('Shot type items:', shotTypeItems)
       return
     }
 
@@ -442,7 +517,7 @@ const Parameters = () => {
                 <option value="">Select Projects</option>
                 {serviceItems.length > 0 ? (
                   serviceItems.map((item, index) => (
-                    <option key={index} value={item.name}>
+                    <option key={index} value={item._id}>
                       {item.name}
                     </option>
                   ))
@@ -459,6 +534,7 @@ const Parameters = () => {
                 onChange={(e) => setSelectedPage(e.target.value)}
                 className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
               >
+                <option value="">Select Shot Type</option>
                 {shotTypeItems.length > 0 ? (
                   shotTypeItems.map((item) => (
                     <option key={item._id} value={item.name}>
@@ -466,7 +542,9 @@ const Parameters = () => {
                     </option>
                   ))
                 ) : (
-                  <option value="">No shot types available</option>
+                  <option value="" disabled>
+                    No shot types available
+                  </option>
                 )}
               </select>
 
@@ -609,17 +687,17 @@ const Parameters = () => {
                       formData.append('image', updatedElement.imageFile)
                     }
 
+                    // Build API URL with projectTypeId if selected
+                    const apiUrl = selectedService
+                      ? `${config.UPDATE_PARAMETER}/${updatedElement._id}?projectTypeId=${selectedService}`
+                      : `${config.UPDATE_PARAMETER}/${updatedElement._id}`
+
                     // Call UPDATE API with element _id
-                    const response = await apiCall(
-                      'put',
-                      `${config.UPDATE_PARAMETER}/${updatedElement._id}`,
-                      formData,
-                      {
-                        headers: {
-                          'Content-Type': 'multipart/form-data',
-                        },
-                      }
-                    )
+                    const response = await apiCall('put', apiUrl, formData, {
+                      headers: {
+                        'Content-Type': 'multipart/form-data',
+                      },
+                    })
 
                     if (response.status === 200 || response.status === 201) {
                       addToast({
@@ -656,11 +734,13 @@ const Parameters = () => {
                 onElementDeleted={async (sectionId, elementId) => {
                   showSpinner()
                   try {
+                    // Build API URL with projectTypeId if selected
+                    const apiUrl = selectedService
+                      ? `${config.DELETE_PARAMETER}/${elementId}?projectTypeId=${selectedService}`
+                      : `${config.DELETE_PARAMETER}/${elementId}`
+
                     // Call DELETE API with element _id
-                    const response = await apiCall(
-                      'delete',
-                      `${config.DELETE_PARAMETER}/${elementId}`
-                    )
+                    const response = await apiCall('delete', apiUrl)
 
                     if (response.status === 200 || response.status === 204) {
                       addToast({
@@ -697,11 +777,13 @@ const Parameters = () => {
                 onSectionDeleted={async (sectionId) => {
                   showSpinner()
                   try {
+                    // Build API URL with projectTypeId if selected
+                    const apiUrl = selectedService
+                      ? `${config.DELETE_PARAMETER}/${sectionId}?projectTypeId=${selectedService}`
+                      : `${config.DELETE_PARAMETER}/${sectionId}`
+
                     // Call DELETE API with section _id
-                    const response = await apiCall(
-                      'delete',
-                      `${config.DELETE_PARAMETER}/${sectionId}`
-                    )
+                    const response = await apiCall('delete', apiUrl)
 
                     if (response.status === 200 || response.status === 204) {
                       addToast({
