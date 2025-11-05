@@ -11,11 +11,13 @@ const AddProjectModal = ({
   const [serviceType, setServiceType] = useState('')
   const [metadataFields, setMetadataFields] = useState([])
   const [newFieldName, setNewFieldName] = useState('')
+  const [isGender, setIsGender] = useState(false)
 
   // Populate form when editing
   useEffect(() => {
     if (isOpen && editData) {
       setServiceType(editData.name || '')
+      setIsGender(editData.isGender || false)
 
       // Convert schema to metadata fields format
       if (editData.schema && editData.schema[editData.name]) {
@@ -53,6 +55,7 @@ const AddProjectModal = ({
       setServiceType('')
       setMetadataFields([])
       setNewFieldName('')
+      setIsGender(false)
     }
   }, [isOpen, editData])
 
@@ -211,6 +214,7 @@ const AddProjectModal = ({
     // Create final metadata structure
     const metaData = {
       category: categories,
+      isGender: isGender,
     }
 
     console.log('Submitting project with data:', {
@@ -225,18 +229,20 @@ const AddProjectModal = ({
     setServiceType('')
     setMetadataFields([])
     setNewFieldName('')
+    setIsGender(false)
   }
 
   const handleCancel = () => {
     setServiceType('')
     setMetadataFields([])
     setNewFieldName('')
+    setIsGender(false)
     onClose()
   }
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="max-h-[100vh] w-full max-w-6xl overflow-y-auto rounded-lg bg-white shadow-xl">
+      <div className="max-h-[100vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white shadow-xl">
         {/* Header */}
         <div className="sticky top-0 z-10 border-b border-gray-200 bg-white px-6 py-4">
           <h2 className="text-xl font-bold text-gray-900">
@@ -247,9 +253,9 @@ const AddProjectModal = ({
         {/* Content */}
         <div className="p-6">
           {/* Service Type and Field Input Row */}
-          <div className="mb-6 grid grid-cols-12 gap-3">
+          <div className="mb-3 grid grid-cols-12 gap-3">
             {/* Service Type Name */}
-            <div className="col-span-5">
+            <div className="col-span-10">
               <label className="mb-2 block text-sm font-semibold text-gray-700">
                 Project Name <span className="text-red-500">*</span>
               </label>
@@ -262,8 +268,33 @@ const AddProjectModal = ({
               />
             </div>
 
+            {/* Gender Toggle */}
+            <div className="col-span-2 flex flex-col">
+              <label className="mb-2 block text-sm font-semibold text-gray-700">
+                Gender
+              </label>
+              <div className="flex h-[42px] items-center justify-start rounded-lg   bg-white ">
+                <button
+                  type="button"
+                  onClick={() => setIsGender(!isGender)}
+                  className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors ${
+                    isGender ? 'bg-blue-600' : 'bg-gray-300'
+                  }`}
+                >
+                  <span
+                    className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-sm transition-transform ${
+                      isGender ? 'translate-x-9' : 'translate-x-1'
+                    }`}
+                  />
+                </button>
+              </div>
+            </div>
+          </div>
+
+          {/* Category and Add Button Row */}
+          <div className="mb-6 grid grid-cols-12 gap-3">
             {/* Field Input */}
-            <div className="col-span-5">
+            <div className="col-span-10">
               <label className="mb-2 block text-sm font-semibold text-gray-700">
                 Category <span className="text-red-500">*</span>
               </label>

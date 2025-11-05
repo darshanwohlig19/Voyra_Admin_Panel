@@ -84,7 +84,7 @@ const RoutesComponent = () => {
         icon: <FaUsers className="h-6 w-6" />,
         component: <OrganizationDetail />,
         isComing: false,
-        isVisible: isSuperAdmin,
+        isVisible: false,
       },
       {
         name: 'Projects',

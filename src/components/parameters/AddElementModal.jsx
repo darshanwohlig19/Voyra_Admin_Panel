@@ -6,6 +6,7 @@ import { useToaster } from '../../common/Toaster'
 
 const AddElementModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
   const [elementName, setElementName] = useState('')
+  const [elementPrompt, setElementPrompt] = useState('')
   const [selectedImage, setSelectedImage] = useState(null)
   const [imagePreview, setImagePreview] = useState(null)
   const { addToast } = useToaster()
@@ -15,10 +16,13 @@ const AddElementModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
     if (isOpen) {
       if (editData) {
         setElementName(editData.name || '')
+        setElementPrompt(editData.prompt || '')
+
         setImagePreview(editData.image || null)
         setSelectedImage(null) // Will be set only if user uploads new image
       } else {
         setElementName('')
+        setElementPrompt('')
         setSelectedImage(null)
         setImagePreview(null)
       }
@@ -89,18 +93,22 @@ const AddElementModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
     // Submit data
     onSubmit({
       name: elementName.trim(),
+      prompt: elementPrompt,
       image: selectedImage, // New file (if uploaded)
       existingImage: imagePreview, // Existing image URL (for edit mode)
     })
 
     // Reset form
     setElementName('')
+    setElementPrompt('')
     setSelectedImage(null)
     setImagePreview(null)
   }
 
   const handleClose = () => {
     setElementName('')
+    setElementPrompt('')
+
     setSelectedImage(null)
     setImagePreview(null)
     onClose()
@@ -110,7 +118,7 @@ const AddElementModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="relative w-full max-w-6xl overflow-hidden rounded-xl bg-white shadow-2xl">
+      <div className="relative max-h-[100vh] w-full max-w-4xl overflow-y-auto rounded-xl bg-white shadow-2xl">
         {/* Modal Header */}
         <div className="border-b border-gray-200 bg-white px-6 py-4">
           <div className="flex items-center justify-between">
@@ -145,6 +153,19 @@ const AddElementModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
                 type="text"
                 value={elementName}
                 onChange={(e) => setElementName(e.target.value)}
+                placeholder="e.g., Full Body Shot"
+                className="block w-full rounded-lg border border-gray-300 bg-white px-5 py-3 text-base font-medium text-gray-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                required
+              />
+            </div>
+            <div className="mb-6">
+              <label className="mb-2 block text-base font-semibold text-gray-700">
+                Prompt <span className="text-red-500">*</span>
+              </label>
+              <input
+                type="text"
+                value={elementPrompt}
+                onChange={(e) => setElementPrompt(e.target.value)}
                 placeholder="e.g., Full Body Shot"
                 className="block w-full rounded-lg border border-gray-300 bg-white px-5 py-3 text-base font-medium text-gray-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
                 required

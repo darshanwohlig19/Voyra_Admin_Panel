@@ -155,7 +155,12 @@ function SignInDefault() {
           className="relative flex h-full w-full items-center justify-center overflow-hidden rounded-2xl
  object-cover"
         >
-          <img src={Logo} alt="Modern interior design" fill />
+          <img
+            className="h-[100%] w-auto"
+            src={Logo}
+            alt="Modern interior design"
+            fill
+          />
         </div>
       </div>
     </div>

@@ -631,9 +631,10 @@ const Parameters = () => {
                           type: section.type || 'nameCard',
                           elements: [
                             ...section.elements.map((el) => {
-                              // For existing elements, backend only needs _id to recognize them
+                              // For existing elements, send _id and prompt
                               const existingElement = {
                                 _id: el._id, // Backend uses this to identify existing element
+                                prompt: el.prompt || '', // Include prompt for existing elements
                               }
                               console.log(
                                 'Existing element being sent:',
@@ -644,6 +645,7 @@ const Parameters = () => {
                             {
                               name: element.name,
                               value: element.name,
+                              prompt: element.prompt || '', // Include prompt field
                               imageKey: newElementImageKey, // Only new elements get imageKey
                             },
                           ],
@@ -654,6 +656,7 @@ const Parameters = () => {
                         type: section.type || 'nameCard',
                         elements: section.elements.map((el) => ({
                           _id: el._id, // Backend uses this to identify existing element
+                          prompt: el.prompt || '', // Include prompt for existing elements
                         })),
                       }
                     }
@@ -681,6 +684,7 @@ const Parameters = () => {
                     // Add element name and value
                     formData.append('name', updatedElement.name)
                     formData.append('value', updatedElement.name)
+                    formData.append('prompt', updatedElement.prompt || '')
 
                     // Add image file if new image was uploaded
                     if (updatedElement.imageFile) {

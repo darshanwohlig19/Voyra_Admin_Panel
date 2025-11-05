@@ -34,7 +34,7 @@ const ParameterSection = ({
       name: formData.name,
       image: imageUrl,
       imageFile: formData.image, // Pass the actual file to parent
-      prompt: '', // Can be added later if needed
+      prompt: formData.prompt || '', // Include prompt from form data
     }
 
     // Call parent callback to add element
@@ -67,6 +67,7 @@ const ParameterSection = ({
       name: formData.name,
       image: imageUrl,
       imageFile: formData.image || null, // Pass the actual file to parent if new image uploaded
+      prompt: formData.prompt || '', // Include prompt from form data
     }
 
     // Call parent callback to update element

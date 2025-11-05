@@ -504,6 +504,22 @@ const Projects = () => {
         )
       },
     },
+
+    {
+      key: 'isGender',
+      label: 'Gender',
+      width: '100px',
+      render: (_, value) => (
+        <span
+          className={`inline-block rounded-md px-3 py-1 text-sm font-medium ${
+            value ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-600'
+          }`}
+        >
+          {value ? 'Enabled' : 'Disabled'}
+        </span>
+      ),
+    },
+
     {
       key: 'createdAt',
       label: 'Created At',
