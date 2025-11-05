@@ -126,9 +126,9 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="relative max-h-[85vh] w-full max-w-4xl overflow-hidden rounded-xl bg-white shadow-2xl">
+      <div className="relative flex h-[90vh] w-[900px] max-w-[95vw] flex-col rounded-xl bg-white shadow-2xl">
         {/* Modal Header */}
-        <div className="border-b border-gray-200 bg-white px-6 py-4">
+        <div className="flex-shrink-0 border-b border-gray-200 bg-white px-6 py-4">
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-base font-bold text-gray-900">
@@ -150,7 +150,7 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
         </div>
 
         {/* Modal Body */}
-        <div className="max-h-[calc(85vh-130px)] overflow-y-auto bg-white">
+        <div className="flex-1 overflow-y-auto bg-white">
           <form onSubmit={handleSubmit} className="p-5">
             <div className="space-y-5">
               {/* Shot Type Items Section */}
@@ -186,7 +186,7 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
         </div>
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-end border-t border-gray-200 bg-gradient-to-r from-gray-50 to-white px-6 py-4">
+        <div className="flex flex-shrink-0 items-center justify-end border-t border-gray-200 bg-gradient-to-r from-gray-50 to-white px-6 py-4">
           <div className="flex gap-3">
             <button
               type="button"

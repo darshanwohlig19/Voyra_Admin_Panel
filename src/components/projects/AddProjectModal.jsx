@@ -242,16 +242,16 @@ const AddProjectModal = ({
 
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="max-h-[100vh] w-full max-w-4xl overflow-y-auto rounded-lg bg-white shadow-xl">
+      <div className="flex max-h-[90vh] w-[900px] max-w-[95vw] flex-col rounded-lg bg-white shadow-xl">
         {/* Header */}
-        <div className="sticky top-0 z-10 border-b border-gray-200 bg-white px-6 py-4">
+        <div className="flex-shrink-0 border-b border-gray-200 bg-white px-6 py-4">
           <h2 className="text-xl font-bold text-gray-900">
             {editData ? 'Edit Project' : 'Add New Project'}
           </h2>
         </div>
 
         {/* Content */}
-        <div className="p-6">
+        <div className="flex-1 overflow-y-auto p-6">
           {/* Service Type and Field Input Row */}
           <div className="mb-3 grid grid-cols-12 gap-3">
             {/* Service Type Name */}
@@ -467,7 +467,7 @@ const AddProjectModal = ({
         </div>
 
         {/* Footer */}
-        <div className="sticky bottom-0 flex justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
+        <div className="flex flex-shrink-0 justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
           <button
             onClick={handleCancel}
             className="rounded-lg border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"
