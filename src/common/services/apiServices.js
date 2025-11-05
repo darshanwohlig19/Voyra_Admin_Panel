@@ -9,8 +9,8 @@ const handle401Error = () => {
   }
 
   localStorage.clear()
-  sessionStorage.clear() // If using sessionStorage
-  clearAuthCookies() // Clear encrypted cookies
+  sessionStorage.clear()
+  clearAuthCookies()
   window.location.href = '/sign-in'
 }
 
@@ -19,23 +19,29 @@ const ApiCaller = () => {
     try {
       let response
 
+      // Get token from encrypted cookie
       const token = getEncryptedCookie('bearerToken')
-      console.log('Token from cookie:', token)
+      console.log('🚀 Request:', httpType.toUpperCase(), url)
 
+      // Build config with token
       const config = {
         ...options,
-        withCredentials: true, // Enable cookies for cross-origin requests (backend jwt cookie)
+        timeout: 30000, // 30 seconds timeout
+        withCredentials: true,
         headers: {
+          'Content-Type': 'application/json',
           ...options.headers,
         },
       }
 
+      // Add Bearer token if exists
       if (token) {
-        config.headers.Authorization = token
+        config.headers.Authorization = `Bearer ${token}`
       }
 
-      console.log('Request config:', config)
+      console.log('🔑 Token included:', !!token)
 
+      // Make request based on HTTP method
       switch (httpType.trim().toLowerCase()) {
         case 'get':
           response = await axios.get(url, config)
@@ -53,16 +59,31 @@ const ApiCaller = () => {
           throw new Error('Invalid HTTP method provided')
       }
 
+      console.log('✅ Response:', response.status)
+
+      // Check for 401 in response data
       if (response?.data?.code === 401) {
         handle401Error()
       }
 
       return response
     } catch (error) {
-      if (error?.response?.status === 401) {
-        handle401Error()
+      // Handle cancelled requests
+      if (axios.isCancel(error)) {
+        console.warn('⚠️ Request was cancelled')
+        throw error
       }
-      return error.response
+
+      // Handle 401 unauthorized
+      if (error?.response?.status === 401) {
+        console.error('❌ Unauthorized:', error.response?.config?.url)
+        handle401Error()
+      } else {
+        console.error('❌ Error:', error.response?.status, error.message)
+      }
+
+      // Return error response for handling in components
+      return error.response || { status: 500, data: { message: error.message } }
     }
   }
 

@@ -35,7 +35,11 @@ export const setEncryptedCookie = (name, value, days = 7) => {
     const expires = new Date()
     expires.setTime(expires.getTime() + days * 24 * 60 * 60 * 1000)
 
-    document.cookie = `${name}=${encryptedValue}; expires=${expires.toUTCString()}; path=/; secure; samesite=strict`
+    // Use secure flag only in production (HTTPS)
+    const isProduction = process.env.NODE_ENV === 'production' || window.location.protocol === 'https:'
+    const cookieString = `${name}=${encryptedValue}; expires=${expires.toUTCString()}; path=/; ${isProduction ? 'secure;' : ''} samesite=strict`
+
+    document.cookie = cookieString
     return true
   } catch (error) {
     console.error('Error setting encrypted cookie:', error)
