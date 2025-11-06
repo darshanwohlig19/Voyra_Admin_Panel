@@ -26,6 +26,9 @@ const Parameters = () => {
 
   // Fetch shot types and parameters when project is selected
   useEffect(() => {
+    // Clear selected shot type whenever project changes
+    setSelectedPage('')
+
     if (selectedService) {
       fetchShotTypes()
       fetchParameters()
@@ -33,7 +36,6 @@ const Parameters = () => {
       // Clear shot types and parameters when no project is selected
       setShotTypeItems([])
       setAllParametersData([])
-      setSelectedPage('')
     }
   }, [selectedService])
 
@@ -532,7 +534,10 @@ const Parameters = () => {
               <select
                 value={selectedPage}
                 onChange={(e) => setSelectedPage(e.target.value)}
-                className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
+                disabled={!selectedService}
+                className={`rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 ${
+                  !selectedService ? 'cursor-not-allowed opacity-50' : ''
+                }`}
               >
                 <option value="">Select Shot Type</option>
                 {shotTypeItems.length > 0 ? (
@@ -551,8 +556,32 @@ const Parameters = () => {
               {/* Add Heading Button - Only show if no heading exists */}
               {!(currentPageData && currentPageData.title) && (
                 <button
-                  onClick={() => setIsHeadingModalOpen(true)}
-                  className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
+                  onClick={() => {
+                    if (!selectedService) {
+                      addToast({
+                        type: 'error',
+                        title: 'Error',
+                        description: 'Please select project name first',
+                        duration: 3000,
+                      })
+                      return
+                    }
+                    if (!selectedPage) {
+                      addToast({
+                        type: 'error',
+                        title: 'Error',
+                        description: 'Please select shot type first',
+                        duration: 3000,
+                      })
+                      return
+                    }
+                    setIsHeadingModalOpen(true)
+                  }}
+                  className={`flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95 ${
+                    !selectedService || !selectedPage
+                      ? 'cursor-not-allowed opacity-50'
+                      : ''
+                  }`}
                 >
                   <FaPlus className="text-sm" />
                   Heading
@@ -561,8 +590,32 @@ const Parameters = () => {
 
               {/* Add Category Button */}
               <button
-                onClick={() => setIsAddCategoryModalOpen(true)}
-                className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
+                onClick={() => {
+                  if (!selectedService) {
+                    addToast({
+                      type: 'error',
+                      title: 'Error',
+                      description: 'Please select project name first',
+                      duration: 3000,
+                    })
+                    return
+                  }
+                  if (!selectedPage) {
+                    addToast({
+                      type: 'error',
+                      title: 'Error',
+                      description: 'Please select shot type first',
+                      duration: 3000,
+                    })
+                    return
+                  }
+                  setIsAddCategoryModalOpen(true)
+                }}
+                className={`flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95 ${
+                  !selectedService || !selectedPage
+                    ? 'cursor-not-allowed opacity-50'
+                    : ''
+                }`}
               >
                 <FaPlus className="text-sm" />
                 Add Category

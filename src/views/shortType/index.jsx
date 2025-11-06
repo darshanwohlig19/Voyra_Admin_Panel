@@ -38,6 +38,10 @@ const ShortTypeManagement = () => {
   useEffect(() => {
     if (selectedService) {
       fetchShotTypes()
+    } else {
+      // Clear shot types when no project is selected
+      setShotTypes([])
+      setTotalItems(0)
     }
   }, [currentPage, selectedService])
 
@@ -661,16 +665,42 @@ const ShortTypeManagement = () => {
                 (shotTypes[0].title || shotTypes[0].subtitle)
               ) && (
                 <button
-                  onClick={() => setIsHeadingModalOpen(true)}
-                  className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
+                  onClick={() => {
+                    if (!selectedService) {
+                      addToast({
+                        type: 'error',
+                        title: 'Error',
+                        description: 'Please select project name first',
+                        duration: 3000,
+                      })
+                      return
+                    }
+                    setIsHeadingModalOpen(true)
+                  }}
+                  className={`flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95 ${
+                    !selectedService ? 'cursor-not-allowed opacity-50' : ''
+                  }`}
                 >
                   <FaPlus className="text-sm" />
                   Add Heading
                 </button>
               )}
               <button
-                onClick={() => setIsAddModalOpen(true)}
-                className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
+                onClick={() => {
+                  if (!selectedService) {
+                    addToast({
+                      type: 'error',
+                      title: 'Error',
+                      description: 'Please select project name first',
+                      duration: 3000,
+                    })
+                    return
+                  }
+                  setIsAddModalOpen(true)
+                }}
+                className={`flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95 ${
+                  !selectedService ? 'cursor-not-allowed opacity-50' : ''
+                }`}
               >
                 <FaPlus className="text-sm" />
                 Add Shot Type
