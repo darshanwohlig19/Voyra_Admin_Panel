@@ -22,28 +22,23 @@ const ParameterElementCard = ({ element, onEdit, onDelete }) => {
         </button>
       </div>
 
-      {/* Image */}
-      <div className="h-64 w-full overflow-hidden bg-gray-100">
-        {element.image ? (
+      {/* Image - Only show if image exists */}
+      {element.image && (
+        <div className="h-64 w-full overflow-hidden bg-gray-100">
           <img
             src={element.image}
             alt={element.name}
             className="h-full w-full object-cover transition-transform duration-300 hover:scale-[1.02]"
           />
-        ) : (
-          <div className="flex h-full w-full items-center justify-center">
-            <div className="text-center">
-              <FaImage className="mx-auto text-5xl text-gray-300" />
-              <p className="mt-3 text-xs font-medium text-gray-400">
-                No image available
-              </p>
-            </div>
-          </div>
-        )}
-      </div>
+        </div>
+      )}
 
       {/* Info Section */}
-      <div className="border-t border-gray-100 bg-white px-5 py-4">
+      <div
+        className={`bg-white px-5 py-4 ${
+          element.image ? 'border-t border-gray-100' : ''
+        }`}
+      >
         <h2 className="text-xl font-bold text-gray-900">{element.name}</h2>
         {element.prompt && (
           <p className="mt-2 text-sm leading-relaxed text-gray-600">

@@ -78,18 +78,6 @@ const AddElementModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
       return
     }
 
-    // For edit mode, check if there's either a new image or existing image
-    // For add mode, require a new image
-    if (!selectedImage && !imagePreview) {
-      addToast({
-        type: 'error',
-        title: 'Validation Error',
-        description: 'Please select an image',
-        duration: 3000,
-      })
-      return
-    }
-
     // Submit data
     onSubmit({
       name: elementName.trim(),
@@ -175,7 +163,7 @@ const AddElementModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
             {/* Image Upload */}
             <div>
               <label className="mb-2 block text-base font-semibold text-gray-700">
-                Image Upload <span className="text-red-500">*</span>
+                Image Upload
               </label>
               <div
                 {...getRootProps()}
