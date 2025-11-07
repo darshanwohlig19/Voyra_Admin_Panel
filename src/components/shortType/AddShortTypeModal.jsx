@@ -132,11 +132,11 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
           <div className="flex items-center justify-between">
             <div>
               <h2 className="text-base font-bold text-gray-900">
-                {editData ? 'Edit Shot Type' : 'Add New Shot Type'}
+                {editData ? 'Edit Shot Type Item' : 'Add New Shot Type'}
               </h2>
               <p className="mt-0.5 text-xs text-gray-500">
                 {editData
-                  ? 'Update shot type configuration'
+                  ? 'Update the details for this specific shot type item'
                   : 'Configure a new shot type option'}
               </p>
             </div>
@@ -200,7 +200,7 @@ const AddShortTypeModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
               onClick={handleSubmit}
               className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40"
             >
-              {editData ? 'Update Shot Type' : 'Create Shot Type'}
+              {editData ? 'Update Item' : 'Create Shot Type'}
             </button>
           </div>
         </div>

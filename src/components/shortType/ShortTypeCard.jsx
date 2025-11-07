@@ -7,7 +7,7 @@ const ShortTypeCard = ({ shotType, item, onEdit, onDelete }) => {
       {/* Action Buttons */}
       <div className="absolute right-4 top-4 z-10 flex gap-2">
         <button
-          onClick={() => onEdit(shotType)}
+          onClick={() => onEdit(shotType, item)}
           className="flex h-9 w-9 items-center justify-center rounded-lg border border-gray-300 bg-white/95 text-gray-700 shadow-lg backdrop-blur-sm transition-all hover:border-blue-500 hover:bg-blue-50 hover:text-blue-700 hover:shadow-xl"
           title="Edit Shot Type"
         >

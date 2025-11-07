@@ -350,7 +350,7 @@ const Projects = () => {
         addToast({
           type: 'success',
           title: 'Success',
-          description: `Service "${serviceType}" updated successfully`,
+          description: `Project "${serviceType}" updated successfully`,
           duration: 3000,
         })
 

@@ -294,30 +294,56 @@ const ShortTypeManagement = () => {
       const existingTitle = selectedShotType?.title || ''
       const existingSubtitle = selectedShotType?.subtitle || ''
 
-      // Prepare metadata with title, subtitle, and items from form data
-      const metadata = {
-        title: existingTitle,
-        subtitle: existingSubtitle,
-        items: formData.items.map((item) => {
-          const imageKey = generateImageKey(item.name)
+      // Get the edited item from formData (should be only 1 item)
+      const editedItem = formData.items[0]
+
+      // Get all existing items from selectedShotType
+      const existingItems = selectedShotType?.items || []
+
+      // Find the index of the item being edited (from editData)
+      const editingItemId = editData?.items?.[0]?._id
+      const editingItemIndex = existingItems.findIndex(
+        (item) => item._id === editingItemId
+      )
+
+      // Update only the specific item, keep all others unchanged
+      const updatedItems = existingItems.map((item, index) => {
+        if (index === editingItemIndex) {
+          // This is the item being edited - update it
+          const imageKey = generateImageKey(editedItem.name)
+          return {
+            name: editedItem.name,
+            typesubtitle: editedItem.typesubtitle || '',
+            imageKey: imageKey,
+            // If there's an existing image and no new file, keep the existing image URL
+            ...(editedItem.image && !editedItem.file
+              ? { image: editedItem.image }
+              : {}),
+          }
+        } else {
+          // Keep other items unchanged, preserving their imageKeys
           return {
             name: item.name,
             typesubtitle: item.typesubtitle || '',
-            imageKey: imageKey,
-            // If there's an existing image and no new file, keep the existing image URL
-            ...(item.image && !item.file ? { image: item.image } : {}),
+            imageKey: generateImageKey(item.name),
+            ...(item.image ? { image: item.image } : {}),
           }
-        }),
+        }
+      })
+
+      // Prepare metadata with title, subtitle, and all items (with the edited one updated)
+      const metadata = {
+        title: existingTitle,
+        subtitle: existingSubtitle,
+        items: updatedItems,
       }
       submitData.append('metadata', JSON.stringify(metadata))
 
-      // Append new image files with their corresponding imageKeys
-      formData.items.forEach((item) => {
-        if (item.file) {
-          const imageKey = generateImageKey(item.name)
-          submitData.append(imageKey, item.file)
-        }
-      })
+      // Append new image file if the edited item has a new file
+      if (editedItem.file) {
+        const imageKey = generateImageKey(editedItem.name)
+        submitData.append(imageKey, editedItem.file)
+      }
 
       // Add projectTypeId as query parameter
       const apiUrl = selectedService
@@ -335,7 +361,7 @@ const ShortTypeManagement = () => {
         addToast({
           type: 'success',
           title: 'Success',
-          description: 'Shot type updated successfully!',
+          description: 'Shot type item updated successfully!',
           duration: 3000,
         })
         setIsEditModalOpen(false)
@@ -420,9 +446,13 @@ const ShortTypeManagement = () => {
     }
   }
 
-  const handleEdit = (shotType) => {
+  const handleEdit = (shotType, item) => {
     setSelectedShotType(shotType)
-    setEditData(shotType)
+    // Create editData with only the specific item being edited
+    setEditData({
+      ...shotType,
+      items: [item], // Only include the specific item to edit
+    })
     setIsEditModalOpen(true)
   }
 
