@@ -1,5 +1,7 @@
 import React, { useState, useEffect } from 'react'
 import { FaPlus, FaTimes, FaTrash } from 'react-icons/fa'
+import ApiCaller from '../../common/services/apiServices'
+import config from '../../common/config/apiConfig'
 
 const AddProjectModal = ({
   isOpen,
@@ -8,6 +10,7 @@ const AddProjectModal = ({
   editData = null,
   addToast,
 }) => {
+  const { apiCall } = ApiCaller()
   const [serviceType, setServiceType] = useState('')
   const [metadataFields, setMetadataFields] = useState([])
   const [newFieldName, setNewFieldName] = useState('')
@@ -25,17 +28,26 @@ const AddProjectModal = ({
 
         // Check if data is in new nested format
         if (schemaData.category && Array.isArray(schemaData.category)) {
-          // New format: { category: [{ name: "Fashion", subcategory: [{ name: "Shoes" }] }] }
+          // New format: { category: [{ name: "Fashion", subcategory: [{ name: "Shoes", _id: "..." }] }] }
           const fields = schemaData.category.map((cat) => {
             const subcategoryValues = cat.subcategory
-              ? cat.subcategory.map((sub) => sub.name || sub)
+              ? cat.subcategory.map((sub) => {
+                  // Preserve _id if it exists
+                  if (typeof sub === 'object' && sub.name) {
+                    return { name: sub.name, _id: sub._id }
+                  }
+                  return { name: sub }
+                })
               : []
 
             return {
               id: Date.now() + Math.random(),
               key: cat.name,
               type: 'array',
-              value: subcategoryValues.length > 0 ? subcategoryValues : [''],
+              value:
+                subcategoryValues.length > 0
+                  ? subcategoryValues
+                  : [{ name: '' }],
             }
           })
           setMetadataFields(fields)
@@ -45,7 +57,9 @@ const AddProjectModal = ({
             id: Date.now() + Math.random(),
             key: key,
             type: 'array',
-            value: Array.isArray(value) ? value : [value],
+            value: Array.isArray(value)
+              ? value.map((v) => ({ name: v }))
+              : [{ name: value }],
           }))
           setMetadataFields(fields)
         }
@@ -96,7 +110,7 @@ const AddProjectModal = ({
       id: Date.now(),
       key: newFieldName.trim(),
       type: 'array',
-      value: [''], // Start with 1 empty value
+      value: [{ name: '' }], // Start with 1 empty value as object
     }
 
     setMetadataFields([...metadataFields, newField])
@@ -110,7 +124,9 @@ const AddProjectModal = ({
   const addArrayValue = (fieldId) => {
     setMetadataFields(
       metadataFields.map((field) =>
-        field.id === fieldId ? { ...field, value: [...field.value, ''] } : field
+        field.id === fieldId
+          ? { ...field, value: [...field.value, { name: '' }] }
+          : field
       )
     )
   }
@@ -120,7 +136,8 @@ const AddProjectModal = ({
       metadataFields.map((field) => {
         if (field.id === fieldId) {
           const newValue = [...field.value]
-          newValue[index] = value
+          // Update the name property while preserving _id if it exists
+          newValue[index] = { ...newValue[index], name: value }
           return { ...field, value: newValue }
         }
         return field
@@ -128,7 +145,61 @@ const AddProjectModal = ({
     )
   }
 
-  const removeArrayValue = (fieldId, index) => {
+  const removeArrayValue = async (fieldId, index) => {
+    const field = metadataFields.find((f) => f.id === fieldId)
+    const subcategory = field?.value[index]
+
+    // If in edit mode and subcategory has _id, call DELETE API
+    if (editData && subcategory?._id && editData._id) {
+      console.log('Deleting subcategory:', {
+        projectId: editData._id,
+        subcategoryId: subcategory._id,
+        subcategoryName: subcategory.name,
+      })
+
+      try {
+        const response = await apiCall(
+          'delete',
+          `${config.DELETE_SERVICE_TYPE}/${editData._id}`,
+          { elementId: subcategory._id }
+        )
+
+        if (response.status === 200 || response.status === 204) {
+          if (addToast) {
+            addToast({
+              type: 'success',
+              title: 'Success',
+              description: 'Subcategory deleted successfully',
+              duration: 3000,
+            })
+          }
+        } else {
+          if (addToast) {
+            addToast({
+              type: 'error',
+              title: 'Error',
+              description:
+                response?.data?.msg || 'Failed to delete subcategory',
+              duration: 3000,
+            })
+          }
+          return // Don't remove from UI if API call failed
+        }
+      } catch (error) {
+        console.error('Error deleting subcategory:', error)
+        if (addToast) {
+          addToast({
+            type: 'error',
+            title: 'Error',
+            description: 'Failed to delete subcategory',
+            duration: 3000,
+          })
+        }
+        return // Don't remove from UI if API call failed
+      }
+    }
+
+    // Remove from local state
     setMetadataFields(
       metadataFields
         .map((field) => {
@@ -179,13 +250,15 @@ const AddProjectModal = ({
     const categories = []
 
     metadataFields.forEach((field) => {
-      // Filter out empty strings from array
-      const filteredValues = field.value.filter((v) => v.trim() !== '')
+      // Filter out empty strings from array (now working with objects)
+      const filteredValues = field.value.filter(
+        (v) => v.name && v.name.trim() !== ''
+      )
 
       if (filteredValues.length > 0 && field.key.trim() !== '') {
         // Create subcategory array with name objects
         const subcategories = filteredValues.map((value) => ({
-          name: value,
+          name: value.name.trim(),
         }))
 
         // Add category with its subcategories
@@ -401,7 +474,7 @@ const AddProjectModal = ({
                             {/* Subcategory Input */}
                             <input
                               type="text"
-                              value={val}
+                              value={val.name || ''}
                               onChange={(e) =>
                                 updateArrayValue(
                                   field.id,
@@ -427,7 +500,7 @@ const AddProjectModal = ({
                             {/* Additional Rows - Subcategory only */}
                             <input
                               type="text"
-                              value={val}
+                              value={val.name || ''}
                               onChange={(e) =>
                                 updateArrayValue(
                                   field.id,
