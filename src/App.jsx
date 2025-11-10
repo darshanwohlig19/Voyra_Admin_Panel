@@ -4,6 +4,7 @@ import 'assets/css/Plugins.css'
 import { useState, useEffect } from 'react'
 import ScrollToTop from 'common/ScrollToTop'
 import SignInGuard from 'common/guard/signInGuard'
+import AuthGuard from 'common/guard/authGuard'
 import AfterLoginLayout from 'layouts/afterLogin'
 import { useTheme } from './contexts/ThemeContext'
 import RoutesComponent from './routes'
@@ -53,7 +54,13 @@ const App = () => {
         <Route
           path="/"
           element={
-            <AfterLoginLayout setMini={setMini} mini={mini} theme={themeApp} />
+            <AuthGuard>
+              <AfterLoginLayout
+                setMini={setMini}
+                mini={mini}
+                theme={themeApp}
+              />
+            </AuthGuard>
           }
         >
           {routes &&
