@@ -305,6 +305,22 @@ const AddProjectModal = ({
     setIsGender(false)
   }
 
+  const handleGenderToggle = () => {
+    const newGenderState = !isGender
+    setIsGender(newGenderState)
+
+    if (addToast) {
+      addToast({
+        type: newGenderState ? 'success' : 'error',
+        title: 'Gender Field',
+        description: newGenderState
+          ? 'Gender field has been enabled'
+          : 'Gender field has been disabled',
+        duration: 3000,
+      })
+    }
+  }
+
   const handleCancel = () => {
     setServiceType('')
     setMetadataFields([])
@@ -349,7 +365,7 @@ const AddProjectModal = ({
               <div className="flex h-[42px] items-center justify-start rounded-lg   bg-white ">
                 <button
                   type="button"
-                  onClick={() => setIsGender(!isGender)}
+                  onClick={handleGenderToggle}
                   className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors ${
                     isGender ? 'bg-blue-600' : 'bg-gray-300'
                   }`}
