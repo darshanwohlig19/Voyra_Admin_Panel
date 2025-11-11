@@ -21,6 +21,7 @@ const Projects = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [selectedService, setSelectedService] = useState(null)
   const [editData, setEditData] = useState(null)
+  const [selectedCategories, setSelectedCategories] = useState({}) // Track selected category for each row
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
   const { addToast } = useToaster()
@@ -441,7 +442,7 @@ const Projects = () => {
       key: 'category',
       label: 'Categories',
       width: '180px',
-      render: (_, value) => {
+      render: (row, value) => {
         if (!value || !Array.isArray(value) || value.length === 0) {
           return <span className="text-sm text-gray-500">N/A</span>
         }
@@ -452,9 +453,18 @@ const Projects = () => {
           return <span className="text-sm text-gray-500">N/A</span>
         }
 
+        // Get selected category for this row, default to first category
+        const selectedCategory = selectedCategories[row._id] || categories[0]
+
         return (
           <select
-            defaultValue={categories[0]}
+            value={selectedCategory}
+            onChange={(e) => {
+              setSelectedCategories({
+                ...selectedCategories,
+                [row._id]: e.target.value,
+              })
+            }}
             className="w-full rounded border border-gray-300 bg-white px-2 py-1 text-sm text-gray-700 focus:border-blue-500 focus:outline-none focus:ring-1 focus:ring-blue-200"
           >
             {categories.map((cat, idx) => (
@@ -470,24 +480,36 @@ const Projects = () => {
       key: 'category',
       label: 'Subcategories',
       width: '180px',
-      render: (_, value) => {
+      render: (row, value) => {
         if (!value || !Array.isArray(value) || value.length === 0) {
           return <span className="text-sm text-gray-500">N/A</span>
         }
 
+        // Get the selected category for this row
+        const categories = value.map((cat) => cat.name).filter(Boolean)
+        const selectedCategory = selectedCategories[row._id] || categories[0]
+
+        // Find the selected category object
+        const selectedCategoryObj = value.find(
+          (cat) => cat.name === selectedCategory
+        )
+
+        // Get subcategories only from the selected category
         const subcategories = []
-        value.forEach((cat) => {
-          if (cat.subcategory && Array.isArray(cat.subcategory)) {
-            cat.subcategory.forEach((sub) => {
-              if (sub.name) {
-                subcategories.push(sub.name)
-              }
-            })
-          }
-        })
+        if (
+          selectedCategoryObj &&
+          selectedCategoryObj.subcategory &&
+          Array.isArray(selectedCategoryObj.subcategory)
+        ) {
+          selectedCategoryObj.subcategory.forEach((sub) => {
+            if (sub.name) {
+              subcategories.push(sub.name)
+            }
+          })
+        }
 
         if (subcategories.length === 0) {
-          return <span className="text-sm text-gray-500">N/A</span>
+          return <span className="text-sm text-gray-500">No subcategories</span>
         }
 
         return (
