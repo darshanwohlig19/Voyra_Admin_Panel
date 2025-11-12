@@ -53,7 +53,7 @@ export function SidebarLinks(props) {
       return true
     }
 
-    // Exact match check to avoid partial matching (e.g., short-type vs short-type-2)
+    // Exact match check to avoid partial matching (e.g., shot-type vs shot-type-2)
     const pathSegments = pathname.split('/').filter(Boolean)
     const routeSegments = routeName.split('/').filter(Boolean)
 

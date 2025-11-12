@@ -96,8 +96,8 @@ const RoutesComponent = () => {
         isVisible: isSuperAdmin, // Only visible to superadmin
       },
       {
-        name: 'Short Type',
-        path: 'short-type',
+        name: 'Shot Type',
+        path: 'shot-type',
         layout: '/afterLogin',
         icon: <MdMovie className="h-6 w-6" />,
         component: <ShortType />,
