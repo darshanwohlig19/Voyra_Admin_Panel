@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { MdClose } from 'react-icons/md'
+import { FaTimes } from 'react-icons/fa'
+import { Plus } from 'lucide-react'
 import { useToaster } from '../../common/Toaster'
 
 const AddCategoryModal = ({ isOpen, onClose, onSubmit }) => {
@@ -40,63 +41,111 @@ const AddCategoryModal = ({ isOpen, onClose, onSubmit }) => {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="relative w-full max-w-md overflow-hidden rounded-xl bg-white shadow-2xl">
-        {/* Modal Header */}
-        <div className="border-b border-gray-200 bg-white px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-bold text-gray-900">
-                Add New Category
-              </h2>
-              <p className="mt-0.5 text-xs text-gray-500">
-                Create a new category for parameters
-              </p>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      aria-describedby="modal-description"
+    >
+      <div
+        className="flex max-h-[90vh] w-full max-w-4xl flex-col rounded-3xl bg-white shadow-xl sm:w-[1000px] sm:max-w-[95vw]"
+        role="document"
+      >
+        {/* Header */}
+        <div className="flex-shrink-0 rounded-t-3xl border-b border-gray-300 bg-white px-8 py-6">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10  items-center justify-center rounded-xl bg-indigo">
+                <Plus className="text-white" size={18} />
+              </div>
+              <div>
+                <h2
+                  id="modal-title"
+                  className="text-xl font-bold text-gray-900"
+                >
+                  Add New Category
+                </h2>
+                <p
+                  id="modal-description"
+                  className="mt-1 text-sm text-gray-600"
+                >
+                  Create a new parameter category to organize your elements
+                </p>
+              </div>
             </div>
             <button
               onClick={handleClose}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-all hover:bg-red-50 hover:text-red-600"
+              className="group flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-gray-100"
+              title="Close modal"
             >
-              <MdClose className="text-xl" />
+              <FaTimes
+                size={14}
+                className="text-gray-500 group-hover:text-gray-700"
+              />
             </button>
           </div>
         </div>
 
-        {/* Modal Body */}
-        <div className="bg-white p-6">
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto bg-white p-6">
           <form onSubmit={handleSubmit}>
-            <div>
-              <label className="mb-2 block text-sm font-semibold text-gray-700">
-                Category Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={categoryName}
-                onChange={(e) => setCategoryName(e.target.value)}
-                placeholder="e.g., Part of Model to Feature"
-                className="block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                required
-              />
+            {/* Step 1: Category Configuration */}
+            <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-5">
+              <div className="mb-4 flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-600 text-sm font-bold text-white">
+                  1
+                </span>
+                <h3 className="text-lg font-bold text-gray-800">
+                  Category Details
+                </h3>
+              </div>
+              <p className="mb-6 text-sm text-gray-600">
+                📁 Create a new category to group related parameter elements
+                together
+              </p>
+
+              <div>
+                <div className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700">
+                  Category Name
+                  <span className="text-xs text-red-500">*Required</span>
+                </div>
+                <input
+                  type="text"
+                  value={categoryName}
+                  onChange={(e) => setCategoryName(e.target.value)}
+                  placeholder="e.g., Shot Angles, Lighting Styles, Model Poses, Product Features"
+                  className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base transition-colors focus:border-gray-500 focus:outline-none"
+                  required
+                />
+                <p className="mt-2 text-xs text-gray-500">
+                  💡 Choose a clear, descriptive name that represents the type
+                  of elements this category will contain
+                </p>
+              </div>
             </div>
           </form>
         </div>
 
-        {/* Modal Footer */}
-        <div className="flex items-center justify-end border-t border-gray-200 bg-gradient-to-r from-gray-50 to-white px-6 py-4">
+        {/* Footer */}
+        <div className="flex items-center justify-between rounded-b-3xl border-t border-gray-200 bg-gray-50 px-6 py-4">
+          <div className="text-sm text-gray-600">
+            💡 Category name is required and should be descriptive and unique
+          </div>
           <div className="flex gap-3">
             <button
               type="button"
               onClick={handleClose}
-              className="rounded-lg border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-400 hover:bg-gray-50"
+              className="rounded-lg border border-gray-300 px-6 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-100"
             >
               Cancel
             </button>
             <button
               type="submit"
               onClick={handleSubmit}
-              className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40"
+              className="flex items-center gap-2 rounded-lg bg-indigo px-8 py-3 font-medium text-white transition-colors hover:bg-indigo"
             >
-              Save
+              Create Category
             </button>
           </div>
         </div>

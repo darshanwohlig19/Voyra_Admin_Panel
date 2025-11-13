@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FaPlus, FaImage, FaEdit } from 'react-icons/fa'
+import { FaPlus, FaImage, FaEdit, FaTrash, FaSearch } from 'react-icons/fa'
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
 import { useSpinner } from '../../common/SpinnerLoader'
@@ -55,13 +55,11 @@ const ShortTypeManagement = () => {
       const response = await apiCall('get', config.GET_SERVICE_TYPES)
 
       if (response.status === 200 && response.data) {
-        // Handle both response formats: new format with status_code or old format with success
         const responseData = response.data.data || response.data
         const isSuccessful =
           response.data.status_code === 200 || response.data.success === true
 
         if (isSuccessful && responseData) {
-          // Handle both array and single object responses
           let data = responseData
           if (Array.isArray(responseData) && responseData.length > 0) {
             data = responseData[0]
@@ -72,17 +70,14 @@ const ShortTypeManagement = () => {
               _id: project._id,
               name: project.name,
             }))
-            console.log('Project Items extracted:', projects)
             setServiceItems(projects)
           }
         }
       } else if (response?.status === 404) {
-        // No projects found - set empty array
         setServiceItems([])
       }
     } catch (error) {
       console.error('Error fetching projects:', error)
-      // Don't show error toast, just log it
       setServiceItems([])
     }
   }
@@ -90,24 +85,19 @@ const ShortTypeManagement = () => {
   const fetchShotTypes = async () => {
     showSpinner()
     try {
-      // Build API URL with projectTypeId if selected
       const apiUrl = selectedService
         ? `${config.GET_SHOT_TYPE_DATA}?projectTypeId=${selectedService}`
         : config.GET_SHOT_TYPE_DATA
 
-      // Try GET_SHOT_TYPE_DATA endpoint
       const response = await apiCall('get', apiUrl)
 
-      // Check if request was successful
       if (!response || response.status !== 200) {
-        // If 404, it means no data exists yet - show empty state without error
         if (response?.status === 404 || response?.data?.code === 4004) {
           setShotTypes([])
           setTotalItems(0)
           return
         }
 
-        // For other errors, show error toast
         addToast({
           type: 'error',
           title: 'Error',
@@ -119,37 +109,26 @@ const ShortTypeManagement = () => {
         return
       }
 
-      // Handle different possible response structures
       let apiData = null
 
-      // Check if response has the structure: { code, msg, data, error }
       if (
         response?.data?.code === 2000 ||
         response?.data?.status_code === 200
       ) {
         apiData = response.data.data
-      }
-      // Check if response.data itself is the data
-      else if (response?.data?._id) {
+      } else if (response?.data?._id) {
         apiData = response.data
-      }
-      // Check if it's an array of shot types
-      else if (Array.isArray(response?.data)) {
-        // If it's an array, take the first one or handle multiple
+      } else if (Array.isArray(response?.data)) {
         apiData = response.data[0]
       }
 
-      // Check if data is null or empty
       if (!apiData) {
-        // Show empty state - no data available yet
         setShotTypes([])
         setTotalItems(0)
         return
       }
 
-      // Check if the data has the expected structure
       if (apiData._id) {
-        // Transform the API response to match the expected format
         const transformedData = {
           _id: apiData._id,
           title: apiData.title || '',
@@ -159,11 +138,7 @@ const ShortTypeManagement = () => {
           updatedAt: apiData.updatedAt,
         }
 
-        console.log('Fetched shot type data:', transformedData)
-
-        // Wrap in array since the component expects an array of shot types
         setShotTypes([transformedData])
-        // Set total items based on the number of items in the array, not the shot type count
         setTotalItems(transformedData.items?.length || 0)
       } else {
         setShotTypes([])
@@ -185,7 +160,6 @@ const ShortTypeManagement = () => {
   const handleAddShotType = async (formData) => {
     showSpinner()
     try {
-      // Check if project is selected
       if (!selectedService) {
         addToast({
           type: 'error',
@@ -199,7 +173,6 @@ const ShortTypeManagement = () => {
 
       const submitData = new FormData()
 
-      // Generate imageKey from item name (convert to camelCase and remove spaces)
       const generateImageKey = (name) => {
         return name
           .trim()
@@ -208,12 +181,10 @@ const ShortTypeManagement = () => {
           .replace(/^(.)/, (char) => char.toLowerCase())
       }
 
-      // Get existing title and subtitle from shotTypes, or use empty strings
       const existingTitle = shotTypes.length > 0 ? shotTypes[0].title || '' : ''
       const existingSubtitle =
         shotTypes.length > 0 ? shotTypes[0].subtitle || '' : ''
 
-      // Prepare metadata with title, subtitle, and items from form data
       const metadata = {
         title: existingTitle,
         subtitle: existingSubtitle,
@@ -225,7 +196,6 @@ const ShortTypeManagement = () => {
       }
       submitData.append('metadata', JSON.stringify(metadata))
 
-      // Append image files with their corresponding imageKeys
       formData.items.forEach((item) => {
         if (item.file) {
           const imageKey = generateImageKey(item.name)
@@ -233,7 +203,6 @@ const ShortTypeManagement = () => {
         }
       })
 
-      // Add projectTypeId as query parameter
       const apiUrl = `${config.ADD_SHOT_TYPE}?projectTypeId=${selectedService}`
 
       const response = await apiCall('post', apiUrl, submitData, {
@@ -250,7 +219,7 @@ const ShortTypeManagement = () => {
           duration: 3000,
         })
         setIsAddModalOpen(false)
-        fetchShotTypes() // Refresh list
+        fetchShotTypes()
       } else {
         addToast({
           type: 'error',
@@ -281,7 +250,6 @@ const ShortTypeManagement = () => {
     try {
       const submitData = new FormData()
 
-      // Generate imageKey from item name (convert to camelCase and remove spaces)
       const generateImageKey = (name) => {
         return name
           .trim()
@@ -290,38 +258,29 @@ const ShortTypeManagement = () => {
           .replace(/^(.)/, (char) => char.toLowerCase())
       }
 
-      // Preserve existing title and subtitle from selectedShotType
       const existingTitle = selectedShotType?.title || ''
       const existingSubtitle = selectedShotType?.subtitle || ''
 
-      // Get the edited item from formData (should be only 1 item)
       const editedItem = formData.items[0]
-
-      // Get all existing items from selectedShotType
       const existingItems = selectedShotType?.items || []
 
-      // Find the index of the item being edited (from editData)
       const editingItemId = editData?.items?.[0]?._id
       const editingItemIndex = existingItems.findIndex(
         (item) => item._id === editingItemId
       )
 
-      // Update only the specific item, keep all others unchanged
       const updatedItems = existingItems.map((item, index) => {
         if (index === editingItemIndex) {
-          // This is the item being edited - update it
           const imageKey = generateImageKey(editedItem.name)
           return {
             name: editedItem.name,
             typesubtitle: editedItem.typesubtitle || '',
             imageKey: imageKey,
-            // If there's an existing image and no new file, keep the existing image URL
             ...(editedItem.image && !editedItem.file
               ? { image: editedItem.image }
               : {}),
           }
         } else {
-          // Keep other items unchanged, preserving their imageKeys
           return {
             name: item.name,
             typesubtitle: item.typesubtitle || '',
@@ -331,7 +290,6 @@ const ShortTypeManagement = () => {
         }
       })
 
-      // Prepare metadata with title, subtitle, and all items (with the edited one updated)
       const metadata = {
         title: existingTitle,
         subtitle: existingSubtitle,
@@ -339,13 +297,11 @@ const ShortTypeManagement = () => {
       }
       submitData.append('metadata', JSON.stringify(metadata))
 
-      // Append new image file if the edited item has a new file
       if (editedItem.file) {
         const imageKey = generateImageKey(editedItem.name)
         submitData.append(imageKey, editedItem.file)
       }
 
-      // Add projectTypeId as query parameter
       const apiUrl = selectedService
         ? `${config.UPDATE_SHOT_TYPE}/${selectedShotType._id}?projectTypeId=${selectedService}`
         : `${config.UPDATE_SHOT_TYPE}/${selectedShotType._id}`
@@ -356,7 +312,6 @@ const ShortTypeManagement = () => {
         },
       })
 
-      // Check if status is 200 or 201 (successful)
       if (response.status === 200 || response.status === 201) {
         addToast({
           type: 'success',
@@ -367,7 +322,7 @@ const ShortTypeManagement = () => {
         setIsEditModalOpen(false)
         setEditData(null)
         setSelectedShotType(null)
-        fetchShotTypes() // Refresh list
+        fetchShotTypes()
       } else {
         addToast({
           type: 'error',
@@ -402,15 +357,12 @@ const ShortTypeManagement = () => {
   const confirmDelete = async () => {
     showSpinner()
     try {
-      // Build API URL with projectTypeId if selected
       const apiUrl = selectedService
         ? `${config.DELETE_SHOT_TYPE}/${selectedItem._id}?projectTypeId=${selectedService}`
         : `${config.DELETE_SHOT_TYPE}/${selectedItem._id}`
 
-      // Use the item's _id from the items array for deletion
       const response = await apiCall('delete', apiUrl)
 
-      // Check if status is 200 (successful)
       if (response.status === 200) {
         addToast({
           type: 'success',
@@ -421,7 +373,7 @@ const ShortTypeManagement = () => {
         setIsDeleteModalOpen(false)
         setSelectedShotType(null)
         setSelectedItem(null)
-        fetchShotTypes() // Refresh list
+        fetchShotTypes()
       } else {
         addToast({
           type: 'error',
@@ -448,10 +400,9 @@ const ShortTypeManagement = () => {
 
   const handleEdit = (shotType, item) => {
     setSelectedShotType(shotType)
-    // Create editData with only the specific item being edited
     setEditData({
       ...shotType,
-      items: [item], // Only include the specific item to edit
+      items: [item],
     })
     setIsEditModalOpen(true)
   }
@@ -461,7 +412,6 @@ const ShortTypeManagement = () => {
     try {
       const submitData = new FormData()
 
-      // Generate imageKey from item name (convert to camelCase and remove spaces)
       const generateImageKey = (name) => {
         return name
           .trim()
@@ -470,11 +420,9 @@ const ShortTypeManagement = () => {
           .replace(/^(.)/, (char) => char.toLowerCase())
       }
 
-      // Get existing items from shotTypes, or use empty array
       const existingItems =
         shotTypes.length > 0 && shotTypes[0].items ? shotTypes[0].items : []
 
-      // Prepare metadata with new title and subtitle, and existing items
       const metadata = {
         title: formData.title,
         subtitle: formData.subtitle,
@@ -486,15 +434,12 @@ const ShortTypeManagement = () => {
         })),
       }
 
-      console.log('Sending heading metadata:', metadata)
       submitData.append('metadata', JSON.stringify(metadata))
 
-      // Check if we're updating existing data or creating new
       const shotTypeId = shotTypes.length > 0 ? shotTypes[0]._id : null
 
       let response
       if (shotTypeId) {
-        // Update existing shot type
         const apiUrl = selectedService
           ? `${config.UPDATE_SHOT_TYPE}/${shotTypeId}?projectTypeId=${selectedService}`
           : `${config.UPDATE_SHOT_TYPE}/${shotTypeId}`
@@ -505,7 +450,6 @@ const ShortTypeManagement = () => {
           },
         })
       } else {
-        // Create new shot type with just title and subtitle
         const apiUrl = selectedService
           ? `${config.ADD_SHOT_TYPE}?projectTypeId=${selectedService}`
           : config.ADD_SHOT_TYPE
@@ -517,8 +461,6 @@ const ShortTypeManagement = () => {
         })
       }
 
-      console.log('Heading update response:', response)
-
       if (response.status === 200 || response.status === 201) {
         addToast({
           type: 'success',
@@ -527,7 +469,7 @@ const ShortTypeManagement = () => {
           duration: 3000,
         })
         setIsHeadingModalOpen(false)
-        await fetchShotTypes() // Refresh list
+        await fetchShotTypes()
       } else {
         addToast({
           type: 'error',
@@ -580,10 +522,10 @@ const ShortTypeManagement = () => {
         <button
           key={i}
           onClick={() => handlePageChange(i)}
-          className={`flex h-9 w-9 items-center justify-center rounded-lg text-sm font-semibold transition-all ${
+          className={`relative h-9 w-9 rounded-lg text-sm font-medium transition-all duration-200 ${
             currentPage === i
-              ? 'bg-gradient-to-r from-blue-600 to-blue-700 text-white shadow-md shadow-blue-500/30'
-              : 'border border-gray-300 bg-white text-gray-700 shadow-sm hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700'
+              ? 'bg-gray-900 text-white shadow-lg shadow-gray-900/25'
+              : 'text-gray-600 hover:bg-gray-100 hover:text-gray-900'
           }`}
         >
           {i}
@@ -592,104 +534,117 @@ const ShortTypeManagement = () => {
     }
 
     return (
-      <div className="mt-6 rounded-xl border border-gray-200 bg-white p-5 shadow-sm">
-        <div className="flex flex-col items-center justify-between gap-4 sm:flex-row">
-          <div className="flex items-center gap-3 text-sm">
-            <span className="text-gray-600">Showing</span>
-            <span className="rounded-md bg-blue-50 px-2.5 py-1 font-semibold text-blue-700">
-              {startIndex} - {endIndex}
-            </span>
-            <span className="text-gray-600">of</span>
-            <span className="font-bold text-gray-900">{totalItems}</span>
-          </div>
-          <div className="flex items-center gap-2">
-            <button
-              onClick={() => handlePageChange(currentPage - 1)}
-              disabled={currentPage === 1}
-              className="flex h-9 items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-gray-300 disabled:hover:bg-white disabled:hover:text-gray-700"
+      <div className="mt-8 flex items-center justify-between border-t border-gray-200 pt-6">
+        <div className="flex items-center gap-2 text-sm text-gray-600">
+          <span>Showing</span>
+          <span className="font-medium text-gray-900">
+            {startIndex}-{endIndex}
+          </span>
+          <span>of</span>
+          <span className="font-medium text-gray-900">{totalItems}</span>
+          <span>items</span>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => handlePageChange(currentPage - 1)}
+            disabled={currentPage === 1}
+            className="flex h-9 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white"
+          >
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M15 19l-7-7 7-7"
-                />
-              </svg>
-              Prev
-            </button>
-            <div className="flex items-center gap-1">{pages}</div>
-            <button
-              onClick={() => handlePageChange(currentPage + 1)}
-              disabled={currentPage === totalPages}
-              className="flex h-9 items-center gap-2 rounded-lg border border-gray-300 bg-white px-4 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-blue-300 hover:bg-blue-50 hover:text-blue-700 disabled:cursor-not-allowed disabled:opacity-50 disabled:hover:border-gray-300 disabled:hover:bg-white disabled:hover:text-gray-700"
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M15 19l-7-7 7-7"
+              />
+            </svg>
+            Previous
+          </button>
+          <div className="flex items-center gap-1">{pages}</div>
+          <button
+            onClick={() => handlePageChange(currentPage + 1)}
+            disabled={currentPage === totalPages}
+            className="flex h-9 items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-white"
+          >
+            Next
+            <svg
+              className="h-4 w-4"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke="currentColor"
             >
-              Next
-              <svg
-                className="h-4 w-4"
-                fill="none"
-                viewBox="0 0 24 24"
-                stroke="currentColor"
-              >
-                <path
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                  strokeWidth={2}
-                  d="M9 5l7 7-7 7"
-                />
-              </svg>
-            </button>
-          </div>
+              <path
+                strokeLinecap="round"
+                strokeLinejoin="round"
+                strokeWidth={2}
+                d="M9 5l7 7-7 7"
+              />
+            </svg>
+          </button>
         </div>
       </div>
     )
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-50 to-blue-50/30 px-4 py-6">
-      <div className="mx-auto">
-        {/* Header Section */}
-        <div className="mb-6">
-          {/* Header Content */}
-          <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="min-h-screen bg-white">
+      {/* Modern Header */}
+      <div className="border-b border-gray-200 bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Shot Type</h1>
-              <p className="mt-1 flex items-center gap-2 text-sm text-gray-500">
-                Manage your photography shot types
-                <span className="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
-                  <span className="h-1.5 w-1.5 rounded-full bg-blue-500"></span>
-                  {totalItems} Total
-                </span>
+              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+                Shot Types
+              </h1>
+              <p className="mt-1 text-sm text-gray-600">
+                Manage your photography shot type library
               </p>
             </div>
 
             <div className="flex items-center gap-3">
-              {/* Services Dropdown */}
-              <select
-                value={selectedService}
-                onChange={(e) => setSelectedService(e.target.value)}
-                className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-              >
-                <option value="">Select Projects</option>
-                {serviceItems.length > 0 ? (
-                  serviceItems.map((item, index) => (
-                    <option key={index} value={item._id}>
-                      {item.name}
+              {/* Project Selector */}
+              <div className="relative">
+                <select
+                  value={selectedService}
+                  onChange={(e) => setSelectedService(e.target.value)}
+                  className="h-10 appearance-none rounded-lg border border-gray-200 bg-white pl-4 pr-10 text-sm font-medium text-gray-700 transition-all duration-200 hover:border-gray-300 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                >
+                  <option value="">Select Project</option>
+                  {serviceItems.length > 0 ? (
+                    serviceItems.map((item) => (
+                      <option key={item._id} value={item._id}>
+                        {item.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      No projects available
                     </option>
-                  ))
-                ) : (
-                  <option value="" disabled>
-                    No Projects available
-                  </option>
-                )}
-              </select>
+                  )}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                  <svg
+                    className="h-4 w-4 text-gray-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
 
-              {/* Only show Add Heading button if no heading exists */}
+              {/* Add Heading Button */}
               {!(
                 shotTypes.length > 0 &&
                 (shotTypes[0].title || shotTypes[0].subtitle)
@@ -707,14 +662,15 @@ const ShortTypeManagement = () => {
                     }
                     setIsHeadingModalOpen(true)
                   }}
-                  className={`flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95 ${
-                    !selectedService ? 'cursor-not-allowed opacity-50' : ''
-                  }`}
+                  disabled={!selectedService}
+                  className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  <FaPlus className="text-sm" />
+                  <FaPlus className="text-xs" />
                   Add Heading
                 </button>
               )}
+
+              {/* Add Shot Type Button */}
               <button
                 onClick={() => {
                   if (!selectedService) {
@@ -728,126 +684,139 @@ const ShortTypeManagement = () => {
                   }
                   setIsAddModalOpen(true)
                 }}
-                className={`flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95 ${
-                  !selectedService ? 'cursor-not-allowed opacity-50' : ''
-                }`}
+                disabled={!selectedService}
+                className="flex h-10 items-center gap-2 rounded-lg bg-indigo px-4 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-gray-900"
               >
-                <FaPlus className="text-sm" />
+                <FaPlus className="text-xs" />
                 Add Shot Type
               </button>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Title and Subtitle Display Card */}
+      {/* Main Content */}
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Title and Subtitle Section */}
         {shotTypes.length > 0 &&
           (shotTypes[0].title || shotTypes[0].subtitle) && (
-            <div className="mb-6">
-              <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-white to-blue-50/20 p-6 shadow-sm">
-                <div className="flex items-start justify-between gap-4">
-                  <div className="flex min-w-0 flex-1 flex-col gap-4">
-                    {shotTypes[0].title && (
-                      <div className="overflow-hidden">
-                        <div className="mb-1 text-sm font-semibold text-gray-500">
-                          Title
-                        </div>
-                        <h2 className="overflow-hidden text-ellipsis break-all text-xl font-bold text-gray-900">
-                          {shotTypes[0].title}
-                        </h2>
-                      </div>
-                    )}
-                    {shotTypes[0].subtitle && (
-                      <div className="overflow-hidden">
-                        <div className="mb-1 text-sm font-semibold text-gray-500">
-                          Subtitle
-                        </div>
-                        <p className="overflow-hidden text-ellipsis break-all text-base font-bold text-gray-900 ">
-                          {shotTypes[0].subtitle}
-                        </p>
-                      </div>
-                    )}
-                  </div>
-                  <button
-                    onClick={() => setIsHeadingModalOpen(true)}
-                    className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600 transition-all hover:bg-blue-200 hover:shadow-md"
-                    title="Edit Heading"
-                  >
-                    <FaEdit size={14} />
-                  </button>
-                </div>
+            <div className="group relative mb-8">
+              <div className="absolute right-0 top-0">
+                <button
+                  onClick={() => setIsHeadingModalOpen(true)}
+                  className="flex h-7 w-7 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-all duration-200 hover:bg-gray-900 hover:text-white"
+                  title="Edit Heading"
+                >
+                  <FaEdit size={12} />
+                </button>
               </div>
+
+              <div className="space-y-2">
+                {shotTypes[0].title && (
+                  <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+                    {shotTypes[0].title}
+                  </h2>
+                )}
+                {shotTypes[0].subtitle && (
+                  <p className="text-lg leading-relaxed text-gray-600">
+                    {shotTypes[0].subtitle}
+                  </p>
+                )}
+              </div>
+
+              {/* Subtle divider */}
+              <div className="mt-6 h-px bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200"></div>
             </div>
           )}
 
-        {/* Shot Types Grid */}
+        {/* Shot Types Grid or Empty State */}
         {shotTypes.length > 0 ? (
           <>
-            {/* Check if there are any items to display */}
             {shotTypes.some((st) => st.items && st.items.length > 0) ? (
-              <div className="grid grid-cols-1 gap-5 lg:grid-cols-2 xl:grid-cols-3">
-                {shotTypes.map((shotType) =>
-                  shotType.items.map((item, index) => (
-                    <ShortTypeCard
-                      key={`${shotType._id}-${index}`}
-                      shotType={shotType}
-                      item={item}
-                      onEdit={handleEdit}
-                      onDelete={handleDelete}
-                    />
-                  ))
-                )}
-              </div>
-            ) : (
-              /* Shot type exists but no items - Show different empty state */
-              <div className="flex min-h-[450px] items-center justify-center">
-                <div className="max-w-md rounded-xl border border-gray-200 bg-white p-10 text-center shadow-sm">
-                  <div className="mb-5 flex justify-center">
-                    <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-50 to-blue-100">
-                      <FaImage className="text-4xl text-blue-500" />
+              <>
+                <div className="mb-6 flex items-center justify-between">
+                  <div className="flex items-center gap-2">
+                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
+                      <FaImage className="text-sm text-gray-600" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-gray-900">
+                        {totalItems} {totalItems === 1 ? 'Item' : 'Items'}
+                      </p>
                     </div>
                   </div>
-                  <h3 className="mb-2 text-xl font-bold text-gray-900">
-                    No Items in Shot Type
+                </div>
+
+                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                  {shotTypes.map((shotType) =>
+                    shotType.items.map((item, index) => (
+                      <ShortTypeCard
+                        key={`${shotType._id}-${index}`}
+                        shotType={shotType}
+                        item={item}
+                        onEdit={handleEdit}
+                        onDelete={handleDelete}
+                      />
+                    ))
+                  )}
+                </div>
+
+                {/* Pagination */}
+                {renderPagination()}
+              </>
+            ) : (
+              /* No items in shot type */
+              <div className="flex min-h-[500px] items-center justify-center">
+                <div className="max-w-md text-center">
+                  <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100">
+                    <FaImage className="text-2xl text-gray-400" />
+                  </div>
+                  <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                    No items yet
                   </h3>
-                  <p className="mb-1 text-sm leading-relaxed text-gray-500">
-                    No items found. Add items to get started.
+                  <p className="mb-6 text-sm text-gray-600">
+                    Get started by adding your first shot type item
                   </p>
+                  <button
+                    onClick={() => setIsAddModalOpen(true)}
+                    className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800"
+                  >
+                    <FaPlus className="text-xs" />
+                    Add Shot Type
+                  </button>
                 </div>
               </div>
             )}
-
-            {/* Pagination */}
-            {renderPagination()}
           </>
         ) : (
-          /* Empty State */
-          <div className="flex min-h-[450px] items-center justify-center">
-            <div className="max-w-md rounded-xl border border-gray-200 bg-white p-10 text-center shadow-sm">
-              <div className="mb-5 flex justify-center">
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-50 to-blue-100">
-                  <FaImage className="text-4xl text-blue-500" />
-                </div>
+          /* Empty State - No project selected or no data */
+          <div className="flex min-h-[500px] items-center justify-center">
+            <div className="max-w-md text-center">
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100">
+                <FaImage className="text-2xl text-gray-400" />
               </div>
-              <h3 className="mb-2 text-xl font-bold text-gray-900">
-                No Shot Types Yet
+              <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                {selectedService
+                  ? 'No shot types yet'
+                  : 'Select a project to get started'}
               </h3>
-              <p className="mb-1 text-sm leading-relaxed text-gray-500">
-                Create your first shot type to start organizing your photography
-                options.
+              <p className="text-sm text-gray-600">
+                {selectedService
+                  ? 'Create your first shot type to organize your photography options'
+                  : 'Choose a project from the dropdown menu to view and manage shot types'}
               </p>
             </div>
           </div>
         )}
       </div>
 
-      {/* Add Short Type Modal */}
+      {/* Modals */}
       <AddShortTypeModal
         isOpen={isAddModalOpen}
         onClose={() => setIsAddModalOpen(false)}
         onSubmit={handleAddShotType}
       />
 
-      {/* Edit Short Type Modal */}
       <AddShortTypeModal
         isOpen={isEditModalOpen}
         onClose={() => {
@@ -859,7 +828,6 @@ const ShortTypeManagement = () => {
         editData={editData}
       />
 
-      {/* Add Heading Modal */}
       <AddHeadingModal
         isOpen={isHeadingModalOpen}
         onClose={() => setIsHeadingModalOpen(false)}
@@ -874,7 +842,6 @@ const ShortTypeManagement = () => {
         }
       />
 
-      {/* Delete Confirmation Modal */}
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
         onClose={() => {

@@ -442,7 +442,7 @@ export function SidebarLinks(props) {
                       route.isComing ? 'max-w-[200px]' : ''
                     } group cursor-pointer items-center ${
                       activeRoute(route.path)
-                        ? 'flex w-full items-center border-l-4 border-[#4880FF] p-4'
+                        ? 'flex w-full items-center border-l-4 border-[#6E56FB] p-4'
                         : ''
                     }`}
                     style={{
@@ -461,9 +461,9 @@ export function SidebarLinks(props) {
                           <span
                             className={`${
                               activeRoute(route.path) === true
-                                ? 'font-bold text-moderateBlue dark:text-white'
+                                ? 'font-bold text-indigo dark:text-white'
                                 : 'font-medium text-gray-600'
-                            } relative group-hover:text-moderateBlue dark:group-hover:text-white`}
+                            } relative group-hover:text-indigo dark:group-hover:text-white`}
                           >
                             {route.openInNewTab ? (
                               <span
@@ -488,9 +488,9 @@ export function SidebarLinks(props) {
                       <span
                         className={`${
                           activeRoute(route.path) === true
-                            ? 'font-bold text-moderateBlue dark:text-white'
+                            ? 'font-bold text-indigo dark:text-white'
                             : 'font-medium text-gray-600'
-                        } relative group-hover:text-moderateBlue dark:group-hover:text-white`}
+                        } relative group-hover:text-indigo dark:group-hover:text-white`}
                       >
                         {route.icon ? route.icon : <DashIcon />}
                       </span>

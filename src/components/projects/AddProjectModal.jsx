@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { FaPlus, FaTimes, FaTrash } from 'react-icons/fa'
+import { FaPlus, FaTrash, FaSpinner, FaTimes } from 'react-icons/fa'
+import { Edit, Plus } from 'lucide-react'
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
 
@@ -15,6 +16,9 @@ const AddProjectModal = ({
   const [metadataFields, setMetadataFields] = useState([])
   const [newFieldName, setNewFieldName] = useState('')
   const [isGender, setIsGender] = useState(false)
+  const [loading, setLoading] = useState(false)
+  const [errors, setErrors] = useState({})
+  const [fieldErrors, setFieldErrors] = useState({})
 
   // Populate form when editing
   useEffect(() => {
@@ -76,33 +80,31 @@ const AddProjectModal = ({
   if (!isOpen) return null
 
   const addMetadataField = () => {
+    const newErrors = {}
+
+    // Clear previous errors
+    setErrors({})
+
     // Validate Project Name is filled
     if (!serviceType.trim()) {
-      if (addToast) {
-        addToast({
-          type: 'error',
-          title: 'Validation Error',
-          description: 'Please enter a Project Name first',
-          duration: 3000,
-        })
-      } else {
-        alert('Please enter a Project Name first')
-      }
-      return
+      newErrors.serviceType = 'Please enter a Project Name first'
     }
 
     // Validate Category name is filled
     if (!newFieldName.trim()) {
-      if (addToast) {
-        addToast({
-          type: 'error',
-          title: 'Validation Error',
-          description: 'Please enter a Category name',
-          duration: 3000,
-        })
-      } else {
-        alert('Please enter a Category name')
-      }
+      newErrors.newFieldName = 'Please enter a Category name'
+    }
+
+    // Check for duplicate category names
+    const duplicateCategory = metadataFields.find(
+      (field) => field.key.toLowerCase() === newFieldName.trim().toLowerCase()
+    )
+    if (duplicateCategory) {
+      newErrors.newFieldName = 'This category name already exists'
+    }
+
+    if (Object.keys(newErrors).length > 0) {
+      setErrors(newErrors)
       return
     }
 
@@ -115,10 +117,7 @@ const AddProjectModal = ({
 
     setMetadataFields([...metadataFields, newField])
     setNewFieldName('')
-  }
-
-  const removeMetadataField = (fieldId) => {
-    setMetadataFields(metadataFields.filter((field) => field.id !== fieldId))
+    setErrors({})
   }
 
   const addArrayValue = (fieldId) => {
@@ -157,6 +156,7 @@ const AddProjectModal = ({
         subcategoryName: subcategory.name,
       })
 
+      setLoading(true)
       try {
         const response = await apiCall(
           'delete',
@@ -183,6 +183,7 @@ const AddProjectModal = ({
               duration: 3000,
             })
           }
+          setLoading(false)
           return // Don't remove from UI if API call failed
         }
       } catch (error) {
@@ -195,7 +196,10 @@ const AddProjectModal = ({
             duration: 3000,
           })
         }
+        setLoading(false)
         return // Don't remove from UI if API call failed
+      } finally {
+        setLoading(false)
       }
     }
 
@@ -214,95 +218,110 @@ const AddProjectModal = ({
     )
   }
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
+    const newErrors = {}
+    const newFieldErrors = {}
+
+    // Clear previous errors
+    setErrors({})
+    setFieldErrors({})
+
     // Trim and validate service type
     const trimmedServiceType = serviceType.trim()
 
     if (!trimmedServiceType) {
-      if (addToast) {
-        addToast({
-          type: 'error',
-          title: 'Validation Error',
-          description: 'Please enter a Project Name',
-          duration: 3000,
-        })
-      } else {
-        alert('Please enter a project name')
-      }
-      return
+      newErrors.serviceType = 'Please enter a Project Name'
     }
 
     if (metadataFields.length === 0) {
-      if (addToast) {
-        addToast({
-          type: 'error',
-          title: 'Validation Error',
-          description: 'Please add at least one category field',
-          duration: 3000,
-        })
-      } else {
-        alert('Please add at least one category field')
-      }
-      return
+      newErrors.metadataFields = 'Please add at least one category field'
     }
 
-    // Build metadata object in nested format
-    const categories = []
-
+    // Validate each metadata field
     metadataFields.forEach((field) => {
-      // Filter out empty strings from array (now working with objects)
-      const filteredValues = field.value.filter(
+      if (!field.key.trim()) {
+        newFieldErrors[`${field.id}_category`] = 'Category name is required'
+      }
+
+      const validSubcategories = field.value.filter(
         (v) => v.name && v.name.trim() !== ''
       )
-
-      if (filteredValues.length > 0 && field.key.trim() !== '') {
-        // Create subcategory array with name objects
-        const subcategories = filteredValues.map((value) => ({
-          name: value.name.trim(),
-        }))
-
-        // Add category with its subcategories
-        categories.push({
-          name: field.key.trim(),
-          subcategory: subcategories,
-        })
+      if (validSubcategories.length === 0) {
+        newFieldErrors[`${field.id}_subcategory`] =
+          'At least one subcategory is required'
       }
     })
 
-    // Validate that we have at least one category with values
-    if (categories.length === 0) {
-      if (addToast) {
-        addToast({
-          type: 'error',
-          title: 'Validation Error',
-          description: 'Please add at least one category with subcategories',
-          duration: 3000,
-        })
-      } else {
-        alert('Please add at least one category with subcategories')
-      }
+    // If there are errors, show them and return
+    if (
+      Object.keys(newErrors).length > 0 ||
+      Object.keys(newFieldErrors).length > 0
+    ) {
+      setErrors(newErrors)
+      setFieldErrors(newFieldErrors)
       return
     }
 
-    // Create final metadata structure
-    const metaData = {
-      category: categories,
-      isGender: isGender,
+    setLoading(true)
+
+    try {
+      // Build metadata object in nested format
+      const categories = []
+
+      metadataFields.forEach((field) => {
+        // Filter out empty strings from array (now working with objects)
+        const filteredValues = field.value.filter(
+          (v) => v.name && v.name.trim() !== ''
+        )
+
+        if (filteredValues.length > 0 && field.key.trim() !== '') {
+          // Create subcategory array with name objects
+          const subcategories = filteredValues.map((value) => ({
+            name: value.name.trim(),
+          }))
+
+          // Add category with its subcategories
+          categories.push({
+            name: field.key.trim(),
+            subcategory: subcategories,
+          })
+        }
+      })
+
+      // Create final metadata structure
+      const metaData = {
+        category: categories,
+        isGender: isGender,
+      }
+
+      console.log('Submitting project with data:', {
+        serviceType: trimmedServiceType,
+        metaData,
+      })
+
+      // Call onSubmit with trimmed serviceType and metaData
+      await onSubmit({ serviceType: trimmedServiceType, metaData })
+
+      // Reset form
+      setServiceType('')
+      setMetadataFields([])
+      setNewFieldName('')
+      setIsGender(false)
+      setErrors({})
+      setFieldErrors({})
+    } catch (error) {
+      console.error('Error submitting project:', error)
+      if (addToast) {
+        addToast({
+          type: 'error',
+          title: 'Submission Failed',
+          description: 'An error occurred while saving the project',
+          duration: 3000,
+        })
+      }
+    } finally {
+      setLoading(false)
     }
-
-    console.log('Submitting project with data:', {
-      serviceType: trimmedServiceType,
-      metaData,
-    })
-
-    // Call onSubmit with trimmed serviceType and metaData
-    onSubmit({ serviceType: trimmedServiceType, metaData })
-
-    // Reset form
-    setServiceType('')
-    setMetadataFields([])
-    setNewFieldName('')
-    setIsGender(false)
   }
 
   const handleGenderToggle = () => {
@@ -326,249 +345,380 @@ const AddProjectModal = ({
     setMetadataFields([])
     setNewFieldName('')
     setIsGender(false)
+    setErrors({})
+    setFieldErrors({})
+    setLoading(false)
     onClose()
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4">
-      <div className="flex max-h-[90vh] w-[900px] max-w-[95vw] flex-col rounded-lg bg-white shadow-xl">
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      aria-describedby="modal-description"
+    >
+      <div
+        className="flex max-h-[90vh] w-full max-w-4xl flex-col rounded-3xl bg-white shadow-xl sm:w-[1000px] sm:max-w-[95vw]"
+        role="document"
+      >
         {/* Header */}
-        <div className="flex-shrink-0 border-b border-gray-200 bg-white px-6 py-4">
-          <h2 className="text-xl font-bold text-gray-900">
-            {editData ? 'Edit Project' : 'Add New Project'}
-          </h2>
+        <div className="flex-shrink-0 rounded-t-3xl border-b border-gray-300 bg-white px-8 py-6">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo">
+                {editData ? (
+                  <Edit className="text-white" size={18} />
+                ) : (
+                  <Plus className="text-white" size={18} />
+                )}
+              </div>
+              <div>
+                <h2
+                  id="modal-title"
+                  className="text-xl font-bold text-gray-900"
+                >
+                  {editData ? 'Edit Project' : 'Create New Project'}
+                </h2>
+                <p
+                  id="modal-description"
+                  className="mt-1 text-sm text-gray-600"
+                >
+                  {editData
+                    ? 'Update your project details'
+                    : 'Set up your project in 3 simple steps'}
+                </p>
+              </div>
+            </div>
+            <button
+              onClick={onClose}
+              className="group flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-gray-100"
+              title="Close modal"
+            >
+              <FaTimes
+                size={14}
+                className="text-gray-500 group-hover:text-gray-700"
+              />
+            </button>
+          </div>
         </div>
 
         {/* Content */}
-        <div className="flex-1 overflow-y-auto p-6">
-          {/* Service Type and Field Input Row */}
-          <div className="mb-3 grid grid-cols-12 gap-3">
-            {/* Service Type Name */}
-            <div className="col-span-10">
-              <label className="mb-2 block text-sm font-semibold text-gray-700">
-                Project Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={serviceType}
-                onChange={(e) => setServiceType(e.target.value)}
-                placeholder="e.g., jewelry, medical, electronics"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-              />
+        <div className="flex-1 overflow-y-auto bg-white p-6">
+          {/* Step 1: Project Name */}
+          <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-5">
+            <div className="mb-4 flex items-center gap-2">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-600 text-sm font-bold text-white">
+                1
+              </span>
+              <h3 className="text-lg font-bold text-gray-800">Project Name</h3>
             </div>
+            <p className="mb-4 text-sm text-gray-600">
+              💡 What type of business or project is this? (e.g., Jewellery ,
+              Furniture, Pharma)
+            </p>
 
-            {/* Gender Toggle */}
-            <div className="col-span-2 flex flex-col">
-              <label className="mb-2 block text-sm font-semibold text-gray-700">
-                Gender
-              </label>
-              <div className="flex h-[42px] items-center justify-start rounded-lg   bg-white ">
+            <div className="space-y-4">
+              <div>
+                <input
+                  type="text"
+                  value={serviceType}
+                  onChange={(e) => {
+                    setServiceType(e.target.value)
+                    if (errors.serviceType) {
+                      setErrors((prev) => ({ ...prev, serviceType: '' }))
+                    }
+                  }}
+                  placeholder="Enter your project name (e.g.,Jewellery , Furniture, Pharma)"
+                  className={`w-full rounded-lg border px-4 py-3 text-base transition-colors focus:outline-none ${
+                    errors.serviceType
+                      ? 'border-red-400 bg-red-50'
+                      : 'border-gray-300 bg-white focus:border-gray-500'
+                  }`}
+                />
+                {errors.serviceType && (
+                  <p className="mt-2 text-sm text-red-600">
+                    ⚠️ {errors.serviceType}
+                  </p>
+                )}
+              </div>
+
+              <div className="flex items-center gap-3 rounded-lg border border-gray-200 bg-white p-3">
+                <span className="text-sm font-medium text-gray-700">
+                  Include Gender Field:
+                </span>
                 <button
                   type="button"
                   onClick={handleGenderToggle}
-                  className={`relative inline-flex h-8 w-16 items-center rounded-full transition-colors ${
-                    isGender ? 'bg-blue-600' : 'bg-gray-300'
+                  className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors ${
+                    isGender ? 'bg-gray-600' : 'bg-gray-300'
                   }`}
                 >
                   <span
-                    className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-sm transition-transform ${
-                      isGender ? 'translate-x-9' : 'translate-x-1'
+                    className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                      isGender ? 'translate-x-6' : 'translate-x-1'
                     }`}
                   />
                 </button>
+                <span
+                  className={`text-sm font-medium ${
+                    isGender ? 'text-gray-600' : 'text-gray-500'
+                  }`}
+                >
+                  {isGender ? 'Yes' : 'No'}
+                </span>
               </div>
             </div>
           </div>
 
-          {/* Category and Add Button Row */}
-          <div className="mb-6 grid grid-cols-12 gap-3">
-            {/* Field Input */}
-            <div className="col-span-10">
-              <label className="mb-2 block text-sm font-semibold text-gray-700">
-                Category <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={newFieldName}
-                onChange={(e) => setNewFieldName(e.target.value)}
-                placeholder="Field name (e.g., category, medicines)"
-                className="w-full rounded-lg border border-gray-300 px-4 py-2.5 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    e.preventDefault()
-                    addMetadataField()
-                  }
-                }}
-              />
+          {/* Step 2: Add Categories */}
+          <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-5">
+            <div className="mb-4 flex items-center gap-2">
+              <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-600 text-sm font-bold text-white">
+                2
+              </span>
+              <h3 className="text-lg font-bold text-gray-800">
+                Add Categories
+              </h3>
             </div>
 
-            {/* Add Field Button */}
-            <div className="col-span-2 flex items-end">
+            <p className="mb-4 text-sm text-gray-600">
+              🏷️ Add main categories for your project (e.g., Earrings,
+              Necklaces, Accessories)
+            </p>
+
+            <div className="flex gap-3">
+              <div className="flex-1">
+                <input
+                  type="text"
+                  value={newFieldName}
+                  onChange={(e) => {
+                    setNewFieldName(e.target.value)
+                    if (errors.newFieldName) {
+                      setErrors((prev) => ({ ...prev, newFieldName: '' }))
+                    }
+                  }}
+                  placeholder="Type category name (e.g., Earrings, Necklaces, Accessories)"
+                  className={`w-full rounded-lg border px-4 py-3 text-base transition-colors focus:outline-none ${
+                    errors.newFieldName
+                      ? 'border-red-400 bg-red-50'
+                      : 'border-gray-300 bg-white focus:border-gray-500'
+                  }`}
+                  onKeyDown={(e) => {
+                    if (e.key === 'Enter') {
+                      e.preventDefault()
+                      addMetadataField()
+                    }
+                  }}
+                />
+                {errors.newFieldName && (
+                  <p className="mt-2 text-sm text-red-600">
+                    ⚠️ {errors.newFieldName}
+                  </p>
+                )}
+              </div>
+
               <button
                 onClick={addMetadataField}
-                className="flex h-[42px] w-full items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
+                disabled={loading}
+                className="flex items-center gap-2 rounded-lg bg-blueSecondary px-5 py-3 font-medium text-white transition-colors hover:bg-gray-700"
               >
-                <FaPlus size={12} />
+                {loading ? (
+                  <FaSpinner className="animate-spin" size={14} />
+                ) : (
+                  <FaPlus size={14} />
+                )}
                 Add
               </button>
             </div>
           </div>
 
-          {/* Divider */}
-          {metadataFields.length > 0 && (
-            <div className="-mx-6 my-6 border-t border-gray-200"></div>
+          {/* Show validation error for metadata fields */}
+          {errors.metadataFields && (
+            <div className="mb-6 rounded-lg border border-red-200 bg-red-50 p-4">
+              <p className="font-medium text-red-600">
+                ⚠️ {errors.metadataFields}
+              </p>
+            </div>
           )}
 
-          {/* Display Metadata Fields */}
+          {/* Step 3: Your Categories */}
           {metadataFields.length > 0 && (
-            <div className="space-y-3">
-              {metadataFields.map((field) => (
-                <div
-                  key={field.id}
-                  className="rounded-lg border border-gray-200 bg-white p-4"
-                >
-                  {/* Array Values - Display with Category in first row only */}
-                  <div className="space-y-3">
-                    {/* Add Subcategory Button at Top */}
-                    {field.value.length > 0 && (
-                      <div className="flex justify-end">
-                        <button
-                          onClick={() => addArrayValue(field.id)}
-                          className="flex h-[42px] items-center justify-center gap-2 rounded-lg bg-blue-600 px-4 py-2 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-                          title="Add subcategory"
-                        >
-                          <FaPlus size={12} />
-                          Add Subcategory
-                        </button>
-                      </div>
-                    )}
+            <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-5">
+              <div className="mb-4 flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-600 text-sm font-bold text-white">
+                  3
+                </span>
+                <h3 className="text-lg font-bold text-gray-800">
+                  Your Categories
+                </h3>
+                <span className="rounded-full bg-gray-200 px-2 py-1 text-sm font-medium text-gray-700">
+                  {metadataFields.length}{' '}
+                  {metadataFields.length === 1 ? 'category' : 'categories'}
+                </span>
+              </div>
 
-                    {/* Column Headers */}
-                    {field.value.length > 0 && (
-                      <div className="grid grid-cols-[1fr_1fr_auto] gap-3">
-                        <div className="text-xs font-semibold text-gray-600">
-                          Category <span className="text-red-500">*</span>
-                        </div>
-                        <div className="text-xs font-semibold text-gray-600">
-                          Subcategory <span className="text-red-500">*</span>
-                        </div>
-                        <div className="w-[38px]"></div>
-                      </div>
-                    )}
+              <p className="mb-4 text-sm text-gray-600">
+                📝 Add subcategories to organize your items better
+              </p>
 
-                    {/* Rows */}
-                    {field.value.map((val, index) => (
-                      <div
-                        key={index}
-                        className={`grid gap-3 ${
-                          index === 0
-                            ? 'grid-cols-[1fr_1fr_auto]'
-                            : 'grid-cols-[1fr_auto]'
-                        }`}
+              <div className="space-y-4">
+                {metadataFields.map((field, index) => (
+                  <div
+                    key={field.id}
+                    className="rounded-lg border border-gray-200 bg-white p-4"
+                  >
+                    <div className="mb-3 flex items-center justify-between">
+                      <h4 className="flex items-center gap-2 text-base font-bold text-gray-800">
+                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-600 text-sm text-white">
+                          {index + 1}
+                        </span>
+                        {field.key || 'Category Name'}
+                      </h4>
+                      <button
+                        onClick={() => addArrayValue(field.id)}
+                        disabled={loading}
+                        className="flex items-center gap-1 rounded-lg bg-indigo px-3 py-1 text-sm text-white transition-colors hover:bg-gray-700"
                       >
-                        {/* First Row - Category and Subcategory */}
-                        {index === 0 ? (
-                          <>
-                            {/* Category Input - Only in first row */}
-                            <input
-                              type="text"
-                              value={field.key}
-                              onChange={(e) => {
-                                // Update the category name for this field
-                                setMetadataFields(
-                                  metadataFields.map((f) =>
-                                    f.id === field.id
-                                      ? { ...f, key: e.target.value }
-                                      : f
-                                  )
-                                )
-                              }}
-                              placeholder="Enter category name"
-                              className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                            />
+                        <FaPlus size={12} />
+                        Add Item
+                      </button>
+                    </div>
 
-                            {/* Subcategory Input */}
-                            <input
-                              type="text"
-                              value={val.name || ''}
-                              onChange={(e) =>
-                                updateArrayValue(
-                                  field.id,
-                                  index,
-                                  e.target.value
-                                )
-                              }
-                              placeholder={`Enter subcategory value`}
-                              className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                            />
-
-                            {/* Delete Button */}
-                            <button
-                              onClick={() => removeArrayValue(field.id, index)}
-                              className="flex h-[38px] w-[38px] items-center justify-center rounded-lg border border-red-200 text-red-500 transition-colors hover:bg-red-50"
-                              title="Remove subcategory"
-                            >
-                              <FaTrash size={12} />
-                            </button>
-                          </>
-                        ) : (
-                          <>
-                            {/* Additional Rows - Subcategory only */}
-                            <input
-                              type="text"
-                              value={val.name || ''}
-                              onChange={(e) =>
-                                updateArrayValue(
-                                  field.id,
-                                  index,
-                                  e.target.value
-                                )
-                              }
-                              placeholder={`Enter subcategory value`}
-                              className="rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                            />
-
-                            {/* Delete Button - Only button on additional rows */}
-                            <button
-                              onClick={() => removeArrayValue(field.id, index)}
-                              className="flex h-[38px] w-[38px] items-center justify-center rounded-lg border border-red-200 text-red-500 transition-colors hover:bg-red-50"
-                              title="Remove subcategory"
-                            >
-                              <FaTrash size={12} />
-                            </button>
-                          </>
-                        )}
+                    {/* Show field-level errors */}
+                    {(fieldErrors[`${field.id}_category`] ||
+                      fieldErrors[`${field.id}_subcategory`]) && (
+                      <div className="mb-3 rounded-lg border border-red-200 bg-red-50 p-3">
+                        <p className="text-sm font-medium text-red-600">
+                          ⚠️{' '}
+                          {fieldErrors[`${field.id}_category`] ||
+                            fieldErrors[`${field.id}_subcategory`]}
+                        </p>
                       </div>
-                    ))}
+                    )}
+
+                    <div className="space-y-4">
+                      {/* Category Name Section */}
+                      <div>
+                        <div className="mb-2 text-sm font-medium text-gray-700">
+                          Category Name
+                        </div>
+                        <input
+                          type="text"
+                          value={field.key}
+                          onChange={(e) => {
+                            setMetadataFields(
+                              metadataFields.map((f) =>
+                                f.id === field.id
+                                  ? { ...f, key: e.target.value }
+                                  : f
+                              )
+                            )
+                            if (fieldErrors[`${field.id}_category`]) {
+                              setFieldErrors((prev) => ({
+                                ...prev,
+                                [`${field.id}_category`]: '',
+                              }))
+                            }
+                          }}
+                          placeholder="Enter category name"
+                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                        />
+                      </div>
+
+                      {/* Subcategory Items Section */}
+                      <div>
+                        <div className="mb-2 text-sm font-medium text-gray-700">
+                          Subcategory Items
+                        </div>
+                        <div className="space-y-2">
+                          {field.value.map((val, valIndex) => (
+                            <div
+                              key={valIndex}
+                              className="flex items-center gap-2"
+                            >
+                              <input
+                                type="text"
+                                value={val.name || ''}
+                                onChange={(e) => {
+                                  updateArrayValue(
+                                    field.id,
+                                    valIndex,
+                                    e.target.value
+                                  )
+                                  if (fieldErrors[`${field.id}_subcategory`]) {
+                                    setFieldErrors((prev) => ({
+                                      ...prev,
+                                      [`${field.id}_subcategory`]: '',
+                                    }))
+                                  }
+                                }}
+                                placeholder="Enter subcategory item"
+                                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                              />
+                              <button
+                                onClick={() =>
+                                  removeArrayValue(field.id, valIndex)
+                                }
+                                disabled={loading}
+                                className="rounded-lg bg-red-500 px-3 py-2 text-white transition-colors hover:bg-red-600"
+                                title="Remove item"
+                              >
+                                <FaTrash size={12} />
+                              </button>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
+              </div>
             </div>
           )}
 
           {metadataFields.length === 0 && (
-            <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 py-8 text-center">
+            <div className="rounded-lg border border-dashed border-gray-300 bg-gray-50 p-8 text-center">
+              <p className="mb-2 text-base text-gray-600">
+                👆 Add your first category above
+              </p>
               <p className="text-sm text-gray-500">
-                No metadata fields added yet. Add fields using the form above.
+                Categories help organize your project (like: Shirts, Pants,
+                Accessories)
               </p>
             </div>
           )}
         </div>
 
         {/* Footer */}
-        <div className="flex flex-shrink-0 justify-end gap-3 border-t border-gray-200 bg-gray-50 px-6 py-4">
-          <button
-            onClick={handleCancel}
-            className="rounded-lg border border-gray-300 px-5 py-2.5 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-100"
-          >
-            Cancel
-          </button>
-          <button
-            onClick={handleSubmit}
-            className="rounded-lg bg-blue-600 px-5 py-2.5 text-sm font-medium text-white transition-colors hover:bg-blue-700"
-          >
-            {editData ? 'Update Project' : 'Add Project'}
-          </button>
+        <div className="flex items-center justify-between rounded-b-3xl border-t border-gray-200 bg-gray-50 px-6 py-4">
+          <div className="text-sm text-gray-600">
+            💡 Make sure to add at least one category with items
+          </div>
+          <div className="flex gap-3">
+            <button
+              onClick={handleCancel}
+              disabled={loading}
+              className="rounded-lg border border-gray-300 px-6 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-100"
+            >
+              Cancel
+            </button>
+            <button
+              onClick={handleSubmit}
+              disabled={loading}
+              className="flex items-center gap-2 rounded-lg bg-indigo px-8 py-3 font-medium text-white transition-colors hover:bg-gray-700"
+            >
+              {loading ? (
+                <>
+                  <FaSpinner className="animate-spin" size={14} />
+                  {editData ? 'Updating...' : 'Saving...'}
+                </>
+              ) : (
+                <>{editData ? 'Update Project' : 'Create Project'}</>
+              )}
+            </button>
+          </div>
         </div>
       </div>
     </div>

@@ -139,7 +139,7 @@ const ParameterSection = ({
             </button>
             <button
               onClick={handleAddElement}
-              className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
+              className="flex items-center gap-2 rounded-lg bg-indigo px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
             >
               <FaPlus className="text-sm" />
               Add Element

@@ -372,7 +372,7 @@ const Organizations = () => {
       render: (row) => (
         <div className="flex items-center justify-center gap-2">
           <button
-            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-100 hover:shadow-md"
+            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-indigo text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-100 hover:shadow-md"
             onClick={() => handleView(row)}
             title="View"
           >

@@ -621,7 +621,7 @@ const Projects = () => {
       render: (row) => (
         <div className="flex items-center justify-center gap-2">
           <button
-            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-100 hover:shadow-md"
+            className="hover:bg-bg-indigohover:shadow-md flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-indigo  text-white transition-all duration-200 hover:-translate-y-0.5"
             onClick={() => handleEdit(row)}
             title="Edit Service"
           >
@@ -657,7 +657,7 @@ const Projects = () => {
         {/* <h1 className="text-2xl font-bold text-gray-900">Service Types</h1> */}
         <button
           onClick={() => setIsAddModalOpen(true)}
-          className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
+          className="flex items-center gap-2 rounded-lg bg-indigo px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
         >
           <FaPlus className="text-sm" />
           Add Project
