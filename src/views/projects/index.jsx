@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FaTrash, FaPlus, FaEdit } from 'react-icons/fa'
+import { FaTrash, FaPlus, FaEdit, FaEye, FaEyeSlash } from 'react-icons/fa'
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
 import { useSpinner } from '../../common/SpinnerLoader'
@@ -150,6 +150,51 @@ const Projects = () => {
         type: 'error',
         title: 'Error',
         description: error?.message || 'Failed to delete service',
+        duration: 3000,
+      })
+    } finally {
+      hideSpinner()
+    }
+  }
+
+  const handleToggleStatus = async (project) => {
+    showSpinner()
+    try {
+      // Toggle status between Active and Inactive
+      const newStatus = project.status === 'Active' ? 'Inactive' : 'Active'
+
+      const response = await apiCall(
+        'put',
+        `${config.UPDATE_PROJECT_STATUS}?projectId=${project._id}&status=${newStatus}`
+      )
+
+      if (response.status === 200 || response.status === 201) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: `Project "${project.name}" status updated to ${newStatus} successfully`,
+          duration: 3000,
+        })
+
+        // Refresh service types list
+        await fetchServiceTypes()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.msg ||
+            response?.data?.message ||
+            `Failed to update project status to ${newStatus}`,
+          duration: 3000,
+        })
+      }
+    } catch (error) {
+      console.error('Error updating project status:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: error?.message || 'Failed to update project status',
         duration: 3000,
       })
     } finally {
@@ -543,6 +588,23 @@ const Projects = () => {
     },
 
     {
+      key: 'status',
+      label: 'Status',
+      width: '100px',
+      render: (_, value) => (
+        <span
+          className={`inline-block rounded-md px-3 py-1 text-sm font-medium ${
+            value === 'Active' || !value
+              ? 'bg-green-100 text-green-700'
+              : 'bg-red-100 text-red-700'
+          }`}
+        >
+          {value === 'Active' || !value ? 'Active' : 'Inactive'}
+        </span>
+      ),
+    },
+
+    {
       key: 'createdAt',
       label: 'Created At',
       width: '150px',
@@ -571,6 +633,17 @@ const Projects = () => {
             title="Delete Service"
           >
             <FaTrash size={14} />
+          </button>
+          <button
+            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-orange-50 text-orange-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-orange-100 hover:shadow-md"
+            onClick={() => handleToggleStatus(row)}
+            title={row.status === 'Active' ? 'Hide Project' : 'Unhide Project'}
+          >
+            {row.status === 'Active' ? (
+              <FaEye size={14} />
+            ) : (
+              <FaEyeSlash size={14} />
+            )}
           </button>
         </div>
       ),
