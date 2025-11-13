@@ -504,69 +504,105 @@ const Parameters = () => {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-gray-50 via-gray-50 to-blue-50/30 px-4 py-6">
-      <div className="mx-auto">
-        {/* Header Section */}
-        <div className="mb-6">
-          <div className="flex items-center justify-between rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
+    <div className="min-h-screen bg-white">
+      {/* Modern Header */}
+      <div className="border-b border-gray-200 bg-white">
+        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
+          <div className="flex items-center justify-between">
             <div>
-              <h1 className="text-2xl font-bold text-gray-900">Parameters</h1>
-              {title && (
-                <p className="mt-1 flex items-center gap-2 text-sm text-gray-500">
-                  {title}
-                  <span className="inline-flex items-center gap-1.5 rounded-md bg-blue-50 px-2 py-0.5 text-xs font-medium text-blue-700">
-                    <span className="h-1.5 w-1.5 rounded-full bg-blue-500"></span>
+              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+                Parameters
+              </h1>
+              <p className="mt-1 text-sm text-gray-600">
+                Manage your parameter configurations
+                {title && (
+                  <span className="ml-2 inline-flex items-center gap-1.5 rounded-md bg-gray-100 px-2 py-0.5 text-xs font-medium text-gray-700">
+                    <span className="h-1.5 w-1.5 rounded-full bg-gray-500"></span>
                     {parameters.length} Sections
                   </span>
-                </p>
-              )}
+                )}
+              </p>
             </div>
 
             <div className="flex items-center gap-3">
-              {/* Services Dropdown */}
-              <select
-                value={selectedService}
-                onChange={(e) => setSelectedService(e.target.value)}
-                className="rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-              >
-                <option value="">Select Projects</option>
-                {serviceItems.length > 0 ? (
-                  serviceItems.map((item, index) => (
-                    <option key={index} value={item._id}>
-                      {item.name}
+              {/* Project Selector */}
+              <div className="relative">
+                <select
+                  value={selectedService}
+                  onChange={(e) => setSelectedService(e.target.value)}
+                  className="h-10 appearance-none rounded-lg border border-gray-200 bg-white pl-4 pr-10 text-sm font-medium text-gray-700 transition-all duration-200 hover:border-gray-300 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
+                >
+                  <option value="">Select Project</option>
+                  {serviceItems.length > 0 ? (
+                    serviceItems.map((item, index) => (
+                      <option key={index} value={item._id}>
+                        {item.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      No projects available
                     </option>
-                  ))
-                ) : (
-                  <option value="" disabled>
-                    No Projects available
-                  </option>
-                )}
-              </select>
+                  )}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                  <svg
+                    className="h-4 w-4 text-gray-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
 
-              {/* Pages Dropdown */}
-              <select
-                value={selectedPage}
-                onChange={(e) => setSelectedPage(e.target.value)}
-                disabled={!selectedService}
-                className={`rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-400 focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100 ${
-                  !selectedService ? 'cursor-not-allowed opacity-50' : ''
-                }`}
-              >
-                <option value="">Select Shot Type</option>
-                {shotTypeItems.length > 0 ? (
-                  shotTypeItems.map((item) => (
-                    <option key={item._id} value={item.name}>
-                      {item.name}
+              {/* Shot Type Selector */}
+              <div className="relative">
+                <select
+                  value={selectedPage}
+                  onChange={(e) => setSelectedPage(e.target.value)}
+                  disabled={!selectedService}
+                  className={`h-10 appearance-none rounded-lg border border-gray-200 bg-white pl-4 pr-10 text-sm font-medium text-gray-700 transition-all duration-200 hover:border-gray-300 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/10 ${
+                    !selectedService ? 'cursor-not-allowed opacity-50' : ''
+                  }`}
+                >
+                  <option value="">Select Shot Type</option>
+                  {shotTypeItems.length > 0 ? (
+                    shotTypeItems.map((item) => (
+                      <option key={item._id} value={item.name}>
+                        {item.name}
+                      </option>
+                    ))
+                  ) : (
+                    <option value="" disabled>
+                      No shot types available
                     </option>
-                  ))
-                ) : (
-                  <option value="" disabled>
-                    No shot types available
-                  </option>
-                )}
-              </select>
+                  )}
+                </select>
+                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+                  <svg
+                    className="h-4 w-4 text-gray-500"
+                    fill="none"
+                    viewBox="0 0 24 24"
+                    stroke="currentColor"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+              </div>
 
-              {/* Add Heading Button - Only show if no heading exists */}
+              {/* Add Heading Button */}
               {!(currentPageData && currentPageData.title) && (
                 <button
                   onClick={() => {
@@ -590,14 +626,11 @@ const Parameters = () => {
                     }
                     setIsHeadingModalOpen(true)
                   }}
-                  className={`flex items-center gap-2 rounded-lg bg-indigo px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95 ${
-                    !selectedService || !selectedPage
-                      ? 'cursor-not-allowed opacity-50'
-                      : ''
-                  }`}
+                  disabled={!selectedService || !selectedPage}
+                  className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
                 >
-                  <FaPlus className="text-sm" />
-                  Heading
+                  <FaPlus className="text-xs" />
+                  Add Heading
                 </button>
               )}
 
@@ -624,43 +657,40 @@ const Parameters = () => {
                   }
                   setIsAddCategoryModalOpen(true)
                 }}
-                className={`flex items-center gap-2 rounded-lg bg-indigo px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95 ${
-                  !selectedService || !selectedPage
-                    ? 'cursor-not-allowed opacity-50'
-                    : ''
-                }`}
+                disabled={!selectedService || !selectedPage}
+                className="flex h-10 items-center gap-2 rounded-lg bg-indigo px-4 text-sm font-medium text-white transition-all duration-200 hover:bg-indigo disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-gray-900"
               >
-                <FaPlus className="text-sm" />
+                <FaPlus className="text-xs" />
                 Add Category
               </button>
             </div>
           </div>
         </div>
+      </div>
 
-        {/* Title Display Card */}
+      {/* Main Content */}
+      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
+        {/* Title and Subtitle Section */}
         {currentPageData && currentPageData.title && (
-          <div className="mb-6">
-            <div className="rounded-xl border border-gray-200 bg-gradient-to-br from-white to-blue-50/20 p-6 shadow-sm">
-              <div className="flex items-start justify-between gap-4">
-                <div className="flex min-w-0 flex-1 flex-col gap-4">
-                  <div className="overflow-hidden">
-                    <div className="mb-1 text-sm font-semibold text-gray-500">
-                      Title
-                    </div>
-                    <h2 className="overflow-hidden text-ellipsis break-all text-xl font-bold text-gray-900">
-                      {currentPageData.title}
-                    </h2>
-                  </div>
-                </div>
-                <button
-                  onClick={() => setIsHeadingModalOpen(true)}
-                  className="flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-lg bg-blue-100 text-blue-600 transition-all hover:bg-blue-200 hover:shadow-md"
-                  title="Edit Heading"
-                >
-                  <FaEdit size={14} />
-                </button>
-              </div>
+          <div className="group relative mb-8">
+            <div className="absolute right-0 top-0">
+              <button
+                onClick={() => setIsHeadingModalOpen(true)}
+                className="flex h-7 w-7 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-all duration-200 hover:bg-gray-900 hover:text-white"
+                title="Edit Heading"
+              >
+                <FaEdit size={12} />
+              </button>
             </div>
+
+            <div className="space-y-2">
+              <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+                {currentPageData.title}
+              </h2>
+            </div>
+
+            {/* Subtle divider */}
+            <div className="mt-6 h-px bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200"></div>
           </div>
         )}
 
@@ -901,19 +931,24 @@ const Parameters = () => {
           </div>
         ) : (
           /* Empty State */
-          <div className="flex min-h-[450px] items-center justify-center">
-            <div className="max-w-md rounded-xl border border-gray-200 bg-white p-10 text-center shadow-sm">
-              <div className="mb-5 flex justify-center">
-                <div className="flex h-20 w-20 items-center justify-center rounded-full bg-gradient-to-br from-blue-50 to-blue-100">
-                  <FaLayerGroup className="text-4xl text-blue-500" />
-                </div>
+          <div className="flex min-h-[500px] items-center justify-center">
+            <div className="max-w-md text-center">
+              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100">
+                <FaLayerGroup className="text-2xl text-gray-400" />
               </div>
-              <h3 className="mb-2 text-xl font-bold text-gray-900">
-                No Parameters Yet
+              <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                {selectedService && selectedPage
+                  ? 'No parameters yet'
+                  : !selectedService
+                  ? 'Select a project to get started'
+                  : 'Select a shot type to view parameters'}
               </h3>
-              <p className="mb-1 text-sm leading-relaxed text-gray-500">
-                No parameters found. Parameters will appear here once they are
-                configured.
+              <p className="text-sm text-gray-600">
+                {selectedService && selectedPage
+                  ? 'Create your first parameter category to organize your configuration options'
+                  : !selectedService
+                  ? 'Choose a project from the dropdown menu to view and manage parameters'
+                  : 'Choose a shot type to view parameter configurations'}
               </p>
             </div>
           </div>
