@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FaTrash, FaPlus, FaEdit, FaEye, FaEyeSlash } from 'react-icons/fa'
+import { FaTrash, FaPlus, FaEdit } from 'react-icons/fa'
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
 import { useSpinner } from '../../common/SpinnerLoader'
@@ -19,6 +19,7 @@ const Projects = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false)
   const [selectedService, setSelectedService] = useState(null)
   const [editData, setEditData] = useState(null)
   const [selectedCategories, setSelectedCategories] = useState({}) // Track selected category for each row
@@ -157,27 +158,41 @@ const Projects = () => {
     }
   }
 
-  const handleToggleStatus = async (project) => {
+  const handleOpenStatusModal = (project) => {
+    setSelectedService(project)
+    setIsStatusModalOpen(true)
+  }
+
+  const closeStatusModal = () => {
+    setIsStatusModalOpen(false)
+    setSelectedService(null)
+  }
+
+  const confirmToggleStatus = async () => {
+    if (!selectedService) return
+
     showSpinner()
     try {
       // Toggle status between Active and Inactive
-      const newStatus = project.status === 'Active' ? 'Inactive' : 'Active'
+      const newStatus =
+        selectedService.status === 'Active' ? 'Inactive' : 'Active'
 
       const response = await apiCall(
         'put',
-        `${config.UPDATE_PROJECT_STATUS}?projectId=${project._id}&status=${newStatus}`
+        `${config.UPDATE_PROJECT_STATUS}?projectId=${selectedService._id}&status=${newStatus}`
       )
 
       if (response.status === 200 || response.status === 201) {
         addToast({
           type: 'success',
           title: 'Success',
-          description: `Project "${project.name}" status updated to ${newStatus} successfully`,
+          description: `Project "${selectedService.name}" status updated to ${newStatus} successfully`,
           duration: 3000,
         })
 
         // Refresh service types list
         await fetchServiceTypes()
+        closeStatusModal()
       } else {
         addToast({
           type: 'error',
@@ -617,7 +632,7 @@ const Projects = () => {
     {
       key: 'actions',
       label: 'Actions',
-      width: '120px',
+      width: '200px',
       render: (row) => (
         <div className="flex items-center justify-center gap-2">
           <button
@@ -635,15 +650,18 @@ const Projects = () => {
             <FaTrash size={14} />
           </button>
           <button
-            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-orange-50 text-orange-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-orange-100 hover:shadow-md"
-            onClick={() => handleToggleStatus(row)}
-            title={row.status === 'Active' ? 'Hide Project' : 'Unhide Project'}
+            onClick={() => handleOpenStatusModal(row)}
+            className={`relative inline-flex h-[20px] w-[38px] items-center rounded-full transition-colors duration-200 focus:outline-none ${
+              row.status === 'Inactive' ? 'bg-green-500' : 'bg-gray-300'
+            }`}
           >
-            {row.status === 'Active' ? (
-              <FaEye size={14} />
-            ) : (
-              <FaEyeSlash size={14} />
-            )}
+            <span
+              className={`inline-block h-[14px] w-[14px] transform rounded-full bg-white shadow-md transition-transform duration-200 ${
+                row.status === 'Inactive'
+                  ? 'translate-x-[21px]'
+                  : 'translate-x-[3px]'
+              }`}
+            />
           </button>
         </div>
       ),
@@ -689,6 +707,27 @@ const Projects = () => {
         confirmColorScheme="red"
         icon="delete"
         onConfirm={confirmDeleteService}
+      />
+
+      {/* Status Change Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isStatusModalOpen}
+        onClose={closeStatusModal}
+        title={
+          selectedService?.status === 'Active'
+            ? 'Hide Project'
+            : 'Unhide Project'
+        }
+        message={`Are you sure you want to ${
+          selectedService?.status === 'Active' ? 'hide' : 'unhide'
+        } "${selectedService?.name}" project?`}
+        confirmText={selectedService?.status === 'Active' ? 'Hide' : 'Unhide'}
+        cancelText="Cancel"
+        confirmColorScheme={
+          selectedService?.status === 'Active' ? 'orange' : 'green'
+        }
+        icon={selectedService?.status === 'Active' ? 'warning' : 'info'}
+        onConfirm={confirmToggleStatus}
       />
 
       {/* Add Project Modal */}
