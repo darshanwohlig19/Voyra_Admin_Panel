@@ -1,5 +1,12 @@
 import React, { useState, useEffect } from 'react'
-import { FaPlus, FaTrash, FaSpinner, FaTimes } from 'react-icons/fa'
+import {
+  FaPlus,
+  FaTrash,
+  FaSpinner,
+  FaTimes,
+  FaChevronDown,
+  FaChevronUp,
+} from 'react-icons/fa'
 import { Edit, Plus } from 'lucide-react'
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
@@ -19,6 +26,8 @@ const AddProjectModal = ({
   const [loading, setLoading] = useState(false)
   const [errors, setErrors] = useState({})
   const [fieldErrors, setFieldErrors] = useState({})
+  const [isCategoriesCollapsed, setIsCategoriesCollapsed] = useState(false)
+  const [collapsedCategories, setCollapsedCategories] = useState({})
 
   // Populate form when editing
   useEffect(() => {
@@ -340,6 +349,13 @@ const AddProjectModal = ({
     }
   }
 
+  const toggleCategoryCollapse = (fieldId) => {
+    setCollapsedCategories((prev) => ({
+      ...prev,
+      [fieldId]: !prev[fieldId],
+    }))
+  }
+
   const handleCancel = () => {
     setServiceType('')
     setMetadataFields([])
@@ -348,6 +364,7 @@ const AddProjectModal = ({
     setErrors({})
     setFieldErrors({})
     setLoading(false)
+    setCollapsedCategories({})
     onClose()
   }
 
@@ -557,124 +574,176 @@ const AddProjectModal = ({
                   {metadataFields.length}{' '}
                   {metadataFields.length === 1 ? 'category' : 'categories'}
                 </span>
+                <button
+                  onClick={() =>
+                    setIsCategoriesCollapsed(!isCategoriesCollapsed)
+                  }
+                  className="ml-auto flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-gray-200"
+                  title={
+                    isCategoriesCollapsed
+                      ? 'Expand categories'
+                      : 'Collapse categories'
+                  }
+                >
+                  {isCategoriesCollapsed ? (
+                    <FaChevronDown className="text-gray-600" size={14} />
+                  ) : (
+                    <FaChevronUp className="text-gray-600" size={14} />
+                  )}
+                </button>
               </div>
 
-              <p className="mb-4 text-sm text-gray-600">
-                📝 Add subcategories to organize your items better
-              </p>
+              {!isCategoriesCollapsed && (
+                <>
+                  <p className="mb-4 text-sm text-gray-600">
+                    📝 Add subcategories to organize your items better
+                  </p>
 
-              <div className="space-y-4">
-                {metadataFields.map((field, index) => (
-                  <div
-                    key={field.id}
-                    className="rounded-lg border border-gray-200 bg-white p-4"
-                  >
-                    <div className="mb-3 flex items-center justify-between">
-                      <h4 className="flex items-center gap-2 text-base font-bold text-gray-800">
-                        <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-600 text-sm text-white">
-                          {index + 1}
-                        </span>
-                        {field.key || 'Category Name'}
-                      </h4>
-                      <button
-                        onClick={() => addArrayValue(field.id)}
-                        disabled={loading}
-                        className="flex items-center gap-1 rounded-lg bg-indigo px-3 py-1 text-sm text-white transition-colors hover:bg-gray-700"
+                  <div className="space-y-4">
+                    {metadataFields.map((field, index) => (
+                      <div
+                        key={field.id}
+                        className="rounded-lg border border-gray-200 bg-white p-4"
                       >
-                        <FaPlus size={12} />
-                        Add Item
-                      </button>
-                    </div>
-
-                    {/* Show field-level errors */}
-                    {(fieldErrors[`${field.id}_category`] ||
-                      fieldErrors[`${field.id}_subcategory`]) && (
-                      <div className="mb-3 rounded-lg border border-red-200 bg-red-50 p-3">
-                        <p className="text-sm font-medium text-red-600">
-                          ⚠️{' '}
-                          {fieldErrors[`${field.id}_category`] ||
-                            fieldErrors[`${field.id}_subcategory`]}
-                        </p>
-                      </div>
-                    )}
-
-                    <div className="space-y-4">
-                      {/* Category Name Section */}
-                      <div>
-                        <div className="mb-2 text-sm font-medium text-gray-700">
-                          Category Name
-                        </div>
-                        <input
-                          type="text"
-                          value={field.key}
-                          onChange={(e) => {
-                            setMetadataFields(
-                              metadataFields.map((f) =>
-                                f.id === field.id
-                                  ? { ...f, key: e.target.value }
-                                  : f
-                              )
-                            )
-                            if (fieldErrors[`${field.id}_category`]) {
-                              setFieldErrors((prev) => ({
-                                ...prev,
-                                [`${field.id}_category`]: '',
-                              }))
-                            }
-                          }}
-                          placeholder="Enter category name"
-                          className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
-                        />
-                      </div>
-
-                      {/* Subcategory Items Section */}
-                      <div>
-                        <div className="mb-2 text-sm font-medium text-gray-700">
-                          Subcategory Items
-                        </div>
-                        <div className="space-y-2">
-                          {field.value.map((val, valIndex) => (
-                            <div
-                              key={valIndex}
-                              className="flex items-center gap-2"
+                        <div className="mb-3 flex items-center justify-between">
+                          <h4 className="flex items-center gap-2 text-base font-bold text-gray-800">
+                            <span className="flex h-6 w-6 items-center justify-center rounded-full bg-gray-600 text-sm text-white">
+                              {index + 1}
+                            </span>
+                            {field.key || 'Category Name'}
+                          </h4>
+                          <div className="flex items-center gap-2">
+                            <button
+                              onClick={() => addArrayValue(field.id)}
+                              disabled={loading}
+                              className="flex items-center gap-1 rounded-lg bg-indigo px-3 py-1 text-sm text-white transition-colors hover:bg-gray-700"
                             >
-                              <input
-                                type="text"
-                                value={val.name || ''}
-                                onChange={(e) => {
-                                  updateArrayValue(
-                                    field.id,
-                                    valIndex,
-                                    e.target.value
-                                  )
-                                  if (fieldErrors[`${field.id}_subcategory`]) {
-                                    setFieldErrors((prev) => ({
-                                      ...prev,
-                                      [`${field.id}_subcategory`]: '',
-                                    }))
-                                  }
-                                }}
-                                placeholder="Enter subcategory item"
-                                className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
-                              />
-                              <button
-                                onClick={() =>
-                                  removeArrayValue(field.id, valIndex)
-                                }
-                                disabled={loading}
-                                className="rounded-lg bg-red-500 px-3 py-2 text-white transition-colors hover:bg-red-600"
-                                title="Remove item"
-                              >
-                                <FaTrash size={12} />
-                              </button>
-                            </div>
-                          ))}
+                              <FaPlus size={12} />
+                              Add Item
+                            </button>
+                            <button
+                              onClick={() => toggleCategoryCollapse(field.id)}
+                              className="flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-gray-100"
+                              title={
+                                collapsedCategories[field.id]
+                                  ? 'Expand category'
+                                  : 'Collapse category'
+                              }
+                            >
+                              {collapsedCategories[field.id] ? (
+                                <FaChevronDown
+                                  className="text-gray-600"
+                                  size={14}
+                                />
+                              ) : (
+                                <FaChevronUp
+                                  className="text-gray-600"
+                                  size={14}
+                                />
+                              )}
+                            </button>
+                          </div>
                         </div>
+
+                        {!collapsedCategories[field.id] && (
+                          <>
+                            {/* Show field-level errors */}
+                            {(fieldErrors[`${field.id}_category`] ||
+                              fieldErrors[`${field.id}_subcategory`]) && (
+                              <div className="mb-3 rounded-lg border border-red-200 bg-red-50 p-3">
+                                <p className="text-sm font-medium text-red-600">
+                                  ⚠️{' '}
+                                  {fieldErrors[`${field.id}_category`] ||
+                                    fieldErrors[`${field.id}_subcategory`]}
+                                </p>
+                              </div>
+                            )}
+
+                            <div className="space-y-4">
+                              {/* Category Name Section */}
+                              <div>
+                                <div className="mb-2 text-sm font-medium text-gray-700">
+                                  Category Name
+                                </div>
+                                <input
+                                  type="text"
+                                  value={field.key}
+                                  onChange={(e) => {
+                                    setMetadataFields(
+                                      metadataFields.map((f) =>
+                                        f.id === field.id
+                                          ? { ...f, key: e.target.value }
+                                          : f
+                                      )
+                                    )
+                                    if (fieldErrors[`${field.id}_category`]) {
+                                      setFieldErrors((prev) => ({
+                                        ...prev,
+                                        [`${field.id}_category`]: '',
+                                      }))
+                                    }
+                                  }}
+                                  placeholder="Enter category name"
+                                  className="w-full rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                                />
+                              </div>
+
+                              {/* Subcategory Items Section */}
+                              <div>
+                                <div className="mb-2 text-sm font-medium text-gray-700">
+                                  Subcategory Items
+                                </div>
+                                <div className="space-y-2">
+                                  {field.value.map((val, valIndex) => (
+                                    <div
+                                      key={valIndex}
+                                      className="flex items-center gap-2"
+                                    >
+                                      <input
+                                        type="text"
+                                        value={val.name || ''}
+                                        onChange={(e) => {
+                                          updateArrayValue(
+                                            field.id,
+                                            valIndex,
+                                            e.target.value
+                                          )
+                                          if (
+                                            fieldErrors[
+                                              `${field.id}_subcategory`
+                                            ]
+                                          ) {
+                                            setFieldErrors((prev) => ({
+                                              ...prev,
+                                              [`${field.id}_subcategory`]: '',
+                                            }))
+                                          }
+                                        }}
+                                        placeholder="Enter subcategory item"
+                                        className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:border-gray-500 focus:outline-none"
+                                      />
+                                      <button
+                                        onClick={() =>
+                                          removeArrayValue(field.id, valIndex)
+                                        }
+                                        disabled={loading}
+                                        className="rounded-lg bg-red-500 px-3 py-2 text-white transition-colors hover:bg-red-600"
+                                        title="Remove item"
+                                      >
+                                        <FaTrash size={12} />
+                                      </button>
+                                    </div>
+                                  ))}
+                                </div>
+                              </div>
+                            </div>
+                          </>
+                        )}
                       </div>
-                    </div>
+                    ))}
                   </div>
-                ))}
-              </div>
+                </>
+              )}
             </div>
           )}
 
