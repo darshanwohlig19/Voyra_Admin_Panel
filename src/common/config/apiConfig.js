@@ -45,6 +45,7 @@ const config = {
   ADD_SHOT_TYPE: baseUrl + '/api/adminShotType/addShotType',
   UPDATE_SHOT_TYPE: baseUrl + '/api/adminShotType/updateShotType',
   DELETE_SHOT_TYPE: baseUrl + '/api/adminShotType/deleteShotType',
+  UPDATE_SHOT_TYPE_STATUS: baseUrl + '/api/adminShotType/shotType/status',
 
   // Parameters API
   GET_PARAMETERS: baseUrl + '/api/adminParameters/getParameters',

@@ -21,6 +21,7 @@ const ShortTypeManagement = () => {
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isHeadingModalOpen, setIsHeadingModalOpen] = useState(false)
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false)
   const [selectedShotType, setSelectedShotType] = useState(null)
   const [selectedItem, setSelectedItem] = useState(null)
   const [editData, setEditData] = useState(null)
@@ -407,6 +408,66 @@ const ShortTypeManagement = () => {
     setIsEditModalOpen(true)
   }
 
+  const handleToggleStatus = (shotType, item) => {
+    setSelectedShotType(shotType)
+    setSelectedItem(item)
+    setIsStatusModalOpen(true)
+  }
+
+  const closeStatusModal = () => {
+    setIsStatusModalOpen(false)
+    setSelectedShotType(null)
+    setSelectedItem(null)
+  }
+
+  const confirmToggleStatus = async () => {
+    if (!selectedItem) return
+
+    showSpinner()
+    try {
+      // Toggle status between Active and Inactive
+      const newStatus = selectedItem.status === 'Active' ? 'Inactive' : 'Active'
+
+      // Use shotTypeId from item's _id
+      const apiUrl = `${config.UPDATE_SHOT_TYPE_STATUS}?shotTypeId=${selectedItem._id}&status=${newStatus}`
+
+      const response = await apiCall('put', apiUrl)
+
+      if (response.status === 200 || response.status === 201) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: `Shot type "${selectedItem.name}" status updated to ${newStatus} successfully`,
+          duration: 3000,
+        })
+
+        // Refresh shot types list
+        await fetchShotTypes()
+        closeStatusModal()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.msg ||
+            response?.data?.message ||
+            `Failed to update status to ${newStatus}`,
+          duration: 3000,
+        })
+      }
+    } catch (error) {
+      console.error('Error updating shot type status:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: error?.message || 'Failed to update shot type status',
+        duration: 3000,
+      })
+    } finally {
+      hideSpinner()
+    }
+  }
+
   const handleAddHeading = async (formData) => {
     showSpinner()
     try {
@@ -756,6 +817,7 @@ const ShortTypeManagement = () => {
                         item={item}
                         onEdit={handleEdit}
                         onDelete={handleDelete}
+                        onToggleStatus={handleToggleStatus}
                       />
                     ))
                   )}
@@ -858,6 +920,27 @@ const ShortTypeManagement = () => {
         confirmColorScheme="red"
         icon="delete"
         onConfirm={confirmDelete}
+      />
+
+      {/* Status Change Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isStatusModalOpen}
+        onClose={closeStatusModal}
+        title={
+          selectedItem?.status === 'Active'
+            ? 'Hide Shot Type'
+            : 'Unhide Shot Type'
+        }
+        message={`Are you sure you want to ${
+          selectedItem?.status === 'Active' ? 'hide' : 'unhide'
+        } "${selectedItem?.name}"?`}
+        confirmText={selectedItem?.status === 'Active' ? 'Hide' : 'Unhide'}
+        cancelText="Cancel"
+        confirmColorScheme={
+          selectedItem?.status === 'Active' ? 'orange' : 'green'
+        }
+        icon={selectedItem?.status === 'Active' ? 'warning' : 'info'}
+        onConfirm={confirmToggleStatus}
       />
     </div>
   )
