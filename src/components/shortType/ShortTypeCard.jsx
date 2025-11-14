@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react'
-import { FaEdit, FaTrash, FaChevronDown, FaChevronUp } from 'react-icons/fa'
+import { FaEdit, FaTrash, FaChevronDown } from 'react-icons/fa'
 
 const ShortTypeCard = ({ shotType, item, onEdit, onDelete }) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false)
@@ -8,21 +8,37 @@ const ShortTypeCard = ({ shotType, item, onEdit, onDelete }) => {
   const textRef = useRef(null)
   const compactTextRef = useRef(null)
 
-  // Check if text overflows for compact layout
+  // Check if text overflows beyond line-clamp
   useEffect(() => {
-    if (compactTextRef.current && item.typesubtitle) {
-      const element = compactTextRef.current
-      setShowExpandButton(element.scrollHeight > element.clientHeight)
-    }
-  }, [item.typesubtitle])
+    const checkOverflow = () => {
+      const currentRef = !item.image ? compactTextRef.current : textRef.current
+      if (currentRef && item.typesubtitle) {
+        // Temporarily remove line-clamp to get natural height
+        const originalDisplay = currentRef.style.webkitLineClamp
+        const originalOverflow = currentRef.style.webkitBoxOrient
+        const originalTextOverflow = currentRef.style.display
 
-  // Check if text overflows for full layout
-  useEffect(() => {
-    if (textRef.current && item.typesubtitle) {
-      const element = textRef.current
-      setShowExpandButton(element.scrollHeight > element.clientHeight)
+        currentRef.style.webkitLineClamp = 'unset'
+        currentRef.style.webkitBoxOrient = 'unset'
+        currentRef.style.display = 'block'
+
+        const naturalHeight = currentRef.scrollHeight
+
+        // Restore line-clamp
+        currentRef.style.webkitLineClamp =
+          originalDisplay || (!item.image ? '2' : '3')
+        currentRef.style.webkitBoxOrient = originalOverflow || 'vertical'
+        currentRef.style.display = originalTextOverflow || '-webkit-box'
+
+        const clampedHeight = currentRef.clientHeight
+        setShowExpandButton(naturalHeight > clampedHeight)
+      }
     }
-  }, [item.typesubtitle])
+
+    // Small delay to ensure DOM is rendered
+    const timeoutId = setTimeout(checkOverflow, 100)
+    return () => clearTimeout(timeoutId)
+  }, [item.typesubtitle, item.image])
 
   // Compact layout for items without images
   if (!item.image) {
@@ -57,35 +73,38 @@ const ShortTypeCard = ({ shotType, item, onEdit, onDelete }) => {
               </h3>
               {item.typesubtitle && (
                 <div>
-                  <p
-                    ref={compactTextRef}
-                    className={`mt-1 text-sm leading-relaxed text-gray-600 transition-colors duration-200 group-hover:text-gray-700 ${
-                      isExpanded ? '' : 'line-clamp-2'
-                    }`}
-                  >
-                    {item.typesubtitle}
-                  </p>
+                  <div className="relative">
+                    <p
+                      ref={compactTextRef}
+                      className={`mt-1 text-sm leading-relaxed text-gray-600 transition-colors duration-200 group-hover:text-gray-700 ${
+                        isExpanded
+                          ? 'cursor-pointer whitespace-pre-wrap'
+                          : 'line-clamp-2'
+                      }`}
+                      onClick={
+                        isExpanded ? () => setIsExpanded(false) : undefined
+                      }
+                    >
+                      {item.typesubtitle}
+                    </p>
 
-                  {/* Show expand button only if text overflows */}
-                  {showExpandButton && (
-                    <div className="mt-2 flex justify-start">
-                      <button
-                        onClick={() => setIsExpanded(!isExpanded)}
-                        className="bg-emerald-50/80 text-emerald-700 ring-emerald-200/50 hover:bg-emerald-100/90 hover:ring-emerald-300/60 focus:ring-emerald-500/40 group inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-medium ring-1 transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 active:scale-95"
-                      >
-                        <span className="group-hover:text-emerald-800 transition-colors duration-150">
-                          {isExpanded ? 'Less' : 'More'}
-                        </span>
-                        <div className="bg-emerald-200/60 group-hover:bg-emerald-300/80 flex h-3 w-3 items-center justify-center rounded-full transition-all duration-150">
-                          {isExpanded ? (
-                            <FaChevronUp className="text-emerald-700 text-[7px]" />
-                          ) : (
+                    {/* Show expand button only if text overflows and not expanded */}
+                    {showExpandButton && !isExpanded && (
+                      <div className="mt-2 flex justify-start">
+                        <button
+                          onClick={() => setIsExpanded(true)}
+                          className="bg-emerald-50/80 text-emerald-700 hover:bg-emerald-100/90 focus:ring-emerald-500/40 group inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1 text-[11px] font-medium transition-all duration-200 hover:shadow-sm focus:outline-none focus:ring-2 active:scale-95"
+                        >
+                          <span className="group-hover:text-emerald-800 transition-colors duration-150">
+                            Show More
+                          </span>
+                          <div className="bg-emerald-200/60 group-hover:bg-emerald-300/80 flex h-3 w-3 items-center justify-center rounded-full transition-all duration-150">
                             <FaChevronDown className="text-emerald-700 text-[7px]" />
-                          )}
-                        </div>
-                      </button>
-                    </div>
-                  )}
+                          </div>
+                        </button>
+                      </div>
+                    )}
+                  </div>
                 </div>
               )}
             </div>
@@ -132,7 +151,7 @@ const ShortTypeCard = ({ shotType, item, onEdit, onDelete }) => {
           src={item.image}
           alt={item.name}
           onLoad={() => setIsImageLoaded(true)}
-          className={`h-full w-full object-cover transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 ${
+          className={`h-full w-full object-contain transition-all duration-700 group-hover:scale-110 group-hover:brightness-110 ${
             isImageLoaded ? 'opacity-100' : 'opacity-0'
           }`}
         />
@@ -148,38 +167,39 @@ const ShortTypeCard = ({ shotType, item, onEdit, onDelete }) => {
         {/* Description with Expand/Collapse */}
         {item.typesubtitle && (
           <div className="mb-4">
-            <p
-              ref={textRef}
-              className={`text-sm leading-relaxed text-gray-600 transition-colors duration-200 group-hover:text-gray-700 ${
-                isExpanded ? '' : 'line-clamp-3'
-              }`}
-            >
-              {item.typesubtitle}
-            </p>
+            <div className="relative">
+              <p
+                ref={textRef}
+                className={`text-sm leading-relaxed text-gray-600 transition-colors duration-200 group-hover:text-gray-700 ${
+                  isExpanded
+                    ? 'cursor-pointer whitespace-pre-wrap'
+                    : 'line-clamp-3'
+                }`}
+                onClick={isExpanded ? () => setIsExpanded(false) : undefined}
+              >
+                {item.typesubtitle}
+              </p>
 
-            {/* Show expand button only if text overflows */}
-            {showExpandButton && (
-              <div className="mt-3 flex justify-center">
-                <button
-                  onClick={() => setIsExpanded(!isExpanded)}
-                  className="from-emerald-50 text-emerald-700 hover:ring-emerald-300/60 focus:ring-emerald-500/50 group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r to-teal-50 px-4 py-2 text-xs font-medium shadow-sm ring-1 ring-indigo transition-all duration-300 hover:scale-105 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-95"
-                >
-                  <span className="group-hover:text-emerald-800 transition-colors duration-200">
-                    {isExpanded ? 'Show less' : 'Show more'}
-                  </span>
-                  <div className="bg-emerald-100 group-hover:bg-emerald-200 flex h-4 w-4 items-center justify-center rounded-full transition-all duration-200">
-                    {isExpanded ? (
-                      <FaChevronUp className="text-emerald-600 text-[9px] transition-transform duration-200 group-hover:scale-110" />
-                    ) : (
+              {/* Show expand button only if text overflows and not expanded */}
+              {showExpandButton && !isExpanded && (
+                <div className="mt-3 flex justify-start">
+                  <button
+                    onClick={() => setIsExpanded(true)}
+                    className="from-emerald-50 text-emerald-700 hover:ring-emerald-300/60 focus:ring-emerald-500/50 group relative inline-flex items-center gap-2 rounded-full bg-gradient-to-r to-teal-50 px-4 py-2 text-xs font-medium shadow-sm transition-all duration-300 hover:scale-105 hover:shadow-md focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-95"
+                  >
+                    <span className="group-hover:text-emerald-800 transition-colors duration-200">
+                      Show More
+                    </span>
+                    <div className="bg-emerald-100 group-hover:bg-emerald-200 flex h-4 w-4 items-center justify-center rounded-full transition-all duration-200">
                       <FaChevronDown className="text-emerald-600 text-[9px] transition-transform duration-200 group-hover:scale-110" />
-                    )}
-                  </div>
+                    </div>
 
-                  {/* Subtle glow effect */}
-                  <div className="from-emerald-200/30 absolute -inset-0.5 -z-10 rounded-full bg-gradient-to-r to-teal-200/30 opacity-0 blur transition-opacity duration-300 group-hover:opacity-100" />
-                </button>
-              </div>
-            )}
+                    {/* Subtle glow effect */}
+                    <div className="from-emerald-200/30 absolute -inset-0.5 -z-10 rounded-full bg-gradient-to-r to-teal-200/30 opacity-0 blur transition-opacity duration-300 group-hover:opacity-100" />
+                  </button>
+                </div>
+              )}
+            </div>
           </div>
         )}
 
