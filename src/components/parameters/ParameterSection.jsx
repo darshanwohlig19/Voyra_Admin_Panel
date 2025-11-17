@@ -11,12 +11,14 @@ const ParameterSection = ({
   onElementUpdated,
   onElementDeleted,
   onSectionDeleted,
+  onElementStatusToggled,
 }) => {
   const [isAddElementModalOpen, setIsAddElementModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isDeleteSectionModalOpen, setIsDeleteSectionModalOpen] =
     useState(false)
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false)
   const [selectedElement, setSelectedElement] = useState(null)
   const { addToast } = useToaster()
 
@@ -122,6 +124,29 @@ const ParameterSection = ({
     setIsDeleteSectionModalOpen(false)
   }
 
+  const handleToggleStatus = (element) => {
+    setSelectedElement(element)
+    setIsStatusModalOpen(true)
+  }
+
+  const closeStatusModal = () => {
+    setIsStatusModalOpen(false)
+    setSelectedElement(null)
+  }
+
+  const confirmToggleStatus = () => {
+    if (!selectedElement) return
+
+    // Call parent callback to toggle element status
+    onElementStatusToggled(
+      section._id,
+      selectedElement._id,
+      selectedElement.elementStatus
+    )
+
+    closeStatusModal()
+  }
+
   return (
     <>
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -153,6 +178,7 @@ const ParameterSection = ({
               element={element}
               onEdit={handleEditElement}
               onDelete={handleDeleteElement}
+              onToggleStatus={handleToggleStatus}
             />
           ))}
         </div>
@@ -205,6 +231,29 @@ const ParameterSection = ({
         confirmColorScheme="red"
         icon="delete"
         onConfirm={confirmDeleteSection}
+      />
+
+      {/* Status Change Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isStatusModalOpen}
+        onClose={closeStatusModal}
+        title={
+          selectedElement?.elementStatus === 'Active'
+            ? 'Hide Parameter Element'
+            : 'Unhide Parameter Element'
+        }
+        message={`Are you sure you want to ${
+          selectedElement?.elementStatus === 'Active' ? 'hide' : 'unhide'
+        } "${selectedElement?.name}"?`}
+        confirmText={
+          selectedElement?.elementStatus === 'Active' ? 'Hide' : 'Unhide'
+        }
+        cancelText="Cancel"
+        confirmColorScheme={
+          selectedElement?.elementStatus === 'Active' ? 'orange' : 'green'
+        }
+        icon={selectedElement?.elementStatus === 'Active' ? 'warning' : 'info'}
+        onConfirm={confirmToggleStatus}
       />
     </>
   )

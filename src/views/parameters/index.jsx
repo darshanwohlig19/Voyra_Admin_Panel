@@ -107,9 +107,12 @@ const Parameters = () => {
       })
 
       // Build API URL with projectName and shotTypeName if selected
-      const apiUrl = selectedService && selectedPage
-        ? `${config.ADD_PARAMETERS}?projectName=${encodeURIComponent(selectedService)}&shotTypeName=${encodeURIComponent(selectedPage)}`
-        : config.ADD_PARAMETERS
+      const apiUrl =
+        selectedService && selectedPage
+          ? `${config.ADD_PARAMETERS}?projectName=${encodeURIComponent(
+              selectedService
+            )}&shotTypeName=${encodeURIComponent(selectedPage)}`
+          : config.ADD_PARAMETERS
 
       const response = await apiCall('post', apiUrl, formData, {
         headers: {
@@ -159,7 +162,9 @@ const Parameters = () => {
       // Build API URL with projectName and shotTypeName if selected
       const apiUrl =
         projectName && shotTypeName
-          ? `${config.GET_PARAMETERS}?projectName=${encodeURIComponent(projectName)}&shotTypeName=${encodeURIComponent(shotTypeName)}`
+          ? `${config.GET_PARAMETERS}?projectName=${encodeURIComponent(
+              projectName
+            )}&shotTypeName=${encodeURIComponent(shotTypeName)}`
           : config.GET_PARAMETERS
 
       const response = await apiCall('get', apiUrl)
@@ -283,7 +288,9 @@ const Parameters = () => {
     try {
       // Build API URL with projectName if selected
       const apiUrl = selectedService
-        ? `${config.GET_SHOT_TYPE_IN_PARAMS}?projectName=${encodeURIComponent(selectedService)}`
+        ? `${config.GET_SHOT_TYPE_IN_PARAMS}?projectName=${encodeURIComponent(
+            selectedService
+          )}`
         : config.GET_SHOT_TYPE_IN_PARAMS
 
       const response = await apiCall('get', apiUrl)
@@ -757,9 +764,14 @@ const Parameters = () => {
                     }
 
                     // Build API URL with projectName and shotTypeName if selected
-                    const apiUrl = selectedService && selectedPage
-                      ? `${config.UPDATE_PARAMETER}/${updatedElement._id}?projectName=${encodeURIComponent(selectedService)}&shotTypeName=${encodeURIComponent(selectedPage)}`
-                      : `${config.UPDATE_PARAMETER}/${updatedElement._id}`
+                    const apiUrl =
+                      selectedService && selectedPage
+                        ? `${config.UPDATE_PARAMETER}/${
+                            updatedElement._id
+                          }?projectName=${encodeURIComponent(
+                            selectedService
+                          )}&shotTypeName=${encodeURIComponent(selectedPage)}`
+                        : `${config.UPDATE_PARAMETER}/${updatedElement._id}`
 
                     // Call UPDATE API with element _id
                     const response = await apiCall('put', apiUrl, formData, {
@@ -806,9 +818,14 @@ const Parameters = () => {
                   showSpinner()
                   try {
                     // Build API URL with projectName and shotTypeName if selected
-                    const apiUrl = selectedService && selectedPage
-                      ? `${config.DELETE_PARAMETER}/${elementId}?projectName=${encodeURIComponent(selectedService)}&shotTypeName=${encodeURIComponent(selectedPage)}`
-                      : `${config.DELETE_PARAMETER}/${elementId}`
+                    const apiUrl =
+                      selectedService && selectedPage
+                        ? `${
+                            config.DELETE_PARAMETER
+                          }/${elementId}?projectName=${encodeURIComponent(
+                            selectedService
+                          )}&shotTypeName=${encodeURIComponent(selectedPage)}`
+                        : `${config.DELETE_PARAMETER}/${elementId}`
 
                     // Call DELETE API with element _id
                     const response = await apiCall('delete', apiUrl)
@@ -851,9 +868,14 @@ const Parameters = () => {
                   showSpinner()
                   try {
                     // Build API URL with projectName and shotTypeName if selected
-                    const apiUrl = selectedService && selectedPage
-                      ? `${config.DELETE_PARAMETER}/${sectionId}?projectName=${encodeURIComponent(selectedService)}&shotTypeName=${encodeURIComponent(selectedPage)}`
-                      : `${config.DELETE_PARAMETER}/${sectionId}`
+                    const apiUrl =
+                      selectedService && selectedPage
+                        ? `${
+                            config.DELETE_PARAMETER
+                          }/${sectionId}?projectName=${encodeURIComponent(
+                            selectedService
+                          )}&shotTypeName=${encodeURIComponent(selectedPage)}`
+                        : `${config.DELETE_PARAMETER}/${sectionId}`
 
                     // Call DELETE API with section _id
                     const response = await apiCall('delete', apiUrl)
@@ -886,6 +908,57 @@ const Parameters = () => {
                       type: 'error',
                       title: 'Error',
                       description: error?.message || 'Failed to delete section',
+                      duration: 3000,
+                    })
+                  } finally {
+                    hideSpinner()
+                  }
+                }}
+                onElementStatusToggled={async (
+                  sectionId,
+                  elementId,
+                  currentStatus
+                ) => {
+                  showSpinner()
+                  try {
+                    // Toggle status between Active and Inactive
+                    const newStatus =
+                      currentStatus === 'Active' ? 'Inactive' : 'Active'
+
+                    // Build API URL with element _id and new status
+                    const apiUrl = `${config.UPDATE_PARAMETER_STATUS}?_id=${elementId}&status=${newStatus}`
+
+                    const response = await apiCall('put', apiUrl)
+
+                    if (response.status === 200 || response.status === 201) {
+                      addToast({
+                        type: 'success',
+                        title: 'Success',
+                        description: `Element status updated to ${newStatus} successfully`,
+                        duration: 3000,
+                      })
+                      // Refresh parameters after successful update
+                      if (selectedService && selectedPage) {
+                        await fetchParameters(selectedService, selectedPage)
+                      }
+                    } else {
+                      addToast({
+                        type: 'error',
+                        title: 'Error',
+                        description:
+                          response?.data?.msg ||
+                          response?.data?.message ||
+                          `Failed to update status to ${newStatus}`,
+                        duration: 3000,
+                      })
+                    }
+                  } catch (error) {
+                    console.error('Error updating element status:', error)
+                    addToast({
+                      type: 'error',
+                      title: 'Error',
+                      description:
+                        error?.message || 'Failed to update element status',
                       duration: 3000,
                     })
                   } finally {

@@ -1,7 +1,12 @@
 import React, { useState, useEffect, useRef } from 'react'
 import { FaEdit, FaTrash, FaChevronDown } from 'react-icons/fa'
 
-const ParameterElementCard = ({ element, onEdit, onDelete }) => {
+const ParameterElementCard = ({
+  element,
+  onEdit,
+  onDelete,
+  onToggleStatus,
+}) => {
   const [isImageLoaded, setIsImageLoaded] = useState(false)
   const [isExpanded, setIsExpanded] = useState(false)
   const [showExpandButton, setShowExpandButton] = useState(false)
@@ -62,6 +67,28 @@ const ParameterElementCard = ({ element, onEdit, onDelete }) => {
             title="Delete Element"
           >
             <FaTrash className="text-xs" />
+          </button>
+
+          <button
+            onClick={() => onToggleStatus(element)}
+            className={`relative inline-flex h-8 w-14 items-center rounded-full border border-white/50 shadow-md backdrop-blur-sm transition-all duration-200 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-90 ${
+              element.elementStatus === 'Active'
+                ? 'bg-green-500/90 focus:ring-green-500'
+                : 'bg-gray-300/90 focus:ring-gray-500'
+            }`}
+            title={
+              element.elementStatus === 'Active'
+                ? 'Active - Click to hide'
+                : 'Inactive - Click to unhide'
+            }
+          >
+            <span
+              className={`inline-block h-5 w-5 transform rounded-full bg-white shadow-md transition-transform duration-200 ${
+                element.elementStatus === 'Active'
+                  ? 'translate-x-[30px]'
+                  : 'translate-x-[4px]'
+              }`}
+            />
           </button>
         </div>
 
@@ -138,6 +165,28 @@ const ParameterElementCard = ({ element, onEdit, onDelete }) => {
           title="Delete Element"
         >
           <FaTrash className="text-sm" />
+        </button>
+
+        <button
+          onClick={() => onToggleStatus(element)}
+          className={`relative inline-flex h-10 w-16 items-center rounded-full border border-white/30 shadow-lg backdrop-blur-xl transition-all duration-300 focus:outline-none focus:ring-2 focus:ring-offset-2 active:scale-90 ${
+            element.elementStatus === 'Active'
+              ? 'bg-green-500/90 focus:ring-green-500'
+              : 'bg-gray-300/90 focus:ring-gray-500'
+          }`}
+          title={
+            element.elementStatus === 'Active'
+              ? 'Active - Click to hide'
+              : 'Inactive - Click to unhide'
+          }
+        >
+          <span
+            className={`inline-block h-6 w-6 transform rounded-full bg-white shadow-md transition-transform duration-200 ${
+              element.elementStatus === 'Active'
+                ? 'translate-x-[34px]'
+                : 'translate-x-[6px]'
+            }`}
+          />
         </button>
       </div>
 
