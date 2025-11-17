@@ -53,26 +53,17 @@ const ShortTypeManagement = () => {
 
   const fetchServices = async () => {
     try {
-      const response = await apiCall('get', config.GET_SERVICE_TYPES)
+      const response = await apiCall('get', config.GET_PROJECT_TYPES)
 
       if (response.status === 200 && response.data) {
         const responseData = response.data.data || response.data
         const isSuccessful =
           response.data.status_code === 200 || response.data.success === true
 
-        if (isSuccessful && responseData) {
-          let data = responseData
-          if (Array.isArray(responseData) && responseData.length > 0) {
-            data = responseData[0]
-          }
-
-          if (data && data.projects && Array.isArray(data.projects)) {
-            const projects = data.projects.map((project) => ({
-              _id: project._id,
-              name: project.name,
-            }))
-            setServiceItems(projects)
-          }
+        if (isSuccessful && responseData && Array.isArray(responseData)) {
+          // Response is an array of project names (strings)
+          const projectNames = responseData
+          setServiceItems(projectNames)
         }
       } else if (response?.status === 404) {
         setServiceItems([])
@@ -87,8 +78,8 @@ const ShortTypeManagement = () => {
     showSpinner()
     try {
       const apiUrl = selectedService
-        ? `${config.GET_SHOT_TYPE_DATA}?projectTypeId=${selectedService}`
-        : config.GET_SHOT_TYPE_DATA
+        ? `${config.GET_SHOT_TYPES}?projectName=${encodeURIComponent(selectedService)}`
+        : config.GET_SHOT_TYPES
 
       const response = await apiCall('get', apiUrl)
 
@@ -110,37 +101,31 @@ const ShortTypeManagement = () => {
         return
       }
 
-      let apiData = null
+      // API returns full shot type object
+      const responseData = response.data.data || response.data
+      const isSuccessful =
+        response.data.code === 2000 ||
+        response.data.status_code === 200 ||
+        response.data.success === true
 
-      if (
-        response?.data?.code === 2000 ||
-        response?.data?.status_code === 200
-      ) {
-        apiData = response.data.data
-      } else if (response?.data?._id) {
-        apiData = response.data
-      } else if (Array.isArray(response?.data)) {
-        apiData = response.data[0]
-      }
+      if (isSuccessful && responseData) {
+        // Check if responseData is the shotType object
+        if (responseData._id && responseData.items) {
+          const transformedData = {
+            _id: responseData._id,
+            title: responseData.title || '',
+            subtitle: responseData.subtitle || '',
+            items: responseData.items || [],
+            createdAt: responseData.createdAt,
+            updatedAt: responseData.updatedAt,
+          }
 
-      if (!apiData) {
-        setShotTypes([])
-        setTotalItems(0)
-        return
-      }
-
-      if (apiData._id) {
-        const transformedData = {
-          _id: apiData._id,
-          title: apiData.title || '',
-          subtitle: apiData.subtitle || '',
-          items: apiData.items || [],
-          createdAt: apiData.createdAt,
-          updatedAt: apiData.updatedAt,
+          setShotTypes([transformedData])
+          setTotalItems(transformedData.items?.length || 0)
+        } else {
+          setShotTypes([])
+          setTotalItems(0)
         }
-
-        setShotTypes([transformedData])
-        setTotalItems(transformedData.items?.length || 0)
       } else {
         setShotTypes([])
         setTotalItems(0)
@@ -677,9 +662,9 @@ const ShortTypeManagement = () => {
                 >
                   <option value="">Select Project</option>
                   {serviceItems.length > 0 ? (
-                    serviceItems.map((item) => (
-                      <option key={item._id} value={item._id}>
-                        {item.name}
+                    serviceItems.map((projectName, index) => (
+                      <option key={index} value={projectName}>
+                        {projectName}
                       </option>
                     ))
                   ) : (

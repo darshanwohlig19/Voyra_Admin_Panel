@@ -39,6 +39,7 @@ const config = {
   ADD_SHORT_TYPE: baseUrl + '/api/adminShotType/addShotType',
 
   // Shot Type API
+  GET_PROJECT_TYPES: baseUrl + '/api/adminShotType/projectType',
   GET_SHOT_TYPE_DATA: baseUrl + '/api/adminShotType/getShotTypeData',
   GET_SHOT_TYPES: baseUrl + '/api/adminShotType/getShotTypes',
   GET_SHOT_TYPE_BY_ID: baseUrl + '/api/adminShotType/getShotType',
@@ -48,6 +49,7 @@ const config = {
   UPDATE_SHOT_TYPE_STATUS: baseUrl + '/api/adminShotType/shotType/status',
 
   // Parameters API
+  GET_SHOT_TYPE_IN_PARAMS: baseUrl + '/api/adminParameters/getShotTypes',
   GET_PARAMETERS: baseUrl + '/api/adminParameters/getParameters',
   ADD_PARAMETERS: baseUrl + '/api/adminParameters/addParameters',
   UPDATE_PARAMETER: baseUrl + '/api/adminParameters/UpdateParameter',
