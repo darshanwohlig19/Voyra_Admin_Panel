@@ -12,6 +12,7 @@ const ParameterSection = ({
   onElementDeleted,
   onSectionDeleted,
   onElementStatusToggled,
+  onSectionStatusToggled,
 }) => {
   const [isAddElementModalOpen, setIsAddElementModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
@@ -19,6 +20,8 @@ const ParameterSection = ({
   const [isDeleteSectionModalOpen, setIsDeleteSectionModalOpen] =
     useState(false)
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false)
+  const [isSectionStatusModalOpen, setIsSectionStatusModalOpen] =
+    useState(false)
   const [selectedElement, setSelectedElement] = useState(null)
   const { addToast } = useToaster()
 
@@ -147,6 +150,21 @@ const ParameterSection = ({
     closeStatusModal()
   }
 
+  const handleToggleSectionStatus = () => {
+    setIsSectionStatusModalOpen(true)
+  }
+
+  const closeSectionStatusModal = () => {
+    setIsSectionStatusModalOpen(false)
+  }
+
+  const confirmToggleSectionStatus = () => {
+    // Call parent callback to toggle section status
+    onSectionStatusToggled(section._id, section.categoryStatus)
+
+    closeSectionStatusModal()
+  }
+
   return (
     <>
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
@@ -155,6 +173,18 @@ const ParameterSection = ({
             {section.categoryTitle}
           </h2>
           <div className="flex items-center gap-3">
+            <button
+              onClick={handleToggleSectionStatus}
+              className={`flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-semibold shadow-sm transition-all hover:shadow-md active:scale-95 ${
+                section.categoryStatus === 'Active'
+                  ? 'border-orange-300 bg-white text-orange-600 hover:border-orange-500 hover:bg-orange-50'
+                  : 'border-green-300 bg-white text-green-600 hover:border-green-500 hover:bg-green-50'
+              }`}
+            >
+              {section.categoryStatus === 'Active'
+                ? 'Hide Section'
+                : 'Unhide Section'}
+            </button>
             <button
               onClick={handleDeleteSection}
               className="flex items-center gap-2 rounded-lg border border-red-300 bg-white px-5 py-2.5 text-sm font-semibold text-red-600 shadow-sm transition-all hover:border-red-500 hover:bg-red-50 hover:shadow-md active:scale-95"
@@ -254,6 +284,29 @@ const ParameterSection = ({
         }
         icon={selectedElement?.elementStatus === 'Active' ? 'warning' : 'info'}
         onConfirm={confirmToggleStatus}
+      />
+
+      {/* Section Status Change Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isSectionStatusModalOpen}
+        onClose={closeSectionStatusModal}
+        title={
+          section?.categoryStatus === 'Active'
+            ? 'Hide Section'
+            : 'Unhide Section'
+        }
+        message={`Are you sure you want to ${
+          section?.categoryStatus === 'Active' ? 'hide' : 'unhide'
+        } the section "${section?.categoryTitle}"? This will ${
+          section?.categoryStatus === 'Active' ? 'hide' : 'unhide'
+        } all elements in this section.`}
+        confirmText={section?.categoryStatus === 'Active' ? 'Hide' : 'Unhide'}
+        cancelText="Cancel"
+        confirmColorScheme={
+          section?.categoryStatus === 'Active' ? 'orange' : 'green'
+        }
+        icon={section?.categoryStatus === 'Active' ? 'warning' : 'info'}
+        onConfirm={confirmToggleSectionStatus}
       />
     </>
   )

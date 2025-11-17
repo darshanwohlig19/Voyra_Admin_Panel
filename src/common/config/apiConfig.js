@@ -55,6 +55,7 @@ const config = {
   UPDATE_PARAMETER: baseUrl + '/api/adminParameters/UpdateParameter',
   DELETE_PARAMETER: baseUrl + '/api/adminParameters/deleteParameter',
   UPDATE_PARAMETER_STATUS: baseUrl + '/api/adminParameters/status',
+  UPDATE_SECTION_STATUS: baseUrl + '/api/adminParameters/status',
 
   // Projects API (Service Types)
   GET_SERVICE_TYPES: baseUrl + '/api/adminProjectType/ProjectType',

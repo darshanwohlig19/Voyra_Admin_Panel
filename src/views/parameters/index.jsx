@@ -965,6 +965,53 @@ const Parameters = () => {
                     hideSpinner()
                   }
                 }}
+                onSectionStatusToggled={async (sectionId, currentStatus) => {
+                  showSpinner()
+                  try {
+                    // Toggle status between Active and Inactive
+                    const newStatus =
+                      currentStatus === 'Active' ? 'Inactive' : 'Active'
+
+                    // Build API URL with section _id and new status
+                    const apiUrl = `${config.UPDATE_SECTION_STATUS}?_id=${sectionId}&status=${newStatus}`
+
+                    const response = await apiCall('put', apiUrl)
+
+                    if (response.status === 200 || response.status === 201) {
+                      addToast({
+                        type: 'success',
+                        title: 'Success',
+                        description: `Section status updated to ${newStatus} successfully`,
+                        duration: 3000,
+                      })
+                      // Refresh parameters after successful update
+                      if (selectedService && selectedPage) {
+                        await fetchParameters(selectedService, selectedPage)
+                      }
+                    } else {
+                      addToast({
+                        type: 'error',
+                        title: 'Error',
+                        description:
+                          response?.data?.msg ||
+                          response?.data?.message ||
+                          `Failed to update section status to ${newStatus}`,
+                        duration: 3000,
+                      })
+                    }
+                  } catch (error) {
+                    console.error('Error updating section status:', error)
+                    addToast({
+                      type: 'error',
+                      title: 'Error',
+                      description:
+                        error?.message || 'Failed to update section status',
+                      duration: 3000,
+                    })
+                  } finally {
+                    hideSpinner()
+                  }
+                }}
               />
             ))}
           </div>
