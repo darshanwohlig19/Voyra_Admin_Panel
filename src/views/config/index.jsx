@@ -185,34 +185,74 @@ const Config = () => {
 
     showSpinner()
     try {
-      if (configMode === 'all') {
-        // Save global config for all organizations
-        // const payload = {
-        //   imageModel: imageGeneration,
-        //   videoModel: videoGeneration,
-        //   audioModel: voice,
-        // }
-        // const response = await apiCall('post', config.SAVE_GLOBAL_CONFIG, payload)
-      } else {
-        // Save organization-specific config
-        // const payload = {
-        //   organizationId: selectedOrganization,
-        //   imageModel: imageGeneration,
-        //   videoModel: videoGeneration,
-        //   audioModel: voice,
-        // }
-        // const response = await apiCall('post', config.SAVE_ORG_CONFIG, payload)
+      // Build payload based on selected models
+      const payload = {}
+
+      // Add ImageModel if selected
+      if (imageGeneration) {
+        const selectedImageOption = imageOptions.find(
+          (opt) => opt.value === imageGeneration
+        )
+        if (selectedImageOption) {
+          payload.ImageModel = [{ modelLabel: selectedImageOption.label }]
+        }
       }
 
-      addToast({
-        type: 'success',
-        title: 'Success',
-        description:
-          configMode === 'all'
-            ? 'Global configuration saved successfully'
-            : 'Organization configuration saved successfully',
-        duration: 3000,
-      })
+      // Add VideoModel if selected
+      if (videoGeneration) {
+        const selectedVideoOption = videoOptions.find(
+          (opt) => opt.value === videoGeneration
+        )
+        if (selectedVideoOption) {
+          payload.VideoModel = [{ modelLabel: selectedVideoOption.label }]
+        }
+      }
+
+      // Add AudioModel if selected
+      if (voice) {
+        const selectedVoiceOption = voiceOptions.find(
+          (opt) => opt.value === voice
+        )
+        if (selectedVoiceOption) {
+          payload.AudioModel = [{ modelLabel: selectedVoiceOption.label }]
+        }
+      }
+
+      // For specific organization, add orgName
+      if (configMode === 'specific') {
+        const selectedOrg = organizations.find(
+          (org) => org._id === selectedOrganization
+        )
+        if (selectedOrg) {
+          payload.orgName = selectedOrg.organizationName || selectedOrg.email
+        }
+      }
+
+      // Call API
+      const response = await apiCall('post', config.ENABLE_MODEL_BULK, payload)
+
+      if (response.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description:
+            configMode === 'all'
+              ? 'Global configuration saved successfully'
+              : 'Organization configuration saved successfully',
+          duration: 3000,
+        })
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.msg ||
+            response?.data?.message ||
+            'Failed to save configuration',
+          duration: 3000,
+        })
+      }
+
       hideSpinner()
     } catch (error) {
       console.error('Error saving configuration:', error)

@@ -1,13 +1,14 @@
 const baseUrl = process.env.REACT_APP_API_BASE_URL
 
 const config = {
-  //Login
-  // SIGNUP_API: baseUrl + 'api/signup',
+  // Organization APIs
   GET_ORGANIZATIONS: baseUrl + '/api/organizations/getOrganizations',
   CHANGE_ORGANIZATION_STATUS:
     baseUrl + '/api/organizations/changeOrganizationStatus',
   DELETE_ORGANIZATION: baseUrl + '/api/organizations/deleteOrganization',
+  // UPDATE_ORGANIZATION: baseUrl + '/api/organizations/updateOrganization',
   GET_ORG_USERS: baseUrl + '/api/orgUsers',
+  // SIGNUP_API
 
   SIGNIN_API: baseUrl + '/api/userAuth/login',
 
@@ -65,5 +66,6 @@ const config = {
 
   // Config API
   GET_MEDIA_MODELS: baseUrl + '/api/admin/getMediaModels',
+  ENABLE_MODEL_BULK: baseUrl + '/api/admin/enableModelBulk',
 }
 export default config
