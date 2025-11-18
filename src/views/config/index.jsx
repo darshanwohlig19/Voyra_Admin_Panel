@@ -10,12 +10,18 @@ const Config = () => {
   const [videoGeneration, setVideoGeneration] = useState('')
   const [voice, setVoice] = useState('')
   const [character, setCharacter] = useState('')
+
+  // State for dropdown options
+  const [imageOptions, setImageOptions] = useState([])
+  const [videoOptions, setVideoOptions] = useState([])
+  const [voiceOptions, setVoiceOptions] = useState([])
+
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
   const { addToast } = useToaster()
 
   useEffect(() => {
-    // fetchConfigData()
+    fetchMediaModels()
   }, [])
 
   const fetchConfigData = async () => {
@@ -31,6 +37,51 @@ const Config = () => {
         type: 'error',
         title: 'Error',
         description: error?.message || 'Failed to fetch configuration',
+        duration: 3000,
+      })
+      hideSpinner()
+    }
+  }
+
+  const fetchMediaModels = async () => {
+    showSpinner()
+    try {
+      // Fetch all media models in parallel
+      const [imageResponse, videoResponse, voiceResponse] = await Promise.all([
+        apiCall('get', `${config.GET_MEDIA_MODELS}?media=image`),
+        apiCall('get', `${config.GET_MEDIA_MODELS}?media=video`),
+        apiCall('get', `${config.GET_MEDIA_MODELS}?media=audio`),
+      ])
+
+      // Extract models from the response structure: response.data.data.models
+      if (
+        imageResponse?.data?.data?.models &&
+        Array.isArray(imageResponse.data.data.models)
+      ) {
+        setImageOptions(imageResponse.data.data.models)
+      }
+
+      if (
+        videoResponse?.data?.data?.models &&
+        Array.isArray(videoResponse.data.data.models)
+      ) {
+        setVideoOptions(videoResponse.data.data.models)
+      }
+
+      if (
+        voiceResponse?.data?.data?.models &&
+        Array.isArray(voiceResponse.data.data.models)
+      ) {
+        setVoiceOptions(voiceResponse.data.data.models)
+      }
+
+      hideSpinner()
+    } catch (error) {
+      console.error('Error fetching media models:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: error?.message || 'Failed to fetch media models',
         duration: 3000,
       })
       hideSpinner()
@@ -81,9 +132,12 @@ const Config = () => {
                     className="focus:border-indigo-500 focus:ring-indigo-500/20 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all focus:outline-none focus:ring-2"
                   >
                     <option value="">Select an option</option>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
+                    {Array.isArray(imageOptions) &&
+                      imageOptions.map((option) => (
+                        <option key={option._id} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                   </select>
                 </div>
               </div>
@@ -108,17 +162,20 @@ const Config = () => {
                     className="focus:border-indigo-500 focus:ring-indigo-500/20 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all focus:outline-none focus:ring-2"
                   >
                     <option value="">Select an option</option>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
+                    {Array.isArray(videoOptions) &&
+                      videoOptions.map((option) => (
+                        <option key={option._id} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                   </select>
                 </div>
               </div>
 
-              {/* Voice Section */}
+              {/* Audio Section */}
               <div className="mb-6">
                 <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                  Voice
+                  Audio Generation
                 </h3>
 
                 <div className="space-y-2">
@@ -135,42 +192,20 @@ const Config = () => {
                     className="focus:border-indigo-500 focus:ring-indigo-500/20 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all focus:outline-none focus:ring-2"
                   >
                     <option value="">Select an option</option>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
+                    {Array.isArray(voiceOptions) &&
+                      voiceOptions.map((option) => (
+                        <option key={option._id} value={option.value}>
+                          {option.label}
+                        </option>
+                      ))}
                   </select>
                 </div>
               </div>
 
               {/* Character Section */}
-              <div className="mb-6">
-                <h3 className="mb-4 text-lg font-semibold text-gray-900">
-                  Character
-                </h3>
-
-                <div className="space-y-2">
-                  <label
-                    htmlFor="character"
-                    className="block text-sm font-medium text-gray-700"
-                  >
-                    Select Option
-                  </label>
-                  <select
-                    id="character"
-                    value={character}
-                    onChange={(e) => setCharacter(e.target.value)}
-                    className="focus:border-indigo-500 focus:ring-indigo-500/20 block w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all focus:outline-none focus:ring-2"
-                  >
-                    <option value="">Select an option</option>
-                    <option value="option1">Option 1</option>
-                    <option value="option2">Option 2</option>
-                    <option value="option3">Option 3</option>
-                  </select>
-                </div>
-              </div>
 
               {/* Submit Button */}
-              <div className="flex justify-end gap-3 border-t border-gray-200 pt-6">
+              <div className="flex justify-end gap-3 border-gray-200 pt-6">
                 <button
                   type="button"
                   className="rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-semibold text-gray-700 shadow-sm transition-all hover:bg-gray-50 active:scale-95"

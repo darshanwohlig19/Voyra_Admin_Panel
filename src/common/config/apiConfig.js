@@ -62,5 +62,8 @@ const config = {
   ADD_SERVICE_TYPE: baseUrl + '/api/adminProjectType/ProjectType',
   DELETE_SERVICE_TYPE: baseUrl + '/api/adminProjectType/projectType',
   UPDATE_PROJECT_STATUS: baseUrl + '/api/adminProjectType/projectType/status',
+
+  // Config API
+  GET_MEDIA_MODELS: baseUrl + '/api/admin/getMediaModels',
 }
 export default config
