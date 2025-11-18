@@ -60,12 +60,9 @@ const Config = () => {
 
   const fetchOrganizations = async () => {
     try {
-      const response = await apiCall('get', config.GET_ORGANIZATIONS)
-      if (
-        response?.data?.data?.orgs &&
-        Array.isArray(response.data.data.orgs)
-      ) {
-        setOrganizations(response.data.data.orgs)
+      const response = await apiCall('get', config.GET_ORG_NAME)
+      if (response?.data?.data && Array.isArray(response.data.data)) {
+        setOrganizations(response.data.data)
       }
     } catch (error) {
       console.error('Error fetching organizations:', error)
@@ -221,10 +218,12 @@ const Config = () => {
       // For specific organization, add orgName
       if (configMode === 'specific') {
         const selectedOrg = organizations.find(
-          (org) => org._id === selectedOrganization
+          (org) =>
+            org._id === selectedOrganization ||
+            org.orgName === selectedOrganization
         )
         if (selectedOrg) {
-          payload.orgName = selectedOrg.organizationName || selectedOrg.email
+          payload.orgName = selectedOrg.orgName
         }
       }
 
@@ -355,10 +354,14 @@ const Config = () => {
                       Organization
                     </label>
                     <SearchableDropdown
-                      options={organizations.map((org) => ({
-                        value: org._id,
-                        label: org.username || org.email,
-                      }))}
+                      options={
+                        Array.isArray(organizations)
+                          ? organizations.map((org) => ({
+                              value: org._id || org.orgName,
+                              label: org.orgName || 'Unknown Organization',
+                            }))
+                          : []
+                      }
                       value={selectedOrganization}
                       onChange={(value) => {
                         setSelectedOrganization(value)

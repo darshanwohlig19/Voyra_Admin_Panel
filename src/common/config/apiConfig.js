@@ -67,5 +67,6 @@ const config = {
   // Config API
   GET_MEDIA_MODELS: baseUrl + '/api/admin/getMediaModels',
   ENABLE_MODEL_BULK: baseUrl + '/api/admin/enableModelBulk',
+  GET_ORG_NAME: baseUrl + '/api/admin/getOrgName',
 }
 export default config
