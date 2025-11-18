@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react'
-import { MdOutlineFolderOpen, MdMovie } from 'react-icons/md'
+import { MdOutlineFolderOpen, MdMovie, MdDashboard } from 'react-icons/md'
 import SignIn from 'views/signIn/signIn'
 import SignUp from 'views/signIn/signUp'
 import { FiTrash2 } from 'react-icons/fi'
 import { useParams } from 'react-router-dom'
 import { FaYoutube, FaCog } from 'react-icons/fa'
 import { ChartNoAxesCombined } from 'lucide-react'
-import DashboardIcon from '../src/assets/svg/dashboard.svg'
 import { FaFolderOpen } from 'react-icons/fa'
 import { FaUsers } from 'react-icons/fa'
 import Dashboard from 'views/dashboard'
@@ -39,9 +38,7 @@ const RoutesComponent = () => {
         name: 'Sign In',
         path: 'sign-in',
         layout: '/afterLogin',
-        icon: (
-          <img src={DashboardIcon} alt="Dashboard Icon" className="h-6 w-6" />
-        ),
+        icon: <MdDashboard className="h-6 w-6" />,
         component: <SignIn />,
         isComing: false,
         isVisible: false,
@@ -50,9 +47,7 @@ const RoutesComponent = () => {
         name: 'Sign Up',
         path: 'sign-up',
         layout: '/afterLogin',
-        icon: (
-          <img src={DashboardIcon} alt="Dashboard Icon" className="h-6 w-6" />
-        ),
+        icon: <MdDashboard className="h-6 w-6" />,
         component: <SignUp />,
         isComing: false,
         isVisible: false,
@@ -61,9 +56,7 @@ const RoutesComponent = () => {
         name: 'Dashboard',
         path: '',
         layout: '/afterLogin',
-        icon: (
-          <img src={DashboardIcon} alt="Dashboard Icon" className="h-6 w-6" />
-        ),
+        icon: <MdDashboard className="h-6 w-6" />,
         component: <Dashboard />,
         isComing: false,
         isVisible: isSuperAdmin, // Only visible to superadmin
