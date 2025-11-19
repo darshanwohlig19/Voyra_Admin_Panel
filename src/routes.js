@@ -11,9 +11,7 @@ import { FaUsers } from 'react-icons/fa'
 import Dashboard from 'views/dashboard'
 import Organizations from 'views/organizations'
 import OrganizationDetail from 'views/organizations/OrganizationDetail'
-import ShortType from 'views/shortType'
-import Parameters from 'views/parameters'
-import Projects from 'views/projects'
+import ProjectWorkflow from 'views/projectWorkflow'
 import Config from 'views/config'
 import { getEncryptedCookie } from 'common/utils/cookieUtils'
 
@@ -81,29 +79,11 @@ const RoutesComponent = () => {
         isVisible: false,
       },
       {
-        name: 'Projects',
-        path: 'projects',
+        name: 'Workflow',
+        path: 'workflow',
         layout: '/afterLogin',
         icon: <FaFolderOpen className="h-6 w-6" />,
-        component: <Projects />,
-        isComing: false,
-        isVisible: isSuperAdmin, // Only visible to superadmin
-      },
-      {
-        name: 'Shot Type',
-        path: 'shot-type',
-        layout: '/afterLogin',
-        icon: <MdMovie className="h-6 w-6" />,
-        component: <ShortType />,
-        isComing: false,
-        isVisible: isSuperAdmin, // Only visible to superadmin
-      },
-      {
-        name: 'Parameters',
-        path: 'parameters',
-        layout: '/afterLogin',
-        icon: <MdOutlineFolderOpen className="h-6 w-6" />,
-        component: <Parameters />,
+        component: <ProjectWorkflow />,
         isComing: false,
         isVisible: isSuperAdmin, // Only visible to superadmin
       },
