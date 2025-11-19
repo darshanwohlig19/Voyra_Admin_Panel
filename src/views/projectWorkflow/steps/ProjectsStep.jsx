@@ -12,6 +12,7 @@ const ProjectsStep = ({
   selectedProject,
   onProjectSelect,
   onProjectCreated,
+  navigationButtons,
 }) => {
   const [services, setServices] = useState([])
   const [organizationId, setOrganizationId] = useState(null)
@@ -630,6 +631,12 @@ const ProjectsStep = ({
           Add Project
         </button>
       </div>
+
+      {/* Divider */}
+      <div className="my-6 border-t border-gray-200"></div>
+
+      {/* Navigation Buttons */}
+      {navigationButtons && <div className="mb-6">{navigationButtons}</div>}
 
       <DataTable
         columns={columns}

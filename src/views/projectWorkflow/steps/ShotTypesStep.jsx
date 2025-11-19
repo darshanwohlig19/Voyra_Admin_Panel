@@ -15,6 +15,7 @@ const ShotTypesStep = ({
   onProjectChange,
   onShotTypeSelect,
   onShotTypeCreated,
+  navigationButtons,
 }) => {
   const [shotTypes, setShotTypes] = useState([])
   const [totalItems, setTotalItems] = useState(0)
@@ -723,6 +724,12 @@ const ShotTypesStep = ({
           </button>
         </div>
       </div>
+
+      {/* Divider */}
+      <div className="my-6 border-t border-gray-200"></div>
+
+      {/* Navigation Buttons */}
+      {navigationButtons && <div className="mb-6">{navigationButtons}</div>}
 
       {/* Show message if no project is selected */}
       {!selectedProject ? (
