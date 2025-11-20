@@ -4,16 +4,12 @@ import Stepper from '../../components/Stepper'
 import ProjectsStep from './steps/ProjectsStep'
 import ShotTypesStep from './steps/ShotTypesStep'
 import ParametersStep from './steps/ParametersStep'
-import ConfirmationModal from '../../components/modal/ConfirmationModal'
 import { useToaster } from '../../common/Toaster'
 
 const ProjectWorkflow = () => {
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedProject, setSelectedProject] = useState('')
   const [selectedShotType, setSelectedShotType] = useState('')
-  const [showConfirmationModal, setShowConfirmationModal] = useState(false)
-  const [pendingProject, setPendingProject] = useState('')
-  const [pendingAction, setPendingAction] = useState(null)
   const { addToast } = useToaster()
 
   // Steps configuration
@@ -54,57 +50,18 @@ const ProjectWorkflow = () => {
     }
   }
 
-  // Handle project selection change with confirmation
+  // Handle project selection change
   const handleProjectChange = (newProject) => {
-    // If we're on step 2 or 3 and changing project, show confirmation
-    if (currentStep >= 2 && selectedProject && newProject !== selectedProject) {
-      setPendingProject(newProject)
-      setPendingAction('changeProject')
-      setShowConfirmationModal(true)
-    } else {
-      setSelectedProject(newProject)
-      // Clear shot type when project changes
-      if (newProject !== selectedProject) {
-        setSelectedShotType('')
-      }
+    setSelectedProject(newProject)
+    // Clear shot type when project changes
+    if (newProject !== selectedProject) {
+      setSelectedShotType('')
     }
   }
 
-  // Handle shot type selection change with confirmation
+  // Handle shot type selection change
   const handleShotTypeChange = (newShotType) => {
-    // If we're on step 3 and changing shot type, show confirmation
-    if (
-      currentStep === 3 &&
-      selectedShotType &&
-      newShotType !== selectedShotType
-    ) {
-      setPendingAction(() => () => {
-        setSelectedShotType(newShotType)
-      })
-      setShowConfirmationModal(true)
-    } else {
-      setSelectedShotType(newShotType)
-    }
-  }
-
-  // Confirm the pending change
-  const handleConfirmChange = () => {
-    if (pendingAction === 'changeProject') {
-      setSelectedProject(pendingProject)
-      setSelectedShotType('') // Clear shot type when project changes
-    } else if (typeof pendingAction === 'function') {
-      pendingAction()
-    }
-    setShowConfirmationModal(false)
-    setPendingProject('')
-    setPendingAction(null)
-  }
-
-  // Cancel the pending change
-  const handleCancelChange = () => {
-    setShowConfirmationModal(false)
-    setPendingProject('')
-    setPendingAction(null)
+    setSelectedShotType(newShotType)
   }
 
   // Auto-advance logic (optional - can be enabled if needed)
@@ -162,8 +119,8 @@ const ProjectWorkflow = () => {
       />
 
       {/* Step Content */}
-      <div className="mx-auto max-w-7xl">
-        <div className="overflow-hidden rounded-lg bg-white shadow">
+      <div className="w-full">
+        <div className="overflow-hidden bg-white">
           <div className="p-6">
             {/* Step 1: Projects */}
             {currentStep === 1 && (
@@ -343,23 +300,6 @@ const ProjectWorkflow = () => {
           </div>
         </div>
       </div>
-
-      {/* Confirmation Modal */}
-      <ConfirmationModal
-        isOpen={showConfirmationModal}
-        onClose={handleCancelChange}
-        title="Confirm Selection Change"
-        message={
-          pendingAction === 'changeProject'
-            ? `Changing the project will reset your shot type selection. Are you sure you want to continue?`
-            : `Changing the shot type may affect your current parameters. Are you sure you want to continue?`
-        }
-        confirmText="Continue"
-        cancelText="Cancel"
-        confirmColorScheme="orange"
-        icon="warning"
-        onConfirm={handleConfirmChange}
-      />
     </div>
   )
 }
