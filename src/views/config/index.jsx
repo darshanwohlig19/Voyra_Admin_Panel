@@ -152,9 +152,11 @@ const Config = () => {
     showSpinner()
     try {
       // Build payload based on selected model
-      const payload = {}
+      const payload = {
+        media: selectedMediaType,
+      }
 
-      // Find the selected media item and model details
+      // Find the selected model details
       const mediaItem = mediaData.find(
         (item) => item.media === selectedMediaType
       )
@@ -163,18 +165,7 @@ const Config = () => {
           (model) => model.value === selectedModel
         )
         if (modelDetails) {
-          // Map media type to payload key
-          const mediaType = mediaItem.media.toLowerCase()
-          if (mediaType.includes('image')) {
-            payload.ImageModel = [{ modelLabel: modelDetails.label }]
-          } else if (mediaType.includes('video')) {
-            payload.VideoModel = [{ modelLabel: modelDetails.label }]
-          } else if (
-            mediaType.includes('audio') ||
-            mediaType.includes('voice')
-          ) {
-            payload.AudioModel = [{ modelLabel: modelDetails.label }]
-          }
+          payload.modelLabel = modelDetails.label // Use value instead of label
         }
       }
 
@@ -403,7 +394,7 @@ const Config = () => {
                           Array.isArray(selectedMediaItem.models)
                             ? selectedMediaItem.models.map((model) => ({
                                 value: model.value,
-                                label: model.value,
+                                label: model.label,
                               }))
                             : []
                         }
