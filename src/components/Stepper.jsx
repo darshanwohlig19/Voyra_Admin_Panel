@@ -1,15 +1,17 @@
 import React from 'react'
 import { FaCheck } from 'react-icons/fa'
 
-const Stepper = ({ steps, currentStep, onStepClick }) => {
+const Stepper = ({ steps, currentStep, onStepClick, isWorkflowCompleted }) => {
   return (
     <div className="w-full px-4 pb-8 pt-0">
       <div className="mx-auto max-w-5xl">
         <div className="flex items-center justify-between">
           {steps.map((step, index) => {
             const stepNumber = index + 1
-            const isActive = currentStep === stepNumber
-            const isCompleted = currentStep > stepNumber
+            const isActive = !isWorkflowCompleted && currentStep === stepNumber
+            const isCompleted =
+              currentStep > stepNumber ||
+              (isWorkflowCompleted && currentStep >= stepNumber)
             const isClickable = false // Steps are not clickable
 
             return (

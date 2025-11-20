@@ -10,6 +10,7 @@ const ProjectWorkflow = () => {
   const [currentStep, setCurrentStep] = useState(1)
   const [selectedProject, setSelectedProject] = useState('')
   const [selectedShotType, setSelectedShotType] = useState('')
+  const [isWorkflowCompleted, setIsWorkflowCompleted] = useState(false)
   const { addToast } = useToaster()
 
   // Steps configuration
@@ -105,6 +106,9 @@ const ProjectWorkflow = () => {
       description: 'Project workflow has been completed successfully!',
       duration: 3000,
     })
+
+    // Mark workflow as completed
+    setIsWorkflowCompleted(true)
   }
 
   return (
@@ -116,6 +120,7 @@ const ProjectWorkflow = () => {
         steps={steps}
         currentStep={currentStep}
         onStepClick={handleStepClick}
+        isWorkflowCompleted={isWorkflowCompleted}
       />
 
       {/* Step Content */}
