@@ -6,7 +6,8 @@ const config = {
   CHANGE_ORGANIZATION_STATUS:
     baseUrl + '/api/organizations/changeOrganizationStatus',
   DELETE_ORGANIZATION: baseUrl + '/api/organizations/deleteOrganization',
-  // UPDATE_ORGANIZATION: baseUrl + '/api/organizations/updateOrganization',
+  UPDATE_ORGANIZATION: baseUrl + '/api/organizations/updateOrganization',
+  GET_ALL_PLANS_DROPDOWN: baseUrl + '/api/organizations/getAllPlansDropdown',
   GET_ORG_USERS: baseUrl + '/api/orgUsers',
   // SIGNUP_API
 

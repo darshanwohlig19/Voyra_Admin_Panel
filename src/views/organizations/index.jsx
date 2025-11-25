@@ -301,18 +301,21 @@ const Organizations = () => {
   const handleSavePlan = async (formData) => {
     showSpinner()
     try {
-      // Call API to update organization plan
+      // Call API to update organization
       const response = await apiCall(
         'put',
         `${config.UPDATE_ORGANIZATION}/${formData.organizationId}`,
-        { planId: formData.plan }
+        {
+          orgName: formData.orgName,
+          planId: formData.plan,
+        }
       )
 
       if (response.status === 200) {
         addToast({
           type: 'success',
           title: 'Success',
-          description: 'Organization plan updated successfully',
+          description: 'Organization updated successfully',
           duration: 3000,
         })
 
@@ -339,16 +342,16 @@ const Organizations = () => {
           description:
             response?.data?.msg ||
             response?.data?.message ||
-            'Failed to update organization plan',
+            'Failed to update organization',
           duration: 3000,
         })
       }
     } catch (error) {
-      console.error('Error updating organization plan:', error)
+      console.error('Error updating organization:', error)
       addToast({
         type: 'error',
         title: 'Error',
-        description: error?.message || 'Failed to update organization plan',
+        description: error?.message || 'Failed to update organization',
         duration: 3000,
       })
     } finally {

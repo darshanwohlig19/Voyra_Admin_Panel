@@ -1,19 +1,47 @@
 import React, { useState, useEffect } from 'react'
+import ApiCaller from '../../common/services/apiServices'
+import config from '../../common/config/apiConfig'
+import { useSpinner } from '../../common/SpinnerLoader'
 
 const EditPlanModal = ({ isOpen, onClose, organization, onSave }) => {
-  const [selectedPlan, setSelectedPlan] = useState('')
+  const [selectedPlan, setSelectedPlan] = useState('trial')
+  const [orgName, setOrgName] = useState('')
+  const [planOptions, setPlanOptions] = useState([])
+  const { apiCall } = ApiCaller()
+  const { showSpinner, hideSpinner } = useSpinner()
 
-  // Plan options - you can fetch these from API if needed
-  const planOptions = [
-    { value: 'free', label: 'Free' },
-    { value: 'basic', label: 'Basic' },
-    { value: 'premium', label: 'Premium' },
-    { value: 'enterprise', label: 'Enterprise' },
-  ]
+  // Fetch plans from API
+  useEffect(() => {
+    const fetchPlans = async () => {
+      showSpinner()
+      try {
+        const response = await apiCall('get', config.GET_ALL_PLANS_DROPDOWN)
+        if (response.status === 200 && response.data.data?.plans) {
+          setPlanOptions(response.data.data.plans)
+        }
+      } catch (error) {
+        console.error('Error fetching plans:', error)
+      } finally {
+        hideSpinner()
+      }
+    }
+
+    if (isOpen) {
+      fetchPlans()
+    }
+  }, [isOpen])
 
   useEffect(() => {
-    if (organization?.planId) {
-      setSelectedPlan(organization.planId)
+    if (organization) {
+      // Set plan
+      if (organization?.planId) {
+        setSelectedPlan(organization.planId)
+      } else {
+        setSelectedPlan('trial')
+      }
+
+      // Set organization name
+      setOrgName(organization?.orgName || organization?.username || '')
     }
   }, [organization])
 
@@ -21,12 +49,14 @@ const EditPlanModal = ({ isOpen, onClose, organization, onSave }) => {
     e.preventDefault()
     onSave({
       organizationId: organization._id,
+      orgName,
       plan: selectedPlan,
     })
   }
 
   const handleClose = () => {
-    setSelectedPlan('')
+    setSelectedPlan('trial')
+    setOrgName('')
     onClose()
   }
 
@@ -37,7 +67,9 @@ const EditPlanModal = ({ isOpen, onClose, organization, onSave }) => {
       <div className="w-full max-w-md rounded-lg bg-white p-6 shadow-xl">
         {/* Header */}
         <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold text-gray-900">Edit Plan</h2>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Edit Organization
+          </h2>
           <button
             onClick={handleClose}
             className="text-gray-400 transition-colors hover:text-gray-600"
@@ -68,6 +100,26 @@ const EditPlanModal = ({ isOpen, onClose, organization, onSave }) => {
 
         {/* Form */}
         <form onSubmit={handleSubmit}>
+          {/* Organization Name */}
+          <div className="mb-6">
+            <label
+              htmlFor="orgName"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Organization Name
+            </label>
+            <input
+              type="text"
+              id="orgName"
+              value={orgName}
+              onChange={(e) => setOrgName(e.target.value)}
+              placeholder="Enter organization name"
+              className="focus:border-indigo-500 focus:ring-indigo-500 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all focus:outline-none focus:ring-2"
+              required
+            />
+          </div>
+
+          {/* Plan Dropdown */}
           <div className="mb-6">
             <label
               htmlFor="plan"
@@ -82,7 +134,6 @@ const EditPlanModal = ({ isOpen, onClose, organization, onSave }) => {
               className="focus:border-indigo-500 focus:ring-indigo-500 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all focus:outline-none focus:ring-2"
               required
             >
-              <option value="">Select a plan</option>
               {planOptions.map((option) => (
                 <option key={option.value} value={option.value}>
                   {option.label}
