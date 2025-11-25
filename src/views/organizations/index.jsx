@@ -398,6 +398,16 @@ const Organizations = () => {
       ),
     },
     {
+      key: 'credits',
+      label: 'Monthly Balance',
+      width: '120px',
+      render: (row) => (
+        <span className="inline-block rounded-md bg-blue-50 px-2 py-1 text-base font-medium text-blue-800">
+          {row?.credits?.monthlyBalance || 0}
+        </span>
+      ),
+    },
+    {
       key: 'status',
       label: 'Status',
       width: '80px',
