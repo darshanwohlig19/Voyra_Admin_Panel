@@ -301,14 +301,28 @@ const Organizations = () => {
   const handleSavePlan = async (formData) => {
     showSpinner()
     try {
+      // Prepare request body
+      const requestBody = {
+        orgName: formData.orgName,
+        planId: formData.plan,
+      }
+
+      // Add credits if provided
+      if (
+        formData.credits !== '' &&
+        formData.credits !== null &&
+        formData.credits !== undefined
+      ) {
+        requestBody.credits = {
+          monthlyBalance: formData.credits,
+        }
+      }
+
       // Call API to update organization
       const response = await apiCall(
         'put',
         `${config.UPDATE_ORGANIZATION}/${formData.organizationId}`,
-        {
-          orgName: formData.orgName,
-          planId: formData.plan,
-        }
+        requestBody
       )
 
       if (response.status === 200) {

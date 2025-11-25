@@ -6,6 +6,7 @@ import { useSpinner } from '../../common/SpinnerLoader'
 const EditPlanModal = ({ isOpen, onClose, organization, onSave }) => {
   const [selectedPlan, setSelectedPlan] = useState('trial')
   const [orgName, setOrgName] = useState('')
+  const [credits, setCredits] = useState('')
   const [planOptions, setPlanOptions] = useState([])
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
@@ -42,6 +43,9 @@ const EditPlanModal = ({ isOpen, onClose, organization, onSave }) => {
 
       // Set organization name
       setOrgName(organization?.orgName || organization?.username || '')
+
+      // Set credits
+      setCredits(organization?.credits?.monthlyBalance || '')
     }
   }, [organization])
 
@@ -51,12 +55,14 @@ const EditPlanModal = ({ isOpen, onClose, organization, onSave }) => {
       organizationId: organization._id,
       orgName,
       plan: selectedPlan,
+      credits,
     })
   }
 
   const handleClose = () => {
     setSelectedPlan('trial')
     setOrgName('')
+    setCredits('')
     onClose()
   }
 
@@ -140,6 +146,25 @@ const EditPlanModal = ({ isOpen, onClose, organization, onSave }) => {
                 </option>
               ))}
             </select>
+          </div>
+
+          {/* Credits Input */}
+          <div className="mb-6">
+            <label
+              htmlFor="credits"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Credits
+            </label>
+            <input
+              type="number"
+              id="credits"
+              value={credits}
+              onChange={(e) => setCredits(e.target.value)}
+              placeholder="Enter credits"
+              className="focus:border-indigo-500 focus:ring-indigo-500 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all [appearance:textfield] focus:outline-none focus:ring-2 [&::-webkit-inner-spin-button]:appearance-none [&::-webkit-outer-spin-button]:appearance-none"
+              min="0"
+            />
           </div>
 
           {/* Footer Buttons */}
