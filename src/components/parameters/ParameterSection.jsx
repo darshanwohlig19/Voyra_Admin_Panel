@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { FaPlus, FaTrash } from 'react-icons/fa'
+import { FaPlus, FaTrash, FaEdit } from 'react-icons/fa'
 import { useToaster } from '../../common/Toaster'
 import AddElementModal from './AddElementModal'
+import EditCategoryModal from './EditCategoryModal'
 import ParameterElementCard from './ParameterElementCard'
 import ConfirmationModal from '../modal/ConfirmationModal'
 
@@ -13,9 +14,11 @@ const ParameterSection = ({
   onSectionDeleted,
   onElementStatusToggled,
   onSectionStatusToggled,
+  onCategoryEdited,
 }) => {
   const [isAddElementModalOpen, setIsAddElementModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isEditCategoryModalOpen, setIsEditCategoryModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isDeleteSectionModalOpen, setIsDeleteSectionModalOpen] =
     useState(false)
@@ -165,13 +168,39 @@ const ParameterSection = ({
     closeSectionStatusModal()
   }
 
+  const handleEditCategory = () => {
+    setIsEditCategoryModalOpen(true)
+  }
+
+  const handleUpdateCategory = async (formData) => {
+    console.log('handleUpdateCategory called with:', formData)
+    console.log('Section ID:', section._id)
+    console.log('New category name:', formData.categoryName)
+    console.log('onCategoryEdited function exists:', !!onCategoryEdited)
+
+    // Call parent callback to update category
+    if (onCategoryEdited) {
+      await onCategoryEdited(section._id, formData.categoryName)
+    }
+    setIsEditCategoryModalOpen(false)
+  }
+
   return (
     <>
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-gray-900">
-            {section.categoryTitle}
-          </h2>
+          <div className="flex items-center gap-3">
+            <h2 className="text-lg font-bold text-gray-900">
+              {section.categoryTitle}
+            </h2>
+            <button
+              onClick={handleEditCategory}
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-all duration-200 hover:bg-indigo hover:text-white"
+              title="Edit Category"
+            >
+              <FaEdit size={14} />
+            </button>
+          </div>
           <div className="flex items-center gap-3">
             <button
               onClick={handleToggleSectionStatus}
@@ -307,6 +336,14 @@ const ParameterSection = ({
         }
         icon={section?.categoryStatus === 'Active' ? 'warning' : 'info'}
         onConfirm={confirmToggleSectionStatus}
+      />
+
+      {/* Edit Category Modal */}
+      <EditCategoryModal
+        isOpen={isEditCategoryModalOpen}
+        onClose={() => setIsEditCategoryModalOpen(false)}
+        onSubmit={handleUpdateCategory}
+        existingData={section}
       />
     </>
   )

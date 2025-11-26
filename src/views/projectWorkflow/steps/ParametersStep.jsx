@@ -20,6 +20,7 @@ const ParametersStep = ({
   const [isHeadingModalOpen, setIsHeadingModalOpen] = useState(false)
   const [shotTypeItems, setShotTypeItems] = useState([])
   const [serviceItems, setServiceItems] = useState([])
+  const [selectedCategory, setSelectedCategory] = useState('')
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
   const { addToast } = useToaster()
@@ -241,7 +242,20 @@ const ParametersStep = ({
   }
 
   const currentPageData = getCurrentPageData()
-  const parameters = currentPageData?.sections || []
+  const allSections = currentPageData?.sections || []
+
+  // Extract unique categories from sections
+  const uniqueCategories = [
+    ...new Set(allSections.map((section) => section.categoryTitle)),
+  ].filter(Boolean)
+
+  // Filter sections based on selected category
+  const parameters = selectedCategory
+    ? allSections.filter(
+        (section) => section.categoryTitle === selectedCategory
+      )
+    : allSections
+
   const title = currentPageData?.title || ''
 
   const handleAddCategory = async (formData) => {
@@ -408,7 +422,10 @@ const ParametersStep = ({
           <div className="relative">
             <select
               value={selectedShotType}
-              onChange={(e) => onShotTypeChange(e.target.value)}
+              onChange={(e) => {
+                onShotTypeChange(e.target.value)
+                setSelectedCategory('') // Reset category when shot type changes
+              }}
               disabled={!selectedProject}
               className={`h-10 appearance-none rounded-lg border border-gray-200 bg-white pl-4 pr-10 text-sm font-medium text-gray-700 transition-all duration-200 hover:border-gray-300 focus:border-indigo focus:outline-none focus:ring-2 focus:ring-indigo/10 ${
                 !selectedProject ? 'cursor-not-allowed opacity-50' : ''
@@ -424,6 +441,48 @@ const ParametersStep = ({
               ) : (
                 <option value="" disabled>
                   No shot types available
+                </option>
+              )}
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+              <svg
+                className="h-4 w-4 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+          </div>
+
+          {/* Category Filter Dropdown */}
+          <div className="relative">
+            <select
+              value={selectedCategory}
+              onChange={(e) => setSelectedCategory(e.target.value)}
+              disabled={!selectedShotType || uniqueCategories.length === 0}
+              className={`h-10 appearance-none rounded-lg border border-gray-200 bg-white pl-4 pr-10 text-sm font-medium text-gray-700 transition-all duration-200 hover:border-gray-300 focus:border-indigo focus:outline-none focus:ring-2 focus:ring-indigo/10 ${
+                !selectedShotType || uniqueCategories.length === 0
+                  ? 'cursor-not-allowed opacity-50'
+                  : ''
+              }`}
+            >
+              <option value="">All Categories</option>
+              {uniqueCategories.length > 0 ? (
+                uniqueCategories.map((category, index) => (
+                  <option key={index} value={category}>
+                    {category}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  No categories available
                 </option>
               )}
             </select>
@@ -858,6 +917,85 @@ const ParametersStep = ({
                         title: 'Error',
                         description:
                           error?.message || 'Failed to update section status',
+                        duration: 3000,
+                      })
+                    } finally {
+                      hideSpinner()
+                    }
+                  }}
+                  onCategoryEdited={async (sectionId, newCategoryName) => {
+                    console.log('onCategoryEdited called in ParametersStep')
+                    console.log('sectionId:', sectionId)
+                    console.log('newCategoryName:', newCategoryName)
+
+                    showSpinner()
+                    try {
+                      // Build API URL with section _id
+                      const apiUrl =
+                        selectedProject && selectedShotType
+                          ? `${
+                              config.UPDATE_PARAMETER
+                            }/${sectionId}?projectName=${encodeURIComponent(
+                              selectedProject
+                            )}&shotTypeName=${encodeURIComponent(
+                              selectedShotType
+                            )}`
+                          : `${config.UPDATE_PARAMETER}/${sectionId}`
+
+                      console.log('API URL:', apiUrl)
+
+                      // Prepare request data
+                      const formData = new FormData()
+                      formData.append('categoryTitle', newCategoryName)
+
+                      console.log(
+                        'Calling API with categoryTitle:',
+                        newCategoryName
+                      )
+
+                      // Call UPDATE API with section _id
+                      const response = await apiCall('put', apiUrl, formData, {
+                        headers: {
+                          'Content-Type': 'multipart/form-data',
+                        },
+                      })
+
+                      console.log('API Response:', response)
+                      console.log('Response status:', response.status)
+
+                      if (response.status === 200 || response.status === 201) {
+                        addToast({
+                          type: 'success',
+                          title: 'Category Updated',
+                          description:
+                            'Category name has been updated successfully',
+                          duration: 3000,
+                        })
+                        // Refresh parameters after successful update
+                        if (selectedProject && selectedShotType) {
+                          await fetchParameters(
+                            selectedProject,
+                            selectedShotType
+                          )
+                        }
+                      } else {
+                        addToast({
+                          type: 'error',
+                          title: 'Error',
+                          description:
+                            response?.data?.msg ||
+                            response?.data?.message ||
+                            'Failed to update category',
+                          duration: 3000,
+                        })
+                      }
+                    } catch (error) {
+                      console.error('Error updating category:', error)
+                      addToast({
+                        type: 'error',
+                        title: 'Error',
+                        description:
+                          error?.message || 'Failed to update category',
                         duration: 3000,
                       })
                     } finally {
