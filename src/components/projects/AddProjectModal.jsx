@@ -57,6 +57,7 @@ const AddProjectModal = ({
               id: Date.now() + Math.random(),
               key: cat.name,
               type: 'array',
+              categoryId: cat._id, // Preserve category _id
               value:
                 subcategoryValues.length > 0
                   ? subcategoryValues
@@ -153,6 +154,66 @@ const AddProjectModal = ({
     )
   }
 
+  const removeCategory = async (fieldId) => {
+    const field = metadataFields.find((f) => f.id === fieldId)
+
+    // If in edit mode and category has _id, call DELETE API
+    if (editData && field?.categoryId) {
+      console.log('Deleting category:', {
+        categoryId: field.categoryId,
+        categoryName: field.key,
+      })
+
+      setLoading(true)
+      try {
+        const response = await apiCall(
+          'delete',
+          `${config.DELETE_SERVICE_TYPE}/${field.categoryId}`,
+          { elementId: field.categoryId }
+        )
+
+        if (response.status === 200 || response.status === 204) {
+          if (addToast) {
+            addToast({
+              type: 'success',
+              title: 'Success',
+              description: 'Category deleted successfully',
+              duration: 3000,
+            })
+          }
+        } else {
+          if (addToast) {
+            addToast({
+              type: 'error',
+              title: 'Error',
+              description: response?.data?.msg || 'Failed to delete category',
+              duration: 3000,
+            })
+          }
+          setLoading(false)
+          return // Don't remove from UI if API call failed
+        }
+      } catch (error) {
+        console.error('Error deleting category:', error)
+        if (addToast) {
+          addToast({
+            type: 'error',
+            title: 'Error',
+            description: 'Failed to delete category',
+            duration: 3000,
+          })
+        }
+        setLoading(false)
+        return // Don't remove from UI if API call failed
+      } finally {
+        setLoading(false)
+      }
+    }
+
+    // Remove from local state
+    setMetadataFields(metadataFields.filter((field) => field.id !== fieldId))
+  }
+
   const removeArrayValue = async (fieldId, index) => {
     const field = metadataFields.find((f) => f.id === fieldId)
     const subcategory = field?.value[index]
@@ -169,7 +230,7 @@ const AddProjectModal = ({
       try {
         const response = await apiCall(
           'delete',
-          `${config.DELETE_SERVICE_TYPE}/${editData._id}`,
+          `${config.DELETE_SERVICE_TYPE}/${subcategory._id}`,
           { elementId: subcategory._id }
         )
 
@@ -620,6 +681,15 @@ const AddProjectModal = ({
                             >
                               <FaPlus size={12} />
                               Add Item
+                            </button>
+                            <button
+                              onClick={() => removeCategory(field.id)}
+                              disabled={loading}
+                              className="flex items-center gap-1 rounded-lg bg-red-500 px-3 py-1 text-sm text-white transition-colors hover:bg-red-600"
+                              title="Delete category"
+                            >
+                              <FaTrash size={12} />
+                              Delete
                             </button>
                             <button
                               onClick={() => toggleCategoryCollapse(field.id)}
