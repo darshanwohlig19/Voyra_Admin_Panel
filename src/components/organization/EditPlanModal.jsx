@@ -16,7 +16,10 @@ const EditPlanModal = ({ isOpen, onClose, organization, onSave }) => {
     const fetchPlans = async () => {
       showSpinner()
       try {
-        const response = await apiCall('get', config.GET_ALL_PLANS_DROPDOWN)
+        const response = await apiCall(
+          'get',
+          `${config.GET_ALL_PLANS_DROPDOWN}?orgId=${organization._id}`
+        )
         if (response.status === 200 && response.data.data?.plans) {
           setPlanOptions(response.data.data.plans)
         }
@@ -27,10 +30,34 @@ const EditPlanModal = ({ isOpen, onClose, organization, onSave }) => {
       }
     }
 
-    if (isOpen) {
+    if (isOpen && organization?._id) {
       fetchPlans()
     }
-  }, [isOpen])
+  }, [isOpen, organization])
+
+  // Fetch credits when plan is selected
+  useEffect(() => {
+    const fetchCredits = async () => {
+      if (!organization?._id || !selectedPlan) return
+
+      try {
+        const response = await apiCall(
+          'get',
+          `${config.GET_ALL_PLANS_DROPDOWN}?orgId=${organization._id}&planId=${selectedPlan}`
+        )
+        if (
+          response.status === 200 &&
+          response.data.data?.credits !== undefined
+        ) {
+          setCredits(response.data.data.credits)
+        }
+      } catch (error) {
+        console.error('Error fetching credits:', error)
+      }
+    }
+
+    fetchCredits()
+  }, [selectedPlan])
 
   useEffect(() => {
     if (organization) {
@@ -42,10 +69,7 @@ const EditPlanModal = ({ isOpen, onClose, organization, onSave }) => {
       }
 
       // Set organization name
-      setOrgName(organization?.orgName || organization?.username || '')
-
-      // Set credits
-      setCredits(organization?.credits?.monthlyBalance || '')
+      setOrgName(organization?.organizationName || organization?.orgName || '')
     }
   }, [organization])
 
@@ -100,7 +124,10 @@ const EditPlanModal = ({ isOpen, onClose, organization, onSave }) => {
         <div className="mb-4 rounded-lg bg-gray-50 p-4">
           <p className="text-sm text-gray-600">Organization</p>
           <p className="text-base font-semibold text-gray-900">
-            {organization?.username || organization?.email || 'N/A'}
+            {organization?.organizationName ||
+              organization?.username ||
+              organization?.email ||
+              'N/A'}
           </p>
         </div>
 
@@ -141,7 +168,7 @@ const EditPlanModal = ({ isOpen, onClose, organization, onSave }) => {
               required
             >
               {planOptions.map((option) => (
-                <option key={option.value} value={option.value}>
+                <option key={option.planId} value={option.planId}>
                   {option.label}
                 </option>
               ))}
