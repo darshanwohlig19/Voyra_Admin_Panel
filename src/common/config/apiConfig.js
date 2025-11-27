@@ -9,6 +9,12 @@ const config = {
   UPDATE_ORGANIZATION: baseUrl + '/api/organizations/updateOrganization',
   GET_ALL_PLANS_DROPDOWN: baseUrl + '/api/organizations/getAllPlansDropdown',
   GET_ORG_USERS: baseUrl + '/api/orgUsers',
+
+  // Domain Block APIs
+  BLOCK_DOMAIN_CREDIT: baseUrl + '/api/domainCreditBlock/domainBlock',
+  GET_DOMAIN_CREDIT_BLOCKS: baseUrl + '/api/domainCreditBlock/getDomains',
+  DELETE_DOMAIN: baseUrl + '/api/domainCreditBlock/deleteDomain',
+
   // SIGNUP_API
 
   SIGNIN_API: baseUrl + '/api/userAuth/login',
