@@ -1,7 +1,8 @@
 import React, { useState } from 'react'
-import { FaPlus, FaTrash } from 'react-icons/fa'
+import { FaPlus, FaTrash, FaEdit } from 'react-icons/fa'
 import { useToaster } from '../../common/Toaster'
 import AddElementModal from './AddElementModal'
+import EditCategoryModal from './EditCategoryModal'
 import ParameterElementCard from './ParameterElementCard'
 import ConfirmationModal from '../modal/ConfirmationModal'
 
@@ -11,11 +12,18 @@ const ParameterSection = ({
   onElementUpdated,
   onElementDeleted,
   onSectionDeleted,
+  onElementStatusToggled,
+  onSectionStatusToggled,
+  onCategoryEdited,
 }) => {
   const [isAddElementModalOpen, setIsAddElementModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [isEditCategoryModalOpen, setIsEditCategoryModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isDeleteSectionModalOpen, setIsDeleteSectionModalOpen] =
+    useState(false)
+  const [isStatusModalOpen, setIsStatusModalOpen] = useState(false)
+  const [isSectionStatusModalOpen, setIsSectionStatusModalOpen] =
     useState(false)
   const [selectedElement, setSelectedElement] = useState(null)
   const { addToast } = useToaster()
@@ -122,14 +130,90 @@ const ParameterSection = ({
     setIsDeleteSectionModalOpen(false)
   }
 
+  const handleToggleStatus = (element) => {
+    setSelectedElement(element)
+    setIsStatusModalOpen(true)
+  }
+
+  const closeStatusModal = () => {
+    setIsStatusModalOpen(false)
+    setSelectedElement(null)
+  }
+
+  const confirmToggleStatus = () => {
+    if (!selectedElement) return
+
+    // Call parent callback to toggle element status
+    onElementStatusToggled(
+      section._id,
+      selectedElement._id,
+      selectedElement.elementStatus
+    )
+
+    closeStatusModal()
+  }
+
+  const handleToggleSectionStatus = () => {
+    setIsSectionStatusModalOpen(true)
+  }
+
+  const closeSectionStatusModal = () => {
+    setIsSectionStatusModalOpen(false)
+  }
+
+  const confirmToggleSectionStatus = () => {
+    // Call parent callback to toggle section status
+    onSectionStatusToggled(section._id, section.categoryStatus)
+
+    closeSectionStatusModal()
+  }
+
+  const handleEditCategory = () => {
+    setIsEditCategoryModalOpen(true)
+  }
+
+  const handleUpdateCategory = async (formData) => {
+    console.log('handleUpdateCategory called with:', formData)
+    console.log('Section ID:', section._id)
+    console.log('New category name:', formData.categoryName)
+    console.log('onCategoryEdited function exists:', !!onCategoryEdited)
+
+    // Call parent callback to update category
+    if (onCategoryEdited) {
+      await onCategoryEdited(section._id, formData.categoryName)
+    }
+    setIsEditCategoryModalOpen(false)
+  }
+
   return (
     <>
       <div className="rounded-xl border border-gray-200 bg-white p-6 shadow-sm">
         <div className="mb-5 flex items-center justify-between">
-          <h2 className="text-lg font-bold text-gray-900">
-            {section.categoryTitle}
-          </h2>
           <div className="flex items-center gap-3">
+            <h2 className="text-lg font-bold text-gray-900">
+              {section.categoryTitle}
+            </h2>
+            <button
+              onClick={handleEditCategory}
+              className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100 text-gray-600 transition-all duration-200 hover:bg-indigo hover:text-white"
+              title="Edit Category"
+            >
+              <FaEdit size={14} />
+            </button>
+          </div>
+          <div className="flex items-center gap-3">
+            <button
+              onClick={handleToggleSectionStatus}
+              className={`flex items-center gap-2 rounded-lg border px-5 py-2.5 text-sm font-semibold shadow-sm transition-all hover:shadow-md active:scale-95 ${
+                section.categoryStatus === 'Active'
+                  ? 'border-orange-300 bg-white text-orange-600 hover:border-orange-500 hover:bg-orange-50'
+                  : 'border-green-300 bg-white text-green-600 hover:border-green-500 hover:bg-green-50'
+              }`}
+            >
+              {section.categoryStatus === 'Active'
+                ? 'Hide Section'
+                : 'Unhide Section'}
+            </button>
             <button
               onClick={handleDeleteSection}
               className="flex items-center gap-2 rounded-lg border border-red-300 bg-white px-5 py-2.5 text-sm font-semibold text-red-600 shadow-sm transition-all hover:border-red-500 hover:bg-red-50 hover:shadow-md active:scale-95"
@@ -139,7 +223,7 @@ const ParameterSection = ({
             </button>
             <button
               onClick={handleAddElement}
-              className="flex items-center gap-2 rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
+              className="flex items-center gap-2 rounded-lg bg-indigo px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
             >
               <FaPlus className="text-sm" />
               Add Element
@@ -153,6 +237,7 @@ const ParameterSection = ({
               element={element}
               onEdit={handleEditElement}
               onDelete={handleDeleteElement}
+              onToggleStatus={handleToggleStatus}
             />
           ))}
         </div>
@@ -205,6 +290,60 @@ const ParameterSection = ({
         confirmColorScheme="red"
         icon="delete"
         onConfirm={confirmDeleteSection}
+      />
+
+      {/* Status Change Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isStatusModalOpen}
+        onClose={closeStatusModal}
+        title={
+          selectedElement?.elementStatus === 'Active'
+            ? 'Hide Parameter Element'
+            : 'Unhide Parameter Element'
+        }
+        message={`Are you sure you want to ${
+          selectedElement?.elementStatus === 'Active' ? 'hide' : 'unhide'
+        } "${selectedElement?.name}"?`}
+        confirmText={
+          selectedElement?.elementStatus === 'Active' ? 'Hide' : 'Unhide'
+        }
+        cancelText="Cancel"
+        confirmColorScheme={
+          selectedElement?.elementStatus === 'Active' ? 'orange' : 'green'
+        }
+        icon={selectedElement?.elementStatus === 'Active' ? 'warning' : 'info'}
+        onConfirm={confirmToggleStatus}
+      />
+
+      {/* Section Status Change Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={isSectionStatusModalOpen}
+        onClose={closeSectionStatusModal}
+        title={
+          section?.categoryStatus === 'Active'
+            ? 'Hide Section'
+            : 'Unhide Section'
+        }
+        message={`Are you sure you want to ${
+          section?.categoryStatus === 'Active' ? 'hide' : 'unhide'
+        } the section "${section?.categoryTitle}"? This will ${
+          section?.categoryStatus === 'Active' ? 'hide' : 'unhide'
+        } all elements in this section.`}
+        confirmText={section?.categoryStatus === 'Active' ? 'Hide' : 'Unhide'}
+        cancelText="Cancel"
+        confirmColorScheme={
+          section?.categoryStatus === 'Active' ? 'orange' : 'green'
+        }
+        icon={section?.categoryStatus === 'Active' ? 'warning' : 'info'}
+        onConfirm={confirmToggleSectionStatus}
+      />
+
+      {/* Edit Category Modal */}
+      <EditCategoryModal
+        isOpen={isEditCategoryModalOpen}
+        onClose={() => setIsEditCategoryModalOpen(false)}
+        onSubmit={handleUpdateCategory}
+        existingData={section}
       />
     </>
   )

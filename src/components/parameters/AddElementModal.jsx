@@ -1,7 +1,8 @@
 import React, { useState, useEffect, useCallback } from 'react'
 import { useDropzone } from 'react-dropzone'
-import { MdClose } from 'react-icons/md'
+import { FaTimes } from 'react-icons/fa'
 import { FiUpload } from 'react-icons/fi'
+import { Plus, Edit } from 'lucide-react'
 import { useToaster } from '../../common/Toaster'
 
 const AddElementModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
@@ -105,93 +106,162 @@ const AddElementModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
   if (!isOpen) return null
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 backdrop-blur-sm">
-      <div className="relative flex h-[90vh] w-[900px] max-w-[95vw] flex-col rounded-xl bg-white shadow-2xl">
-        {/* Modal Header */}
-        <div className="flex-shrink-0 border-b border-gray-200 bg-white px-6 py-4">
-          <div className="flex items-center justify-between">
-            <div>
-              <h2 className="text-base font-bold text-gray-900">
-                {editData ? 'Edit Element' : 'Add New Element'}
-              </h2>
-              <p className="mt-0.5 text-xs text-gray-500">
-                {editData
-                  ? 'Update element details'
-                  : 'Add a new element with image'}
-              </p>
+    <div
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-50 p-4"
+      role="dialog"
+      aria-modal="true"
+      aria-labelledby="modal-title"
+      aria-describedby="modal-description"
+    >
+      <div
+        className="flex max-h-[90vh] w-full max-w-4xl flex-col rounded-3xl bg-white shadow-xl sm:w-[1000px] sm:max-w-[95vw]"
+        role="document"
+      >
+        {/* Header */}
+        <div className="flex-shrink-0 rounded-t-3xl border-b border-gray-300 bg-white px-8 py-6">
+          <div className="flex w-full items-center justify-between">
+            <div className="flex items-center gap-3">
+              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo">
+                {editData ? (
+                  <Edit className="text-white" size={18} />
+                ) : (
+                  <Plus className="text-white" size={18} />
+                )}
+              </div>
+              <div>
+                <h2
+                  id="modal-title"
+                  className="text-xl font-bold text-gray-900"
+                >
+                  {editData ? 'Edit Element' : 'Add New Element'}
+                </h2>
+                <p
+                  id="modal-description"
+                  className="mt-1 text-sm text-gray-600"
+                >
+                  {editData
+                    ? 'Update element details and image'
+                    : 'Create a new element with name, prompt, and image'}
+                </p>
+              </div>
             </div>
             <button
               onClick={handleClose}
-              className="flex h-8 w-8 items-center justify-center rounded-lg text-gray-400 transition-all hover:bg-red-50 hover:text-red-600"
+              className="group flex h-8 w-8 items-center justify-center rounded-lg transition-colors hover:bg-gray-100"
+              title="Close modal"
             >
-              <MdClose className="text-xl" />
+              <FaTimes
+                size={14}
+                className="text-gray-500 group-hover:text-gray-700"
+              />
             </button>
           </div>
         </div>
 
-        {/* Modal Body */}
-        <div className="flex-1 overflow-y-auto bg-white p-8">
+        {/* Content */}
+        <div className="flex-1 overflow-y-auto bg-white p-6">
           <form onSubmit={handleSubmit}>
-            {/* Element Name Input */}
-            <div className="mb-6">
-              <label className="mb-2 block text-base font-semibold text-gray-700">
-                Element Name <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={elementName}
-                onChange={(e) => setElementName(e.target.value)}
-                placeholder="e.g., Full Body Shot"
-                className="block w-full rounded-lg border border-gray-300 bg-white px-5 py-3 text-base font-medium text-gray-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                required
-              />
-            </div>
-            <div className="mb-6">
-              <label className="mb-2 block text-base font-semibold text-gray-700">
-                Prompt <span className="text-red-500">*</span>
-              </label>
-              <input
-                type="text"
-                value={elementPrompt}
-                onChange={(e) => setElementPrompt(e.target.value)}
-                placeholder="e.g., Full Body Shot"
-                className="block w-full rounded-lg border border-gray-300 bg-white px-5 py-3 text-base font-medium text-gray-900 shadow-sm transition-all focus:border-blue-500 focus:outline-none focus:ring-2 focus:ring-blue-100"
-                required
-              />
+            {/* Step 1: Element Configuration */}
+            <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-5">
+              <div className="mb-4 flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-600 text-sm font-bold text-white">
+                  1
+                </span>
+                <h3 className="text-lg font-bold text-gray-800">
+                  Element Details
+                </h3>
+              </div>
+              <p className="mb-6 text-sm text-gray-600">
+                🧩 Configure the element name and prompt that will be used for
+                this parameter
+              </p>
+
+              <div className="space-y-6">
+                {/* Element Name Input */}
+                <div>
+                  <div className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700">
+                    Element Name
+                    <span className="text-xs text-red-500">*Required</span>
+                  </div>
+                  <input
+                    type="text"
+                    value={elementName}
+                    onChange={(e) => setElementName(e.target.value)}
+                    placeholder="e.g., Full Body Shot, Close-up Portrait, Wide Angle"
+                    className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base transition-colors focus:border-gray-500 focus:outline-none"
+                    required
+                  />
+                  <p className="mt-2 text-xs text-gray-500">
+                    💡 Choose a clear, descriptive name for this element
+                  </p>
+                </div>
+
+                {/* Element Prompt Input */}
+                <div>
+                  <div className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700">
+                    Element Prompt
+                    <span className="text-xs text-red-500">*Required</span>
+                  </div>
+                  <textarea
+                    value={elementPrompt}
+                    onChange={(e) => setElementPrompt(e.target.value)}
+                    placeholder="e.g., A professional full body shot showcasing the entire outfit or product in frame"
+                    rows={3}
+                    className="w-full resize-none rounded-lg border border-gray-300 bg-white px-4 py-3 text-base transition-colors focus:border-gray-500 focus:outline-none"
+                    required
+                  />
+                  <p className="mt-2 text-xs text-gray-500">
+                    📝 Provide detailed instructions for how this element should
+                    be used
+                  </p>
+                </div>
+              </div>
             </div>
 
-            {/* Image Upload */}
-            <div>
-              <label className="mb-2 block text-base font-semibold text-gray-700">
-                Image Upload
-              </label>
+            {/* Step 2: Image Upload */}
+            <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-5">
+              <div className="mb-4 flex items-center gap-2">
+                <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-600 text-sm font-bold text-white">
+                  2
+                </span>
+                <h3 className="text-lg font-bold text-gray-800">
+                  Element Image
+                </h3>
+              </div>
+              <p className="mb-4 text-sm text-gray-600">
+                📸 Upload an image that represents this element (optional but
+                recommended)
+              </p>
+
               <div
                 {...getRootProps()}
-                className={`relative flex h-96 cursor-pointer items-center justify-center overflow-hidden rounded-lg border-2 border-dashed transition-all ${
+                className={`relative flex min-h-[320px] cursor-pointer items-center justify-center overflow-hidden rounded-xl border-2 border-dashed transition-all ${
                   isDragActive
                     ? 'border-blue-500 bg-blue-50 shadow-lg shadow-blue-500/20'
+                    : imagePreview
+                    ? 'border-green-400 bg-green-50'
                     : 'border-gray-300 bg-gradient-to-br from-gray-50 to-gray-100 hover:border-blue-400 hover:bg-blue-50'
                 }`}
               >
                 <input {...getInputProps()} />
 
                 {imagePreview ? (
-                  <div className="group/img relative h-full w-full">
+                  <div className="group/img relative h-full min-h-[320px] w-full">
                     <img
                       src={imagePreview}
-                      alt={elementName}
-                      className="h-full w-full rounded-lg object-cover transition-transform duration-300 group-hover/img:scale-105"
+                      alt={elementName || 'Element image'}
+                      className="h-full w-full rounded-xl object-cover transition-transform duration-300 group-hover/img:scale-[1.02]"
                     />
-                    <div className="absolute inset-0 flex items-center justify-center gap-2 bg-gradient-to-t from-black/70 to-black/30 opacity-0 transition-opacity group-hover/img:opacity-100">
+                    <div className="absolute inset-0 flex items-center justify-center gap-3 rounded-xl bg-gradient-to-t from-black/80 via-black/20 to-black/40 opacity-0 transition-opacity duration-300 group-hover/img:opacity-100">
                       <button
                         type="button"
                         onClick={(e) => {
                           e.stopPropagation()
                           open()
                         }}
-                        className="rounded-lg bg-white px-4 py-2 text-xs font-semibold text-gray-700 shadow-lg transition-all hover:bg-gray-100"
+                        className="rounded-lg bg-white px-4 py-2.5 text-sm font-semibold text-gray-800 shadow-lg transition-all hover:bg-gray-100 hover:shadow-xl"
                       >
-                        Change
+                        📝 Change Image
                       </button>
                       <button
                         type="button"
@@ -200,49 +270,67 @@ const AddElementModal = ({ isOpen, onClose, onSubmit, editData = null }) => {
                           setSelectedImage(null)
                           setImagePreview(null)
                         }}
-                        className="rounded-lg bg-red-600 px-4 py-2 text-xs font-semibold text-white shadow-lg transition-all hover:bg-red-700"
+                        className="rounded-lg bg-red-600 px-4 py-2.5 text-sm font-semibold text-white shadow-lg transition-all hover:bg-red-700 hover:shadow-xl"
                       >
-                        Remove
+                        🗑️ Remove
                       </button>
                     </div>
                   </div>
                 ) : (
-                  <div className="p-4 text-center">
-                    <div className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-blue-100">
-                      <FiUpload className="h-6 w-6 text-blue-600" />
+                  <div className="p-8 text-center">
+                    <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-blue-100">
+                      <FiUpload className="h-8 w-8 text-blue-600" />
                     </div>
-                    <p className="mt-3 text-sm font-semibold text-gray-900">
+                    <p className="mb-2 text-lg font-semibold text-gray-900">
                       {isDragActive
-                        ? 'Drop image here'
-                        : 'Drag & drop your image'}
+                        ? '📸 Drop your image here'
+                        : '📸 Upload Element Image'}
                     </p>
-                    <p className="mt-1 text-xs text-gray-500">
-                      or click to browse
+                    <p className="mb-3 text-sm text-gray-600">
+                      {isDragActive
+                        ? 'Release to upload'
+                        : 'Drag & drop your image or click to browse'}
                     </p>
-                    <p className="mt-2 text-xs text-gray-400">PNG, JPG, WebP</p>
+                    <p className="inline-block rounded-full bg-gray-100 px-3 py-1 text-xs text-gray-500">
+                      Supports: PNG, JPG, WebP (Max 10MB)
+                    </p>
                   </div>
                 )}
               </div>
+
+              {/* Upload helper text */}
+              {!imagePreview && (
+                <p className="mt-2 flex items-center gap-1 text-xs text-gray-500">
+                  💡{' '}
+                  <span>
+                    Choose an image that clearly represents this element type
+                  </span>
+                </p>
+              )}
             </div>
           </form>
         </div>
 
-        {/* Modal Footer */}
-        <div className="flex flex-shrink-0 items-center justify-end border-t border-gray-200 bg-gradient-to-r from-gray-50 to-white px-6 py-4">
+        {/* Footer */}
+        <div className="flex items-center justify-between rounded-b-3xl border-t border-gray-200 bg-gray-50 px-6 py-4">
+          <div className="text-sm text-gray-600">
+            💡 Element name and prompt are required, image is optional but
+            recommended
+          </div>
           <div className="flex gap-3">
             <button
               type="button"
               onClick={handleClose}
-              className="rounded-lg border border-gray-300 bg-white px-5 py-2 text-sm font-medium text-gray-700 shadow-sm transition-all hover:border-gray-400 hover:bg-gray-50"
+              className="rounded-lg border border-gray-300 px-6 py-3 font-medium text-gray-700 transition-colors hover:bg-gray-100"
             >
               Cancel
             </button>
             <button
               type="submit"
               onClick={handleSubmit}
-              className="rounded-lg bg-gradient-to-r from-blue-600 to-blue-700 px-5 py-2 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40"
+              className="flex items-center gap-2 rounded-lg bg-indigo px-8 py-3 font-medium text-white transition-colors hover:bg-gray-700"
             >
-              {editData ? 'Update' : 'Save'}
+              {editData ? 'Update Element' : 'Save Element'}
             </button>
           </div>
         </div>

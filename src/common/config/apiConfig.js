@@ -1,13 +1,21 @@
 const baseUrl = process.env.REACT_APP_API_BASE_URL
 
 const config = {
-  //Login
-  // SIGNUP_API: baseUrl + 'api/signup',
+  // Organization APIs
   GET_ORGANIZATIONS: baseUrl + '/api/organizations/getOrganizations',
   CHANGE_ORGANIZATION_STATUS:
     baseUrl + '/api/organizations/changeOrganizationStatus',
   DELETE_ORGANIZATION: baseUrl + '/api/organizations/deleteOrganization',
+  UPDATE_ORGANIZATION: baseUrl + '/api/organizations/updateOrganization',
+  GET_ALL_PLANS_DROPDOWN: baseUrl + '/api/organizations/getAllPlansDropdown',
   GET_ORG_USERS: baseUrl + '/api/orgUsers',
+
+  // Domain Block APIs
+  BLOCK_DOMAIN_CREDIT: baseUrl + '/api/domainCreditBlock/domainBlock',
+  GET_DOMAIN_CREDIT_BLOCKS: baseUrl + '/api/domainCreditBlock/getDomains',
+  DELETE_DOMAIN: baseUrl + '/api/domainCreditBlock/deleteDomain',
+
+  // SIGNUP_API
 
   SIGNIN_API: baseUrl + '/api/userAuth/login',
 
@@ -39,23 +47,33 @@ const config = {
   ADD_SHORT_TYPE: baseUrl + '/api/adminShotType/addShotType',
 
   // Shot Type API
+  GET_PROJECT_TYPES: baseUrl + '/api/adminShotType/projectType',
   GET_SHOT_TYPE_DATA: baseUrl + '/api/adminShotType/getShotTypeData',
   GET_SHOT_TYPES: baseUrl + '/api/adminShotType/getShotTypes',
   GET_SHOT_TYPE_BY_ID: baseUrl + '/api/adminShotType/getShotType',
   ADD_SHOT_TYPE: baseUrl + '/api/adminShotType/addShotType',
   UPDATE_SHOT_TYPE: baseUrl + '/api/adminShotType/updateShotType',
   DELETE_SHOT_TYPE: baseUrl + '/api/adminShotType/deleteShotType',
+  UPDATE_SHOT_TYPE_STATUS: baseUrl + '/api/adminShotType/shotType/status',
 
   // Parameters API
+  GET_SHOT_TYPE_IN_PARAMS: baseUrl + '/api/adminParameters/getShotTypes',
   GET_PARAMETERS: baseUrl + '/api/adminParameters/getParameters',
   ADD_PARAMETERS: baseUrl + '/api/adminParameters/addParameters',
   UPDATE_PARAMETER: baseUrl + '/api/adminParameters/UpdateParameter',
   DELETE_PARAMETER: baseUrl + '/api/adminParameters/deleteParameter',
+  UPDATE_PARAMETER_STATUS: baseUrl + '/api/adminParameters/status',
+  UPDATE_SECTION_STATUS: baseUrl + '/api/adminParameters/status',
 
   // Projects API (Service Types)
   GET_SERVICE_TYPES: baseUrl + '/api/adminProjectType/ProjectType',
   ADD_SERVICE_TYPE: baseUrl + '/api/adminProjectType/ProjectType',
   DELETE_SERVICE_TYPE: baseUrl + '/api/adminProjectType/projectType',
   UPDATE_PROJECT_STATUS: baseUrl + '/api/adminProjectType/projectType/status',
+
+  // Config API
+  GET_MEDIA_MODELS: baseUrl + '/api/admin/getMediaModels',
+  ENABLE_MODEL_BULK: baseUrl + '/api/admin/enableModelBulk',
+  GET_ORG_NAME: baseUrl + '/api/admin/getOrgName',
 }
 export default config

@@ -1,16 +1,22 @@
 import React, { useState, useEffect } from 'react'
-import { FaPlus, FaImage, FaEdit, FaTrash, FaSearch } from 'react-icons/fa'
-import ApiCaller from '../../common/services/apiServices'
-import config from '../../common/config/apiConfig'
-import { useSpinner } from '../../common/SpinnerLoader'
-import { useToaster } from '../../common/Toaster'
-import ConfirmationModal from '../../components/modal/ConfirmationModal'
-import ShortTypeCard from '../../components/shortType/ShortTypeCard'
-import AddShortTypeModal from '../../components/shortType/AddShortTypeModal'
-import AddHeadingModal from '../../components/shortType/AddHeadingModal'
+import { FaPlus, FaImage, FaEdit } from 'react-icons/fa'
+import ApiCaller from '../../../common/services/apiServices'
+import config from '../../../common/config/apiConfig'
+import { useSpinner } from '../../../common/SpinnerLoader'
+import { useToaster } from '../../../common/Toaster'
+import ConfirmationModal from '../../../components/modal/ConfirmationModal'
+import ShortTypeCard from '../../../components/shortType/ShortTypeCard'
+import AddShortTypeModal from '../../../components/shortType/AddShortTypeModal'
+import AddHeadingModal from '../../../components/shortType/AddHeadingModal'
 
-const ShortTypeManagement = () => {
-  // State management
+const ShotTypesStep = ({
+  selectedProject,
+  selectedShotType,
+  onProjectChange,
+  onShotTypeSelect,
+  onShotTypeCreated,
+  navigationButtons,
+}) => {
   const [shotTypes, setShotTypes] = useState([])
   const [totalItems, setTotalItems] = useState(0)
   const [currentPage, setCurrentPage] = useState(1)
@@ -22,29 +28,27 @@ const ShortTypeManagement = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isHeadingModalOpen, setIsHeadingModalOpen] = useState(false)
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false)
-  const [selectedShotType, setSelectedShotType] = useState(null)
+  const [selectedShotTypeObj, setSelectedShotTypeObj] = useState(null)
   const [selectedItem, setSelectedItem] = useState(null)
   const [editData, setEditData] = useState(null)
 
   // Service dropdown state
   const [serviceItems, setServiceItems] = useState([])
-  const [selectedService, setSelectedService] = useState('')
 
   // Hooks
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
   const { addToast } = useToaster()
 
-  // Fetch shot types on mount, page change, and when project is selected
+  // Fetch shot types when project changes
   useEffect(() => {
-    if (selectedService) {
+    if (selectedProject) {
       fetchShotTypes()
     } else {
-      // Clear shot types when no project is selected
       setShotTypes([])
       setTotalItems(0)
     }
-  }, [currentPage, selectedService])
+  }, [currentPage, selectedProject])
 
   // Fetch services on mount
   useEffect(() => {
@@ -61,7 +65,6 @@ const ShortTypeManagement = () => {
           response.data.status_code === 200 || response.data.success === true
 
         if (isSuccessful && responseData && Array.isArray(responseData)) {
-          // Response is an array of project names (strings)
           const projectNames = responseData
           setServiceItems(projectNames)
         }
@@ -77,8 +80,10 @@ const ShortTypeManagement = () => {
   const fetchShotTypes = async () => {
     showSpinner()
     try {
-      const apiUrl = selectedService
-        ? `${config.GET_SHOT_TYPES}?projectName=${encodeURIComponent(selectedService)}`
+      const apiUrl = selectedProject
+        ? `${config.GET_SHOT_TYPES}?projectName=${encodeURIComponent(
+            selectedProject
+          )}`
         : config.GET_SHOT_TYPES
 
       const response = await apiCall('get', apiUrl)
@@ -101,7 +106,6 @@ const ShortTypeManagement = () => {
         return
       }
 
-      // API returns full shot type object
       const responseData = response.data.data || response.data
       const isSuccessful =
         response.data.code === 2000 ||
@@ -109,7 +113,6 @@ const ShortTypeManagement = () => {
         response.data.success === true
 
       if (isSuccessful && responseData) {
-        // Check if responseData is the shotType object
         if (responseData._id && responseData.items) {
           const transformedData = {
             _id: responseData._id,
@@ -146,7 +149,7 @@ const ShortTypeManagement = () => {
   const handleAddShotType = async (formData) => {
     showSpinner()
     try {
-      if (!selectedService) {
+      if (!selectedProject) {
         addToast({
           type: 'error',
           title: 'Error',
@@ -189,7 +192,7 @@ const ShortTypeManagement = () => {
         }
       })
 
-      const apiUrl = `${config.ADD_SHOT_TYPE}?projectTypeId=${selectedService}`
+      const apiUrl = `${config.ADD_SHOT_TYPE}?projectTypeId=${selectedProject}`
 
       const response = await apiCall('post', apiUrl, submitData, {
         headers: {
@@ -205,7 +208,17 @@ const ShortTypeManagement = () => {
           duration: 3000,
         })
         setIsAddModalOpen(false)
-        fetchShotTypes()
+        await fetchShotTypes()
+
+        // Notify parent that a shot type was created
+        if (onShotTypeCreated) {
+          onShotTypeCreated()
+        }
+
+        // Auto-select the newly created shot type
+        if (onShotTypeSelect && formData.items.length > 0) {
+          onShotTypeSelect(formData.items[0].name)
+        }
       } else {
         addToast({
           type: 'error',
@@ -244,11 +257,11 @@ const ShortTypeManagement = () => {
           .replace(/^(.)/, (char) => char.toLowerCase())
       }
 
-      const existingTitle = selectedShotType?.title || ''
-      const existingSubtitle = selectedShotType?.subtitle || ''
+      const existingTitle = selectedShotTypeObj?.title || ''
+      const existingSubtitle = selectedShotTypeObj?.subtitle || ''
 
       const editedItem = formData.items[0]
-      const existingItems = selectedShotType?.items || []
+      const existingItems = selectedShotTypeObj?.items || []
 
       const editingItemId = editData?.items?.[0]?._id
       const editingItemIndex = existingItems.findIndex(
@@ -288,9 +301,9 @@ const ShortTypeManagement = () => {
         submitData.append(imageKey, editedItem.file)
       }
 
-      const apiUrl = selectedService
-        ? `${config.UPDATE_SHOT_TYPE}/${selectedShotType._id}?projectTypeId=${selectedService}`
-        : `${config.UPDATE_SHOT_TYPE}/${selectedShotType._id}`
+      const apiUrl = selectedProject
+        ? `${config.UPDATE_SHOT_TYPE}/${selectedShotTypeObj._id}?projectTypeId=${selectedProject}`
+        : `${config.UPDATE_SHOT_TYPE}/${selectedShotTypeObj._id}`
 
       const response = await apiCall('put', apiUrl, submitData, {
         headers: {
@@ -307,7 +320,7 @@ const ShortTypeManagement = () => {
         })
         setIsEditModalOpen(false)
         setEditData(null)
-        setSelectedShotType(null)
+        setSelectedShotTypeObj(null)
         fetchShotTypes()
       } else {
         addToast({
@@ -335,7 +348,7 @@ const ShortTypeManagement = () => {
   }
 
   const handleDelete = (shotType, item) => {
-    setSelectedShotType(shotType)
+    setSelectedShotTypeObj(shotType)
     setSelectedItem(item)
     setIsDeleteModalOpen(true)
   }
@@ -343,8 +356,8 @@ const ShortTypeManagement = () => {
   const confirmDelete = async () => {
     showSpinner()
     try {
-      const apiUrl = selectedService
-        ? `${config.DELETE_SHOT_TYPE}/${selectedItem._id}?projectTypeId=${selectedService}`
+      const apiUrl = selectedProject
+        ? `${config.DELETE_SHOT_TYPE}/${selectedItem._id}?projectTypeId=${selectedProject}`
         : `${config.DELETE_SHOT_TYPE}/${selectedItem._id}`
 
       const response = await apiCall('delete', apiUrl)
@@ -357,7 +370,7 @@ const ShortTypeManagement = () => {
           duration: 3000,
         })
         setIsDeleteModalOpen(false)
-        setSelectedShotType(null)
+        setSelectedShotTypeObj(null)
         setSelectedItem(null)
         fetchShotTypes()
       } else {
@@ -385,7 +398,7 @@ const ShortTypeManagement = () => {
   }
 
   const handleEdit = (shotType, item) => {
-    setSelectedShotType(shotType)
+    setSelectedShotTypeObj(shotType)
     setEditData({
       ...shotType,
       items: [item],
@@ -394,14 +407,14 @@ const ShortTypeManagement = () => {
   }
 
   const handleToggleStatus = (shotType, item) => {
-    setSelectedShotType(shotType)
+    setSelectedShotTypeObj(shotType)
     setSelectedItem(item)
     setIsStatusModalOpen(true)
   }
 
   const closeStatusModal = () => {
     setIsStatusModalOpen(false)
-    setSelectedShotType(null)
+    setSelectedShotTypeObj(null)
     setSelectedItem(null)
   }
 
@@ -410,10 +423,8 @@ const ShortTypeManagement = () => {
 
     showSpinner()
     try {
-      // Toggle status between Active and Inactive
       const newStatus = selectedItem.status === 'Active' ? 'Inactive' : 'Active'
 
-      // Use shotTypeId from item's _id
       const apiUrl = `${config.UPDATE_SHOT_TYPE_STATUS}?shotTypeId=${selectedItem._id}&status=${newStatus}`
 
       const response = await apiCall('put', apiUrl)
@@ -426,7 +437,6 @@ const ShortTypeManagement = () => {
           duration: 3000,
         })
 
-        // Refresh shot types list
         await fetchShotTypes()
         closeStatusModal()
       } else {
@@ -486,8 +496,8 @@ const ShortTypeManagement = () => {
 
       let response
       if (shotTypeId) {
-        const apiUrl = selectedService
-          ? `${config.UPDATE_SHOT_TYPE}/${shotTypeId}?projectTypeId=${selectedService}`
+        const apiUrl = selectedProject
+          ? `${config.UPDATE_SHOT_TYPE}/${shotTypeId}?projectTypeId=${selectedProject}`
           : `${config.UPDATE_SHOT_TYPE}/${shotTypeId}`
 
         response = await apiCall('put', apiUrl, submitData, {
@@ -496,8 +506,8 @@ const ShortTypeManagement = () => {
           },
         })
       } else {
-        const apiUrl = selectedService
-          ? `${config.ADD_SHOT_TYPE}?projectTypeId=${selectedService}`
+        const apiUrl = selectedProject
+          ? `${config.ADD_SHOT_TYPE}?projectTypeId=${selectedProject}`
           : config.ADD_SHOT_TYPE
 
         response = await apiCall('post', apiUrl, submitData, {
@@ -638,224 +648,214 @@ const ShortTypeManagement = () => {
   }
 
   return (
-    <div className="min-h-screen bg-white">
-      {/* Modern Header */}
-      <div className="border-b border-gray-200 bg-white">
-        <div className="mx-auto max-w-7xl px-4 py-6 sm:px-6 lg:px-8">
-          <div className="flex items-center justify-between">
-            <div>
-              <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
-                Shot Types
-              </h1>
-              <p className="mt-1 text-sm text-gray-600">
-                Manage your photography shot type library
-              </p>
-            </div>
+    <div className="w-full">
+      {/* Header */}
+      <div className="mb-6 flex items-center justify-between">
+        <div>
+          <h2 className="text-xl font-semibold text-gray-900">
+            Manage Shot Types
+          </h2>
+          <p className="mt-1 text-sm text-gray-500">
+            Configure shot types for your selected project
+          </p>
+        </div>
 
-            <div className="flex items-center gap-3">
-              {/* Project Selector */}
-              <div className="relative">
-                <select
-                  value={selectedService}
-                  onChange={(e) => setSelectedService(e.target.value)}
-                  className="h-10 appearance-none rounded-lg border border-gray-200 bg-white pl-4 pr-10 text-sm font-medium text-gray-700 transition-all duration-200 hover:border-gray-300 focus:border-gray-900 focus:outline-none focus:ring-2 focus:ring-gray-900/10"
-                >
-                  <option value="">Select Project</option>
-                  {serviceItems.length > 0 ? (
-                    serviceItems.map((projectName, index) => (
-                      <option key={index} value={projectName}>
-                        {projectName}
-                      </option>
-                    ))
-                  ) : (
-                    <option value="" disabled>
-                      No projects available
-                    </option>
-                  )}
-                </select>
-                <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
-                  <svg
-                    className="h-4 w-4 text-gray-500"
-                    fill="none"
-                    viewBox="0 0 24 24"
-                    stroke="currentColor"
-                  >
-                    <path
-                      strokeLinecap="round"
-                      strokeLinejoin="round"
-                      strokeWidth={2}
-                      d="M19 9l-7 7-7-7"
-                    />
-                  </svg>
-                </div>
-              </div>
-
-              {/* Add Heading Button */}
-              {!(
-                shotTypes.length > 0 &&
-                (shotTypes[0].title || shotTypes[0].subtitle)
-              ) && (
-                <button
-                  onClick={() => {
-                    if (!selectedService) {
-                      addToast({
-                        type: 'error',
-                        title: 'Error',
-                        description: 'Please select project name first',
-                        duration: 3000,
-                      })
-                      return
-                    }
-                    setIsHeadingModalOpen(true)
-                  }}
-                  disabled={!selectedService}
-                  className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  <FaPlus className="text-xs" />
-                  Add Heading
-                </button>
+        <div className="flex items-center gap-3">
+          {/* Project Selector */}
+          <div className="relative">
+            <select
+              value={selectedProject}
+              onChange={(e) => onProjectChange(e.target.value)}
+              className="h-10 appearance-none rounded-lg border border-gray-200 bg-white pl-4 pr-10 text-sm font-medium text-gray-700 transition-all duration-200 hover:border-gray-300 focus:border-indigo focus:outline-none focus:ring-2 focus:ring-indigo/10"
+            >
+              <option value="">Select Project</option>
+              {serviceItems.length > 0 ? (
+                serviceItems.map((projectName, index) => (
+                  <option key={index} value={projectName}>
+                    {projectName}
+                  </option>
+                ))
+              ) : (
+                <option value="" disabled>
+                  No projects available
+                </option>
               )}
-
-              {/* Add Shot Type Button */}
-              <button
-                onClick={() => {
-                  if (!selectedService) {
-                    addToast({
-                      type: 'error',
-                      title: 'Error',
-                      description: 'Please select project name first',
-                      duration: 3000,
-                    })
-                    return
-                  }
-                  setIsAddModalOpen(true)
-                }}
-                disabled={!selectedService}
-                className="flex h-10 items-center gap-2 rounded-lg bg-indigo px-4 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40 disabled:hover:bg-gray-900"
+            </select>
+            <div className="pointer-events-none absolute inset-y-0 right-0 flex items-center pr-3">
+              <svg
+                className="h-4 w-4 text-gray-500"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke="currentColor"
               >
-                <FaPlus className="text-xs" />
-                Add Shot Type
-              </button>
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
             </div>
           </div>
+
+          {/* Add Heading Button */}
+          {selectedProject &&
+            !(
+              shotTypes.length > 0 &&
+              (shotTypes[0].title || shotTypes[0].subtitle)
+            ) && (
+              <button
+                onClick={() => setIsHeadingModalOpen(true)}
+                className="flex h-10 items-center gap-2 rounded-lg border border-gray-200 bg-white px-4 text-sm font-medium text-gray-700 transition-all duration-200 hover:bg-gray-50"
+              >
+                <FaPlus className="text-xs" />
+                Add Heading
+              </button>
+            )}
+
+          {/* Add Shot Type Button */}
+          <button
+            onClick={() => setIsAddModalOpen(true)}
+            disabled={!selectedProject}
+            className="flex h-10 items-center gap-2 rounded-lg bg-indigo px-4 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <FaPlus className="text-xs" />
+            Add Shot Type
+          </button>
         </div>
       </div>
 
-      {/* Main Content */}
-      <div className="mx-auto max-w-7xl px-4 py-8 sm:px-6 lg:px-8">
-        {/* Title and Subtitle Section */}
-        {shotTypes.length > 0 &&
-          (shotTypes[0].title || shotTypes[0].subtitle) && (
-            <div className="group relative mb-8">
-              <div className="absolute right-0 top-0">
-                <button
-                  onClick={() => setIsHeadingModalOpen(true)}
-                  className="flex h-7 w-7 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-all duration-200 hover:bg-gray-900 hover:text-white"
-                  title="Edit Heading"
-                >
-                  <FaEdit size={12} />
-                </button>
-              </div>
+      {/* Divider */}
+      <div className="my-6 border-t border-gray-200"></div>
 
-              <div className="space-y-2">
-                {shotTypes[0].title && (
-                  <h2 className="text-3xl font-bold tracking-tight text-gray-900">
-                    {shotTypes[0].title}
-                  </h2>
-                )}
-                {shotTypes[0].subtitle && (
-                  <p className="text-lg leading-relaxed text-gray-600">
-                    {shotTypes[0].subtitle}
-                  </p>
-                )}
-              </div>
+      {/* Navigation Buttons */}
+      {navigationButtons && <div className="mb-6">{navigationButtons}</div>}
 
-              {/* Subtle divider */}
-              <div className="mt-6 h-px bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200"></div>
+      {/* Show message if no project is selected */}
+      {!selectedProject ? (
+        <div className="flex min-h-[400px] items-center justify-center">
+          <div className="max-w-md text-center">
+            <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100">
+              <FaImage className="text-2xl text-gray-400" />
             </div>
-          )}
-
-        {/* Shot Types Grid or Empty State */}
-        {shotTypes.length > 0 ? (
-          <>
-            {shotTypes.some((st) => st.items && st.items.length > 0) ? (
-              <>
-                <div className="mb-6 flex items-center justify-between">
-                  <div className="flex items-center gap-2">
-                    <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
-                      <FaImage className="text-sm text-gray-600" />
-                    </div>
-                    <div>
-                      <p className="text-sm font-medium text-gray-900">
-                        {totalItems} {totalItems === 1 ? 'Item' : 'Items'}
-                      </p>
-                    </div>
-                  </div>
+            <h3 className="mb-2 text-lg font-semibold text-gray-900">
+              No Project Selected
+            </h3>
+            <p className="text-sm text-gray-600">
+              Please select a project from the dropdown above to manage shot
+              types
+            </p>
+          </div>
+        </div>
+      ) : (
+        <>
+          {/* Title and Subtitle Section */}
+          {shotTypes.length > 0 &&
+            (shotTypes[0].title || shotTypes[0].subtitle) && (
+              <div className="group relative mb-8">
+                <div className="absolute right-0 top-0">
+                  <button
+                    onClick={() => setIsHeadingModalOpen(true)}
+                    className="flex h-7 w-7 items-center justify-center rounded-md bg-gray-100 text-gray-600 transition-all duration-200 hover:bg-gray-900 hover:text-white"
+                    title="Edit Heading"
+                  >
+                    <FaEdit size={12} />
+                  </button>
                 </div>
 
-                <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
-                  {shotTypes.map((shotType) =>
-                    shotType.items.map((item, index) => (
-                      <ShortTypeCard
-                        key={`${shotType._id}-${index}`}
-                        shotType={shotType}
-                        item={item}
-                        onEdit={handleEdit}
-                        onDelete={handleDelete}
-                        onToggleStatus={handleToggleStatus}
-                      />
-                    ))
+                <div className="space-y-2">
+                  {shotTypes[0].title && (
+                    <h2 className="text-3xl font-bold tracking-tight text-gray-900">
+                      {shotTypes[0].title}
+                    </h2>
+                  )}
+                  {shotTypes[0].subtitle && (
+                    <p className="text-lg leading-relaxed text-gray-600">
+                      {shotTypes[0].subtitle}
+                    </p>
                   )}
                 </div>
 
-                {/* Pagination */}
-                {renderPagination()}
-              </>
-            ) : (
-              /* No items in shot type */
-              <div className="flex min-h-[500px] items-center justify-center">
-                <div className="max-w-md text-center">
-                  <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100">
-                    <FaImage className="text-2xl text-gray-400" />
-                  </div>
-                  <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                    No items yet
-                  </h3>
-                  <p className="mb-6 text-sm text-gray-600">
-                    Get started by adding your first shot type item
-                  </p>
-                  <button
-                    onClick={() => setIsAddModalOpen(true)}
-                    className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800"
-                  >
-                    <FaPlus className="text-xs" />
-                    Add Shot Type
-                  </button>
-                </div>
+                <div className="mt-6 h-px bg-gradient-to-r from-gray-200 via-gray-300 to-gray-200"></div>
               </div>
             )}
-          </>
-        ) : (
-          /* Empty State - No project selected or no data */
-          <div className="flex min-h-[500px] items-center justify-center">
-            <div className="max-w-md text-center">
-              <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100">
-                <FaImage className="text-2xl text-gray-400" />
+
+          {/* Shot Types Grid or Empty State */}
+          {shotTypes.length > 0 ? (
+            <>
+              {shotTypes.some((st) => st.items && st.items.length > 0) ? (
+                <>
+                  <div className="mb-6 flex items-center justify-between">
+                    <div className="flex items-center gap-2">
+                      <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-gray-100">
+                        <FaImage className="text-sm text-gray-600" />
+                      </div>
+                      <div>
+                        <p className="text-sm font-medium text-gray-900">
+                          {totalItems} {totalItems === 1 ? 'Item' : 'Items'}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+                    {shotTypes.map((shotType) =>
+                      shotType.items.map((item, index) => (
+                        <ShortTypeCard
+                          key={`${shotType._id}-${index}`}
+                          shotType={shotType}
+                          item={item}
+                          onEdit={handleEdit}
+                          onDelete={handleDelete}
+                          onToggleStatus={handleToggleStatus}
+                        />
+                      ))
+                    )}
+                  </div>
+
+                  {renderPagination()}
+                </>
+              ) : (
+                <div className="flex min-h-[400px] items-center justify-center">
+                  <div className="max-w-md text-center">
+                    <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100">
+                      <FaImage className="text-2xl text-gray-400" />
+                    </div>
+                    <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                      No items yet
+                    </h3>
+                    <p className="mb-6 text-sm text-gray-600">
+                      Get started by adding your first shot type item
+                    </p>
+                    <button
+                      onClick={() => setIsAddModalOpen(true)}
+                      className="inline-flex items-center gap-2 rounded-lg bg-gray-900 px-4 py-2 text-sm font-medium text-white transition-all duration-200 hover:bg-gray-800"
+                    >
+                      <FaPlus className="text-xs" />
+                      Add Shot Type
+                    </button>
+                  </div>
+                </div>
+              )}
+            </>
+          ) : (
+            <div className="flex min-h-[400px] items-center justify-center">
+              <div className="max-w-md text-center">
+                <div className="mx-auto mb-6 flex h-16 w-16 items-center justify-center rounded-2xl bg-gray-100">
+                  <FaImage className="text-2xl text-gray-400" />
+                </div>
+                <h3 className="mb-2 text-lg font-semibold text-gray-900">
+                  No shot types yet
+                </h3>
+                <p className="text-sm text-gray-600">
+                  Create your first shot type to organize your photography
+                  options
+                </p>
               </div>
-              <h3 className="mb-2 text-lg font-semibold text-gray-900">
-                {selectedService
-                  ? 'No shot types yet'
-                  : 'Select a project to get started'}
-              </h3>
-              <p className="text-sm text-gray-600">
-                {selectedService
-                  ? 'Create your first shot type to organize your photography options'
-                  : 'Choose a project from the dropdown menu to view and manage shot types'}
-              </p>
             </div>
-          </div>
-        )}
-      </div>
+          )}
+        </>
+      )}
 
       {/* Modals */}
       <AddShortTypeModal
@@ -869,7 +869,7 @@ const ShortTypeManagement = () => {
         onClose={() => {
           setIsEditModalOpen(false)
           setEditData(null)
-          setSelectedShotType(null)
+          setSelectedShotTypeObj(null)
         }}
         onSubmit={handleEditShotType}
         editData={editData}
@@ -893,7 +893,7 @@ const ShortTypeManagement = () => {
         isOpen={isDeleteModalOpen}
         onClose={() => {
           setIsDeleteModalOpen(false)
-          setSelectedShotType(null)
+          setSelectedShotTypeObj(null)
           setSelectedItem(null)
         }}
         title="Delete Item"
@@ -907,7 +907,6 @@ const ShortTypeManagement = () => {
         onConfirm={confirmDelete}
       />
 
-      {/* Status Change Confirmation Modal */}
       <ConfirmationModal
         isOpen={isStatusModalOpen}
         onClose={closeStatusModal}
@@ -931,4 +930,4 @@ const ShortTypeManagement = () => {
   )
 }
 
-export default ShortTypeManagement
+export default ShotTypesStep

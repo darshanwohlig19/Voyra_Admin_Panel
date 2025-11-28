@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FaEye, FaTrash, FaBan } from 'react-icons/fa' // FontAwesome icons
+import { FaEye, FaTrash, FaBan, FaEdit } from 'react-icons/fa' // FontAwesome icons
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
 import { useSpinner } from '../../common/SpinnerLoader'
@@ -8,6 +8,7 @@ import { useLocation, useNavigate } from 'react-router-dom'
 import RoutesComponent from '../../routes'
 import DataTable from '../../components/DataTable'
 import ConfirmationModal from '../../components/modal/ConfirmationModal'
+import EditPlanModal from '../../components/organization/EditPlanModal'
 
 const Organizations = () => {
   const [organizations, setOrganizations] = useState([])
@@ -18,6 +19,7 @@ const Organizations = () => {
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isBlockModalOpen, setIsBlockModalOpen] = useState(false)
   const [isUnblockModalOpen, setIsUnblockModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [selectedOrg, setSelectedOrg] = useState(null)
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
@@ -76,8 +78,8 @@ const Organizations = () => {
   }
 
   const handleEdit = (org) => {
-    console.log('Edit organization:', org)
-    // Add your edit logic here
+    setSelectedOrg(org)
+    setIsEditModalOpen(true)
   }
 
   const handleDelete = (org) => {
@@ -291,6 +293,86 @@ const Organizations = () => {
     }
   }
 
+  const closeEditModal = () => {
+    setIsEditModalOpen(false)
+    setSelectedOrg(null)
+  }
+
+  const handleSavePlan = async (formData) => {
+    showSpinner()
+    try {
+      // Prepare request body
+      const requestBody = {
+        orgName: formData.orgName,
+        planId: formData.plan,
+      }
+
+      // Add credits if provided
+      if (
+        formData.credits !== '' &&
+        formData.credits !== null &&
+        formData.credits !== undefined
+      ) {
+        requestBody.credits = {
+          monthlyBalance: formData.credits,
+        }
+      }
+
+      // Call API to update organization
+      const response = await apiCall(
+        'put',
+        `${config.UPDATE_ORGANIZATION}/${formData.organizationId}`,
+        requestBody
+      )
+
+      if (response.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Organization updated successfully',
+          duration: 3000,
+        })
+
+        // Refresh organizations list
+        const fetchResponse = await apiCall(
+          'get',
+          `${config.GET_ORGANIZATIONS}?page=${currentPage}&limit=${itemsPerPage}`
+        )
+        if (fetchResponse.status === 200 && fetchResponse.data.data) {
+          setOrganizations(fetchResponse.data.data.orgs || [])
+          setTotalOrganizations(
+            fetchResponse.data.data.totalCount ||
+              fetchResponse.data.data.orgs?.length ||
+              0
+          )
+        }
+
+        // Close modal
+        closeEditModal()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.msg ||
+            response?.data?.message ||
+            'Failed to update organization',
+          duration: 3000,
+        })
+      }
+    } catch (error) {
+      console.error('Error updating organization:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: error?.message || 'Failed to update organization',
+        duration: 3000,
+      })
+    } finally {
+      hideSpinner()
+    }
+  }
+
   // Pagination logic
   const totalPages = Math.ceil(totalOrganizations / itemsPerPage)
   const startIndex = (currentPage - 1) * itemsPerPage
@@ -326,6 +408,16 @@ const Organizations = () => {
       render: (_, value) => (
         <span className="inline-block rounded-md bg-gray-100 px-2 py-1 text-base capitalize text-gray-800">
           {value}
+        </span>
+      ),
+    },
+    {
+      key: 'credits',
+      label: 'Monthly Balance',
+      width: '120px',
+      render: (row) => (
+        <span className="inline-block rounded-md bg-blue-50 px-2 py-1 text-base font-medium text-blue-800">
+          {row?.credits?.monthlyBalance || 0}
         </span>
       ),
     },
@@ -372,11 +464,18 @@ const Organizations = () => {
       render: (row) => (
         <div className="flex items-center justify-center gap-2">
           <button
-            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-100 hover:shadow-md"
+            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-indigo text-white transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-100 hover:shadow-md"
             onClick={() => handleView(row)}
             title="View"
           >
             <FaEye size={16} />
+          </button>
+          <button
+            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-100 hover:shadow-md"
+            onClick={() => handleEdit(row)}
+            title="Edit"
+          >
+            <FaEdit size={14} />
           </button>
           <button
             className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-red-50 text-red-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-md"
@@ -461,6 +560,14 @@ const Organizations = () => {
         confirmColorScheme="green"
         icon="unblock"
         onConfirm={confirmUnblockOrganization}
+      />
+
+      {/* Edit Plan Modal */}
+      <EditPlanModal
+        isOpen={isEditModalOpen}
+        onClose={closeEditModal}
+        organization={selectedOrg}
+        onSave={handleSavePlan}
       />
     </div>
   )

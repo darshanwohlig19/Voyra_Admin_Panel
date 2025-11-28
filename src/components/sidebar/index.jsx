@@ -127,9 +127,14 @@ function Sidebar(props) {
                   <HiX />
                 </span>
                 <div className={`flex h-[74px] items-center `}>
-                  <Link to="/" className="ml-4 flex items-center">
-                    <span className="font-xs text-[30px] text-vividSkyBlue dark:text-white">
-                      Pocket Studio
+                  <Link to="/" className="ml-4 flex items-center gap-2">
+                    <img
+                      src={require('../../assets/webp/logo.webp')}
+                      alt="PocketStudio.ai Logo"
+                      className="h-9 w-9"
+                    />
+                    <span className="font-xs text-[24px] text-indigo dark:text-white">
+                      PocketStudio.ai
                     </span>
                   </Link>
                 </div>

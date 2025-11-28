@@ -1,49 +1,47 @@
 import React, { useState, useEffect } from 'react'
 import { FaTimes } from 'react-icons/fa'
-import { Plus, Edit } from 'lucide-react'
+import { Edit } from 'lucide-react'
 import { useToaster } from '../../common/Toaster'
 
-const AddHeadingModal = ({
-  isOpen,
-  onClose,
-  onSubmit,
-  existingData = null,
-}) => {
-  const [title, setTitle] = useState('')
+const EditCategoryModal = ({ isOpen, onClose, onSubmit, existingData }) => {
+  const [categoryName, setCategoryName] = useState('')
   const { addToast } = useToaster()
 
-  // Populate form when editing or reset when adding
+  // Load existing data when modal opens
   useEffect(() => {
-    if (isOpen) {
-      if (existingData && existingData.title) {
-        setTitle(existingData.title)
-      } else {
-        setTitle('')
-      }
+    if (isOpen && existingData) {
+      setCategoryName(existingData.categoryTitle || '')
+    } else if (!isOpen) {
+      setCategoryName('')
     }
   }, [isOpen, existingData])
 
   const handleSubmit = (e) => {
     e.preventDefault()
 
+    console.log('EditCategoryModal handleSubmit called')
+    console.log('Category name:', categoryName)
+
     // Validation
-    if (!title.trim()) {
+    if (!categoryName.trim()) {
       addToast({
         type: 'error',
         title: 'Validation Error',
-        description: 'Please enter a title',
+        description: 'Please enter a category name',
         duration: 3000,
       })
       return
     }
 
+    console.log('Calling onSubmit with:', { categoryName: categoryName.trim() })
+
     // Submit data
-    onSubmit({ title: title.trim() })
-    setTitle('')
+    onSubmit({ categoryName: categoryName.trim() })
+    setCategoryName('')
   }
 
   const handleClose = () => {
-    setTitle('')
+    setCategoryName('')
     onClose()
   }
 
@@ -65,27 +63,21 @@ const AddHeadingModal = ({
         <div className="flex-shrink-0 rounded-t-3xl border-b border-gray-300 bg-white px-8 py-6">
           <div className="flex w-full items-center justify-between">
             <div className="flex items-center gap-3">
-              <div className="flex h-10 w-10 items-center justify-center rounded-xl bg-indigo">
-                {existingData ? (
-                  <Edit className="text-white" size={18} />
-                ) : (
-                  <Plus className="text-white" size={18} />
-                )}
+              <div className="flex h-10 w-10  items-center justify-center rounded-xl bg-indigo">
+                <Edit className="text-white" size={18} />
               </div>
               <div>
                 <h2
                   id="modal-title"
                   className="text-xl font-bold text-gray-900"
                 >
-                  {existingData ? 'Edit Page Heading' : 'Add Page Heading'}
+                  Edit Category
                 </h2>
                 <p
                   id="modal-description"
                   className="mt-1 text-sm text-gray-600"
                 >
-                  {existingData
-                    ? 'Update the page heading title'
-                    : 'Set the main heading title for this parameters page'}
+                  Update the category name
                 </p>
               </div>
             </div>
@@ -105,37 +97,37 @@ const AddHeadingModal = ({
         {/* Content */}
         <div className="flex-1 overflow-y-auto bg-white p-6">
           <form onSubmit={handleSubmit}>
-            {/* Step 1: Heading Configuration */}
+            {/* Category Configuration */}
             <div className="mb-6 rounded-lg border border-gray-200 bg-gray-50 p-5">
               <div className="mb-4 flex items-center gap-2">
                 <span className="flex h-7 w-7 items-center justify-center rounded-full bg-gray-600 text-sm font-bold text-white">
                   1
                 </span>
                 <h3 className="text-lg font-bold text-gray-800">
-                  Page Heading
+                  Category Details
                 </h3>
               </div>
               <p className="mb-6 text-sm text-gray-600">
-                🏷️ Set the main heading that will appear at the top of your
-                parameters page
+                📁 Update the category name to better describe the grouped
+                elements
               </p>
 
               <div>
                 <div className="mb-2 flex items-center gap-2 text-sm font-medium text-gray-700">
-                  Heading Title
+                  Category Name
                   <span className="text-xs text-red-500">*Required</span>
                 </div>
                 <input
                   type="text"
-                  value={title}
-                  onChange={(e) => setTitle(e.target.value)}
-                  placeholder="e.g., On-Model Parameters, Product Photography Settings, Shot Configuration"
+                  value={categoryName}
+                  onChange={(e) => setCategoryName(e.target.value)}
+                  placeholder="e.g., Shot Angles, Lighting Styles, Model Poses, Product Features"
                   className="w-full rounded-lg border border-gray-300 bg-white px-4 py-3 text-base transition-colors focus:border-gray-500 focus:outline-none"
                   required
                 />
                 <p className="mt-2 text-xs text-gray-500">
-                  💡 This will be displayed as the main page title for your
-                  parameters section
+                  💡 Choose a clear, descriptive name that represents the type
+                  of elements this category contains
                 </p>
               </div>
             </div>
@@ -145,7 +137,7 @@ const AddHeadingModal = ({
         {/* Footer */}
         <div className="flex items-center justify-between rounded-b-3xl border-t border-gray-200 bg-gray-50 px-6 py-4">
           <div className="text-sm text-gray-600">
-            💡 Choose a clear, descriptive title for your parameters page
+            💡 Category name is required and should be descriptive and unique
           </div>
           <div className="flex gap-3">
             <button
@@ -160,7 +152,7 @@ const AddHeadingModal = ({
               onClick={handleSubmit}
               className="flex items-center gap-2 rounded-lg bg-indigo px-8 py-3 font-medium text-white transition-colors hover:bg-indigo"
             >
-              {existingData ? 'Update Heading' : 'Save Heading'}
+              Update Category
             </button>
           </div>
         </div>
@@ -169,4 +161,4 @@ const AddHeadingModal = ({
   )
 }
 
-export default AddHeadingModal
+export default EditCategoryModal

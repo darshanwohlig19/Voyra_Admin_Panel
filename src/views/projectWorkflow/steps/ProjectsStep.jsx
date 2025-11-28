@@ -1,43 +1,33 @@
 import React, { useState, useEffect } from 'react'
 import { FaTrash, FaPlus, FaEdit } from 'react-icons/fa'
-import ApiCaller from '../../common/services/apiServices'
-import config from '../../common/config/apiConfig'
-import { useSpinner } from '../../common/SpinnerLoader'
-import { useToaster } from '../../common/Toaster'
-import { useLocation } from 'react-router-dom'
-import RoutesComponent from '../../routes'
-import DataTable from '../../components/DataTable'
-import ConfirmationModal from '../../components/modal/ConfirmationModal'
-import AddProjectModal from '../../components/projects/AddProjectModal'
+import ApiCaller from '../../../common/services/apiServices'
+import config from '../../../common/config/apiConfig'
+import { useSpinner } from '../../../common/SpinnerLoader'
+import { useToaster } from '../../../common/Toaster'
+import DataTable from '../../../components/DataTable'
+import ConfirmationModal from '../../../components/modal/ConfirmationModal'
+import AddProjectModal from '../../../components/projects/AddProjectModal'
 
-const Projects = () => {
+const ProjectsStep = ({
+  selectedProject,
+  onProjectSelect,
+  onProjectCreated,
+  navigationButtons,
+}) => {
   const [services, setServices] = useState([])
   const [organizationId, setOrganizationId] = useState(null)
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(10)
-  const [pageTitle, setPageTitle] = useState('Projects')
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
   const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isStatusModalOpen, setIsStatusModalOpen] = useState(false)
   const [selectedService, setSelectedService] = useState(null)
   const [editData, setEditData] = useState(null)
-  const [selectedCategories, setSelectedCategories] = useState({}) // Track selected category for each row
+  const [selectedCategories, setSelectedCategories] = useState({})
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
   const { addToast } = useToaster()
-  const location = useLocation()
-  const routes = RoutesComponent()
-
-  useEffect(() => {
-    // Find the current route and set the page title dynamically
-    const currentRoute = routes.find((route) =>
-      location.pathname.includes(route.path)
-    )
-    if (currentRoute) {
-      setPageTitle(currentRoute.name)
-    }
-  }, [location, routes])
 
   useEffect(() => {
     fetchServiceTypes()
@@ -49,7 +39,6 @@ const Projects = () => {
       const response = await apiCall('get', config.GET_SERVICE_TYPES)
 
       if (response.status === 204) {
-        // No content - no service types found for this organization
         setServices([])
         addToast({
           type: 'info',
@@ -58,13 +47,11 @@ const Projects = () => {
           duration: 3000,
         })
       } else if (response.status === 200 && response.data) {
-        // Handle both response formats: new format with status_code or old format with success
         const responseData = response.data.data || response.data
         const isSuccessful =
           response.data.status_code === 200 || response.data.success === true
 
         if (isSuccessful && responseData) {
-          // Handle both array and single object responses
           let data = responseData
           if (Array.isArray(responseData) && responseData.length > 0) {
             data = responseData[0]
@@ -73,7 +60,6 @@ const Projects = () => {
           if (data && data.projects) {
             setOrganizationId(data.organizationId)
 
-            // Add createdAt to each project from parent data
             const projectsWithDate = (data.projects || []).map((project) => ({
               ...project,
               createdAt: data.createdAt,
@@ -131,7 +117,6 @@ const Projects = () => {
           duration: 3000,
         })
 
-        // Refresh service types list
         await fetchServiceTypes()
         closeDeleteModal()
       } else {
@@ -173,7 +158,6 @@ const Projects = () => {
 
     showSpinner()
     try {
-      // Toggle status between Active and Inactive
       const newStatus =
         selectedService.status === 'Active' ? 'Inactive' : 'Active'
 
@@ -190,7 +174,6 @@ const Projects = () => {
           duration: 3000,
         })
 
-        // Refresh service types list
         await fetchServiceTypes()
         closeStatusModal()
       } else {
@@ -218,7 +201,6 @@ const Projects = () => {
   }
 
   const handleEdit = (project) => {
-    // Convert project data to include schema format for the modal
     const editDataFormatted = {
       ...project,
       schema: {
@@ -235,7 +217,6 @@ const Projects = () => {
   const handleAddProject = async ({ serviceType, metaData }) => {
     showSpinner()
     try {
-      // Validate inputs
       if (!serviceType || !metaData || Object.keys(metaData).length === 0) {
         addToast({
           type: 'error',
@@ -247,22 +228,11 @@ const Projects = () => {
         return
       }
 
-      // Build form-data payload as shown in Postman
       const formData = new FormData()
       formData.append('projectName', serviceType)
       formData.append('metadata', JSON.stringify(metaData))
 
-      // Log the data being sent for debugging
-      console.log('Sending data:', {
-        serviceType,
-        metaData,
-        formDataEntries: Array.from(formData.entries()),
-      })
-
-      // Send FormData - axios will automatically set the correct Content-Type with boundary
       const response = await apiCall('post', config.ADD_SERVICE_TYPE, formData)
-
-      console.log('API Response:', response)
 
       if (response.status === 200 || response.status === 201) {
         addToast({
@@ -272,11 +242,19 @@ const Projects = () => {
           duration: 3000,
         })
 
-        // Refresh service types list
         await fetchServiceTypes()
         setIsAddModalOpen(false)
+
+        // Notify parent that a project was created
+        if (onProjectCreated) {
+          onProjectCreated()
+        }
+
+        // Auto-select the newly created project
+        if (onProjectSelect) {
+          onProjectSelect(serviceType)
+        }
       } else {
-        // Extract error message and ensure it's a string
         let errorMessage = 'Failed to add service'
 
         const responseData = response?.data
@@ -297,8 +275,6 @@ const Projects = () => {
           }
         }
 
-        console.error('API Error Response:', response?.data)
-
         addToast({
           type: 'error',
           title: 'Error',
@@ -308,13 +284,7 @@ const Projects = () => {
       }
     } catch (error) {
       console.error('Error adding service:', error)
-      console.error('Error details:', {
-        message: error?.message,
-        response: error?.response?.data,
-        status: error?.response?.status,
-      })
 
-      // Extract error message and ensure it's a string
       let errorMessage = 'Failed to add service'
 
       if (error?.response?.data) {
@@ -348,7 +318,6 @@ const Projects = () => {
   const handleEditProject = async ({ serviceType, metaData }) => {
     showSpinner()
     try {
-      // Validate inputs
       if (!serviceType || !metaData || Object.keys(metaData).length === 0) {
         addToast({
           type: 'error',
@@ -360,7 +329,6 @@ const Projects = () => {
         return
       }
 
-      // Get all the old field keys from the existing service
       let oldFieldKeys = []
       if (
         selectedService &&
@@ -370,42 +338,26 @@ const Projects = () => {
         oldFieldKeys = Object.keys(selectedService.schema[serviceType])
       }
 
-      // Get new field keys
       const newFieldKeys = Object.keys(metaData)
 
-      // Find fields that were removed (exist in old but not in new)
       const removedFields = oldFieldKeys.filter(
         (key) => !newFieldKeys.includes(key)
       )
 
-      // Create complete metadata with removed fields set to empty array
       const completeMetaData = { ...metaData }
       removedFields.forEach((field) => {
         completeMetaData[field] = []
       })
 
-      // Build form-data payload
       const formData = new FormData()
       formData.append('projectName', serviceType)
       formData.append('metadata', JSON.stringify(completeMetaData))
 
-      // Include serviceId to identify which service to update
       if (selectedService && selectedService._id) {
         formData.append('serviceId', selectedService._id)
       }
 
-      console.log('Updating service:', {
-        serviceType,
-        originalMetaData: metaData,
-        completeMetaData,
-        serviceId: selectedService?._id,
-        removedFields,
-      })
-
-      // Use POST method (same as add)
       const response = await apiCall('post', config.ADD_SERVICE_TYPE, formData)
-
-      console.log('API Response:', response)
 
       if (response.status === 200 || response.status === 201) {
         addToast({
@@ -415,7 +367,6 @@ const Projects = () => {
           duration: 3000,
         })
 
-        // Refresh service types list
         await fetchServiceTypes()
         setIsEditModalOpen(false)
         setEditData(null)
@@ -427,8 +378,6 @@ const Projects = () => {
           response?.data?.error ||
           'Failed to update service'
 
-        console.error('API Error Response:', response?.data)
-
         addToast({
           type: 'error',
           title: 'Error',
@@ -438,13 +387,7 @@ const Projects = () => {
       }
     } catch (error) {
       console.error('Error updating service:', error)
-      console.error('Error details:', {
-        message: error?.message,
-        response: error?.response?.data,
-        status: error?.response?.status,
-      })
 
-      // Extract error message and ensure it's a string
       let errorMessage = 'Failed to update service'
 
       if (error?.response?.data) {
@@ -492,8 +435,12 @@ const Projects = () => {
       key: 'name',
       label: 'Project Name',
       width: '180px',
-      render: (_, value) => (
-        <span className="text-base font-semibold capitalize text-gray-900">
+      render: (row, value) => (
+        <span
+          className={`text-base font-semibold capitalize ${
+            selectedProject === value ? 'text-indigo' : 'text-gray-900'
+          }`}
+        >
           {value || 'N/A'}
         </span>
       ),
@@ -513,7 +460,6 @@ const Projects = () => {
           return <span className="text-sm text-gray-500">N/A</span>
         }
 
-        // Get selected category for this row, default to first category
         const selectedCategory = selectedCategories[row._id] || categories[0]
 
         return (
@@ -545,16 +491,13 @@ const Projects = () => {
           return <span className="text-sm text-gray-500">N/A</span>
         }
 
-        // Get the selected category for this row
         const categories = value.map((cat) => cat.name).filter(Boolean)
         const selectedCategory = selectedCategories[row._id] || categories[0]
 
-        // Find the selected category object
         const selectedCategoryObj = value.find(
           (cat) => cat.name === selectedCategory
         )
 
-        // Get subcategories only from the selected category
         const subcategories = []
         if (
           selectedCategoryObj &&
@@ -669,10 +612,17 @@ const Projects = () => {
   ]
 
   return (
-    <div className="mt-5 h-full w-full px-4">
+    <div className="w-full">
       {/* Header with Add Button */}
-      <div className="mb-5 flex items-center justify-end">
-        {/* <h1 className="text-2xl font-bold text-gray-900">Service Types</h1> */}
+      <div className="mb-5  flex items-center justify-between">
+        <div className="">
+          <h2 className="text-xl font-semibold text-gray-900">
+            Manage Projects
+          </h2>
+          <p className="mt-1 text-sm text-gray-500">
+            Create and manage your project types
+          </p>
+        </div>
         <button
           onClick={() => setIsAddModalOpen(true)}
           className="flex items-center gap-2 rounded-lg bg-indigo px-5 py-2.5 text-sm font-semibold text-white shadow-lg shadow-blue-500/30 transition-all hover:shadow-xl hover:shadow-blue-500/40 active:scale-95"
@@ -681,6 +631,12 @@ const Projects = () => {
           Add Project
         </button>
       </div>
+
+      {/* Divider */}
+      <div className="my-6 border-t border-gray-200"></div>
+
+      {/* Navigation Buttons */}
+      {navigationButtons && <div className="mb-6">{navigationButtons}</div>}
 
       <DataTable
         columns={columns}
@@ -754,4 +710,4 @@ const Projects = () => {
   )
 }
 
-export default Projects
+export default ProjectsStep

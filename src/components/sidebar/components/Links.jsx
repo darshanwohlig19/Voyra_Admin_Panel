@@ -111,7 +111,7 @@ export function SidebarLinks(props) {
                               : 'mx-auto'
                           } ${
                             activeRoute(route.path.toLowerCase())
-                              ? 'text-vividSkyBlue dark:text-white'
+                              ? 'text-indigo dark:text-white'
                               : 'text-gray-600'
                           } ${
                             activeRoute(route.path.toLowerCase())
@@ -126,9 +126,9 @@ export function SidebarLinks(props) {
                                 <span
                                   className={`${
                                     activeRoute(route.path) === true
-                                      ? 'font-bold text-vividSkyBlue dark:text-white'
+                                      ? 'font-bold text-indigo dark:text-white'
                                       : 'font-medium text-gray-600'
-                                  } relative group-hover:text-vividSkyBlue dark:group-hover:text-white`}
+                                  } relative group-hover:text-indigo dark:group-hover:text-white`}
                                 >
                                   {route.icon ? route.icon : <DashIcon />}
                                 </span>
@@ -140,9 +140,9 @@ export function SidebarLinks(props) {
                             <span
                               className={`${
                                 activeRoute(route.path) === true
-                                  ? 'font-bold text-vividSkyBlue dark:text-white'
+                                  ? 'font-bold text-indigo dark:text-white'
                                   : 'font-medium text-gray-600'
-                              } relative group-hover:text-vividSkyBlue dark:group-hover:text-white`}
+                              } relative group-hover:text-indigo dark:group-hover:text-white`}
                             >
                               {route.icon ? route.icon : <DashIcon />}
                             </span>
@@ -299,9 +299,9 @@ export function SidebarLinks(props) {
                           <span
                             className={`${
                               activeRoute(route.path)
-                                ? 'font-bold text-vividSkyBlue dark:text-white'
+                                ? 'font-bold text-indigo dark:text-white'
                                 : 'font-medium text-gray-600'
-                            } relative group-hover:text-vividSkyBlue dark:group-hover:text-white`}
+                            } relative group-hover:text-indigo dark:group-hover:text-white`}
                           >
                             {route.openInNewTab ? (
                               <span
@@ -311,7 +311,7 @@ export function SidebarLinks(props) {
                                 }}
                               >
                                 {route.icon ? (
-                                  <span className="group-hover:text-vividSkyBlue dark:group-hover:text-white">
+                                  <span className="group-hover:text-indigo dark:group-hover:text-white">
                                     {' '}
                                     {route.icon}
                                   </span>
@@ -320,12 +320,12 @@ export function SidebarLinks(props) {
                                 )}
                               </span>
                             ) : route.icon ? (
-                              <span className="group-hover:text-vividSkyBlue dark:group-hover:text-white">
+                              <span className="group-hover:text-indigo dark:group-hover:text-white">
                                 {' '}
                                 {route.icon}
                               </span>
                             ) : (
-                              <DashIcon className="group-hover:text-vividSkyBlue dark:group-hover:text-white" /> // added hover effect
+                              <DashIcon className="group-hover:text-indigo dark:group-hover:text-white" /> // added hover effect
                             )}
                           </span>
                         }
@@ -336,9 +336,9 @@ export function SidebarLinks(props) {
                       <span
                         className={`${
                           activeRoute(route.path) === true
-                            ? 'font-bold text-vividSkyBlue dark:text-white'
+                            ? 'font-bold text-indigo dark:text-white'
                             : 'font-medium text-gray-600'
-                        } relative font-bold group-hover:text-vividSkyBlue dark:group-hover:text-white `}
+                        } relative font-bold group-hover:text-indigo dark:group-hover:text-white `}
                       >
                         {route.icon ? route.icon : <DashIcon />}
                       </span>
@@ -442,7 +442,7 @@ export function SidebarLinks(props) {
                       route.isComing ? 'max-w-[200px]' : ''
                     } group cursor-pointer items-center ${
                       activeRoute(route.path)
-                        ? 'flex w-full items-center border-l-4 border-[#4880FF] p-4'
+                        ? 'flex w-full items-center border-l-4 border-[#6E56FB] p-4'
                         : ''
                     }`}
                     style={{
@@ -461,9 +461,9 @@ export function SidebarLinks(props) {
                           <span
                             className={`${
                               activeRoute(route.path) === true
-                                ? 'font-bold text-moderateBlue dark:text-white'
+                                ? 'font-bold text-indigo dark:text-white'
                                 : 'font-medium text-gray-600'
-                            } relative group-hover:text-moderateBlue dark:group-hover:text-white`}
+                            } relative group-hover:text-indigo dark:group-hover:text-white`}
                           >
                             {route.openInNewTab ? (
                               <span
@@ -488,9 +488,9 @@ export function SidebarLinks(props) {
                       <span
                         className={`${
                           activeRoute(route.path) === true
-                            ? 'font-bold text-moderateBlue dark:text-white'
+                            ? 'font-bold text-indigo dark:text-white'
                             : 'font-medium text-gray-600'
-                        } relative group-hover:text-moderateBlue dark:group-hover:text-white`}
+                        } relative group-hover:text-indigo dark:group-hover:text-white`}
                       >
                         {route.icon ? route.icon : <DashIcon />}
                       </span>
