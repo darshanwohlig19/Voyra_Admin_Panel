@@ -1,25 +1,33 @@
 import React, { useState, useEffect } from 'react'
 
 const EditDomainBlockModal = ({ isOpen, onClose, onSave, domainBlock }) => {
-  const [isCreditBlocked, setIsCreditBlocked] = useState(true)
+  console.log(domainBlock, 'domainBlockdomainBlock')
+  const [domainName, setDomainName] = useState('')
+  const [isCreditBlocked, setIsCreditBlocked] = useState(false)
+  const [isBlocked, setIsBlocked] = useState(false)
 
   useEffect(() => {
     if (isOpen && domainBlock) {
       // Pre-populate with existing values
+      setDomainName(domainBlock.domain || '')
       setIsCreditBlocked(domainBlock.isCreditBlocked || false)
+      setIsBlocked(domainBlock.isBlocked || false)
     }
   }, [isOpen, domainBlock])
 
   const handleSubmit = (e) => {
     e.preventDefault()
     onSave({
-      domain: domainBlock.domain,
+      domain: domainName,
       isCreditBlocked,
+      isBlocked,
     })
   }
 
   const handleClose = () => {
-    setIsCreditBlocked(true)
+    setDomainName('')
+    setIsCreditBlocked(false)
+    setIsBlocked(false)
     onClose()
   }
 
@@ -52,18 +60,25 @@ const EditDomainBlockModal = ({ isOpen, onClose, onSave, domainBlock }) => {
             </svg>
           </button>
         </div>
-
-        {/* Domain Info */}
-        <div className="mb-4 rounded-lg bg-gray-50 p-4">
-          <p className="text-sm text-gray-600">Domain</p>
-          <p className="text-base font-semibold text-gray-900">
-            {domainBlock?.domain || 'N/A'}
-          </p>
-        </div>
-
         {/* Form */}
         <form onSubmit={handleSubmit}>
-          {/* Credit Block Toggle */}
+          <div className="mb-6">
+            <label
+              htmlFor="domainName"
+              className="mb-2 block text-sm font-medium text-gray-700"
+            >
+              Domain Name
+            </label>
+            <input
+              type="text"
+              id="domainName"
+              value={domainName}
+              onChange={(e) => setDomainName(e.target.value)}
+              placeholder="Enter domain name (e.g., example.com)"
+              className="focus:border-indigo-500 focus:ring-indigo-500 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all focus:outline-none focus:ring-2"
+              required
+            />
+          </div>
           <div className="mb-6">
             <div className="flex items-center justify-between">
               <div>
@@ -94,8 +109,35 @@ const EditDomainBlockModal = ({ isOpen, onClose, onSave, domainBlock }) => {
               </button>
             </div>
           </div>
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <label
+                  htmlFor="isBlocked"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Domain Block
+                </label>
+                <p className="text-xs text-gray-500">Enable domain blocking</p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isBlocked}
+                onClick={() => setIsBlocked(!isBlocked)}
+                className={`focus:ring-indigo-500 relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                  isBlocked ? 'bg-indigo' : 'bg-gray-300'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    isBlocked ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
 
-          {/* Footer Buttons */}
           <div className="flex justify-end gap-3">
             <button
               type="button"

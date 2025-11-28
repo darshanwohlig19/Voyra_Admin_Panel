@@ -3,72 +3,96 @@ import { FaCheck } from 'react-icons/fa'
 
 const Stepper = ({ steps, currentStep, onStepClick, isWorkflowCompleted }) => {
   return (
-    <div className="w-full px-4 pb-8 pt-0">
-      <div className="mx-auto max-w-5xl">
-        <div className="flex items-center justify-between">
+    <div className="w-full border-b border-gray-100 bg-gradient-to-b from-white to-gray-50/50 px-8 py-8">
+      <div className="mx-auto w-full">
+        <div className="relative flex items-start justify-between">
           {steps.map((step, index) => {
             const stepNumber = index + 1
             const isActive = !isWorkflowCompleted && currentStep === stepNumber
             const isCompleted =
               currentStep > stepNumber ||
               (isWorkflowCompleted && currentStep >= stepNumber)
-            const isClickable = false // Steps are not clickable
 
             return (
               <React.Fragment key={step.id}>
-                {/* Step Circle */}
-                <div className="flex flex-col items-center">
+                {/* Step Item */}
+                <div className="relative flex flex-1 flex-col items-center">
+                  {/* Connector Line - Behind Circle */}
+                  {index < steps.length - 1 && (
+                    <div className="absolute left-1/2 top-8 -z-0 h-1 w-full">
+                      <div className="relative h-full w-full">
+                        <div className="absolute inset-0 w-full bg-gray-200" />
+                        <div
+                          className={`absolute inset-0 h-full transition-all duration-500 ease-in-out ${
+                            currentStep > stepNumber
+                              ? 'to-indigo-600 w-full bg-gradient-to-r from-indigo'
+                              : 'w-0'
+                          }`}
+                        />
+                      </div>
+                    </div>
+                  )}
+
+                  {/* Step Circle */}
                   <div
-                    className={`group relative flex h-12 w-12 items-center justify-center rounded-full border-2 transition-all duration-200 ${
+                    className={`relative z-10 flex h-16 w-16 items-center justify-center rounded-full border-4 transition-all duration-300 ${
                       isActive
-                        ? 'border-indigo bg-indigo text-white shadow-lg shadow-indigo/30'
+                        ? 'to-indigo-600 scale-110 border-white bg-gradient-to-br from-indigo shadow-xl shadow-indigo/40'
                         : isCompleted
-                        ? 'border-green-500 bg-green-500 text-white'
-                        : 'border-gray-300 bg-white text-gray-400'
-                    } cursor-default`}
+                        ? 'to-indigo-600 border-white bg-gradient-to-br from-indigo shadow-lg shadow-indigo/30'
+                        : 'border-gray-200 bg-white shadow-sm'
+                    }`}
                   >
                     {isCompleted ? (
-                      <FaCheck className="text-lg" />
+                      <FaCheck
+                        className={`text-xl ${
+                          isActive ? 'text-white' : 'text-white'
+                        }`}
+                      />
                     ) : (
-                      <span className="text-base font-semibold">
+                      <span
+                        className={`text-xl font-bold ${
+                          isActive
+                            ? 'text-white'
+                            : 'text-transparent bg-gradient-to-br from-gray-400 to-gray-500 bg-clip-text'
+                        }`}
+                      >
                         {stepNumber}
                       </span>
                     )}
                   </div>
 
                   {/* Step Label */}
-                  <div className="mt-3 text-center">
+                  <div className="mt-4 text-center">
                     <p
-                      className={`text-sm font-medium ${
+                      className={`text-base font-semibold transition-colors duration-200 ${
                         isActive
                           ? 'text-indigo'
                           : isCompleted
-                          ? 'text-green-600'
-                          : 'text-gray-500'
+                          ? 'text-gray-700'
+                          : 'text-gray-400'
                       }`}
                     >
-                      {step.label}
+                      {step.label
+                        .replace('Step 1: ', '')
+                        .replace('Step 2: ', '')
+                        .replace('Step 3: ', '')}
                     </p>
                     {step.description && (
-                      <p className="mt-1 text-xs text-gray-400">
+                      <p
+                        className={`mt-1 text-xs transition-colors duration-200 ${
+                          isActive
+                            ? 'text-indigo/70'
+                            : isCompleted
+                            ? 'text-gray-500'
+                            : 'text-gray-400'
+                        }`}
+                      >
                         {step.description}
                       </p>
                     )}
                   </div>
                 </div>
-
-                {/* Connector Line */}
-                {index < steps.length - 1 && (
-                  <div className="mb-8 flex-1 px-4">
-                    <div
-                      className={`h-0.5 transition-all duration-300 ${
-                        currentStep > stepNumber
-                          ? 'bg-green-500'
-                          : 'bg-gray-300'
-                      }`}
-                    />
-                  </div>
-                )}
               </React.Fragment>
             )
           })}

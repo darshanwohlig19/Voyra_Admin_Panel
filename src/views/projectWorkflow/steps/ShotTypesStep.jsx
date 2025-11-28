@@ -15,7 +15,7 @@ const ShotTypesStep = ({
   onProjectChange,
   onShotTypeSelect,
   onShotTypeCreated,
-  navigationButtons,
+  onShotTypesStatusChange,
 }) => {
   const [shotTypes, setShotTypes] = useState([])
   const [totalItems, setTotalItems] = useState(0)
@@ -47,8 +47,22 @@ const ShotTypesStep = ({
     } else {
       setShotTypes([])
       setTotalItems(0)
+      // Notify parent that there are no shot types
+      if (onShotTypesStatusChange) {
+        onShotTypesStatusChange(false)
+      }
     }
   }, [currentPage, selectedProject])
+
+  // Notify parent when shot types data changes
+  useEffect(() => {
+    const hasShotTypeItems = shotTypes.some(
+      (shotType) => shotType.items && shotType.items.length > 0
+    )
+    if (onShotTypesStatusChange) {
+      onShotTypesStatusChange(hasShotTypeItems)
+    }
+  }, [shotTypes, onShotTypesStatusChange])
 
   // Fetch services on mount
   useEffect(() => {
@@ -727,9 +741,6 @@ const ShotTypesStep = ({
 
       {/* Divider */}
       <div className="my-6 border-t border-gray-200"></div>
-
-      {/* Navigation Buttons */}
-      {navigationButtons && <div className="mb-6">{navigationButtons}</div>}
 
       {/* Show message if no project is selected */}
       {!selectedProject ? (

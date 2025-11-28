@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react'
-import { FaPlus, FaTrash } from 'react-icons/fa'
+import { FaEye, FaTrash, FaBan, FaEdit, FaPlus } from 'react-icons/fa' // FontAwesome icons
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
 import { useSpinner } from '../../common/SpinnerLoader'
@@ -7,6 +7,7 @@ import { useToaster } from '../../common/Toaster'
 import DataTable from '../../components/DataTable'
 import ConfirmationModal from '../../components/modal/ConfirmationModal'
 import AddDomainBlockModal from '../../components/domainblock/AddDomainBlockModal'
+import EditDomainBlockModal from '../../components/domainblock/EditDomainBlockModal'
 
 const DomainBlock = () => {
   const [domainBlocks, setDomainBlocks] = useState([])
@@ -14,6 +15,7 @@ const DomainBlock = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(10)
   const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
   const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false)
   const [selectedDomain, setSelectedDomain] = useState(null)
   const { apiCall } = ApiCaller()
@@ -60,10 +62,18 @@ const DomainBlock = () => {
     setSelectedDomain(domain)
     setIsDeleteModalOpen(true)
   }
-
   const closeDeleteModal = () => {
     setIsDeleteModalOpen(false)
     setSelectedDomain(null)
+  }
+  const handleEdit = (domain) => {
+    setSelectedDomain(domain)
+    setIsEditModalOpen(true)
+  }
+
+  const closeEditModal = () => {
+    setSelectedDomain(null)
+    setIsEditModalOpen(false)
   }
 
   const confirmDeleteDomain = async () => {
@@ -135,8 +145,9 @@ const DomainBlock = () => {
         // Refresh domain blocks list
         await fetchDomainBlocks()
 
-        // Close modal
-        closeAddModal()
+        // Close whichever modal is open
+        if (isAddModalOpen) closeAddModal()
+        if (isEditModalOpen) closeEditModal()
       } else {
         addToast({
           type: 'error',
@@ -254,9 +265,16 @@ const DomainBlock = () => {
       render: (row) => (
         <div className="flex items-center justify-center gap-2">
           <button
-            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-red-50 text-red-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-md"
-            onClick={() => handleDelete(row)}
+            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-blue-50 text-blue-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-blue-100 hover:shadow-md"
+            onClick={() => handleEdit(row)}
             title="Delete"
+          >
+            <FaEdit size={14} />
+          </button>
+          <button
+            className="flex h-[35px] w-[35px] cursor-pointer items-center justify-center rounded-lg bg-red-50 text-red-600 transition-all duration-200 hover:-translate-y-0.5 hover:bg-red-100 hover:shadow-md"
+            title="Delete"
+            onClick={() => handleDelete(row)}
           >
             <FaTrash size={14} />
           </button>
@@ -277,7 +295,6 @@ const DomainBlock = () => {
           Add Domain
         </button>
       </div>
-
       {/* Data Table */}
       <DataTable
         columns={columns}
@@ -292,7 +309,6 @@ const DomainBlock = () => {
         itemsPerPage={itemsPerPage}
         totalItems={totalDomainBlocks}
       />
-
       {/* Delete Confirmation Modal */}
       <ConfirmationModal
         isOpen={isDeleteModalOpen}
@@ -305,12 +321,17 @@ const DomainBlock = () => {
         icon="delete"
         onConfirm={confirmDeleteDomain}
       />
-
       {/* Add Domain Modal */}
       <AddDomainBlockModal
         isOpen={isAddModalOpen}
         onClose={closeAddModal}
         onSave={handleSaveDomain}
+      />
+      <EditDomainBlockModal
+        isOpen={isEditModalOpen}
+        onClose={closeEditModal}
+        onSave={handleSaveDomain}
+        domainBlock={selectedDomain}
       />
     </div>
   )

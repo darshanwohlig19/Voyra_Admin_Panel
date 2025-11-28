@@ -13,7 +13,7 @@ const ParametersStep = ({
   selectedShotType,
   onProjectChange,
   onShotTypeChange,
-  navigationButtons,
+  onCategoryStatusChange,
 }) => {
   const [allParametersData, setAllParametersData] = useState([])
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false)
@@ -46,8 +46,26 @@ const ParametersStep = ({
       fetchParameters(selectedProject, selectedShotType)
     } else {
       setAllParametersData([])
+      // Notify parent that there are no categories
+      if (onCategoryStatusChange) {
+        onCategoryStatusChange(false)
+      }
     }
   }, [selectedShotType, selectedProject])
+
+  // Notify parent when parameters data changes (to check if categories have elements)
+  useEffect(() => {
+    const hasCategoriesWithElements = allParametersData.some(
+      (page) =>
+        page.sections &&
+        page.sections.some(
+          (section) => section.elements && section.elements.length > 0
+        )
+    )
+    if (onCategoryStatusChange) {
+      onCategoryStatusChange(hasCategoriesWithElements)
+    }
+  }, [allParametersData, onCategoryStatusChange])
 
   const deduplicateElements = (sections) => {
     return sections.map((section) => ({
@@ -530,9 +548,6 @@ const ParametersStep = ({
 
       {/* Divider */}
       <div className="my-6 border-t border-gray-200"></div>
-
-      {/* Navigation Buttons */}
-      {navigationButtons && <div className="mb-6">{navigationButtons}</div>}
 
       {/* Show message if no project is selected */}
       {!selectedProject ? (
