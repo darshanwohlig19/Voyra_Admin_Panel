@@ -15,6 +15,7 @@ const ShotTypesStep = ({
   onProjectChange,
   onShotTypeSelect,
   onShotTypeCreated,
+  onShotTypesStatusChange,
 }) => {
   const [shotTypes, setShotTypes] = useState([])
   const [totalItems, setTotalItems] = useState(0)
@@ -46,8 +47,22 @@ const ShotTypesStep = ({
     } else {
       setShotTypes([])
       setTotalItems(0)
+      // Notify parent that there are no shot types
+      if (onShotTypesStatusChange) {
+        onShotTypesStatusChange(false)
+      }
     }
   }, [currentPage, selectedProject])
+
+  // Notify parent when shot types data changes
+  useEffect(() => {
+    const hasShotTypeItems = shotTypes.some(
+      (shotType) => shotType.items && shotType.items.length > 0
+    )
+    if (onShotTypesStatusChange) {
+      onShotTypesStatusChange(hasShotTypeItems)
+    }
+  }, [shotTypes, onShotTypesStatusChange])
 
   // Fetch services on mount
   useEffect(() => {

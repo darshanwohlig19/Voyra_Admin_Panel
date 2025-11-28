@@ -13,6 +13,7 @@ const ParametersStep = ({
   selectedShotType,
   onProjectChange,
   onShotTypeChange,
+  onCategoryStatusChange,
 }) => {
   const [allParametersData, setAllParametersData] = useState([])
   const [isAddCategoryModalOpen, setIsAddCategoryModalOpen] = useState(false)
@@ -45,8 +46,26 @@ const ParametersStep = ({
       fetchParameters(selectedProject, selectedShotType)
     } else {
       setAllParametersData([])
+      // Notify parent that there are no categories
+      if (onCategoryStatusChange) {
+        onCategoryStatusChange(false)
+      }
     }
   }, [selectedShotType, selectedProject])
+
+  // Notify parent when parameters data changes (to check if categories have elements)
+  useEffect(() => {
+    const hasCategoriesWithElements = allParametersData.some(
+      (page) =>
+        page.sections &&
+        page.sections.some(
+          (section) => section.elements && section.elements.length > 0
+        )
+    )
+    if (onCategoryStatusChange) {
+      onCategoryStatusChange(hasCategoriesWithElements)
+    }
+  }, [allParametersData, onCategoryStatusChange])
 
   const deduplicateElements = (sections) => {
     return sections.map((section) => ({

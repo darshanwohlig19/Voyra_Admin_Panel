@@ -11,6 +11,8 @@ const ProjectWorkflow = () => {
   const [selectedProject, setSelectedProject] = useState('')
   const [selectedShotType, setSelectedShotType] = useState('')
   const [isWorkflowCompleted, setIsWorkflowCompleted] = useState(false)
+  const [hasCategoryInParameters, setHasCategoryInParameters] = useState(false)
+  const [hasShotTypes, setHasShotTypes] = useState(false)
   const { addToast } = useToaster()
 
   // Steps configuration
@@ -37,8 +39,22 @@ const ProjectWorkflow = () => {
     setCurrentStep(stepNumber)
   }
 
-  // Handle next button
+  // Handle next button with validation
   const handleNext = () => {
+    // Validation for Step 2: Must have at least one shot type created
+    if (currentStep === 2) {
+      if (!hasShotTypes) {
+        addToast({
+          type: 'error',
+          title: 'Validation Error',
+          description: 'Please make at least one shot type',
+          duration: 3000,
+        })
+        return
+      }
+    }
+
+    // Proceed to next step if validation passes
     if (currentStep < steps.length) {
       setCurrentStep(currentStep + 1)
     }
@@ -62,8 +78,14 @@ const ProjectWorkflow = () => {
 
   // Handle shot type selection change
   const handleShotTypeChange = (newShotType) => {
+    console.log('Shot type changed to:', newShotType)
     setSelectedShotType(newShotType)
   }
+
+  // Debug: Log when selectedShotType changes
+  useEffect(() => {
+    console.log('Selected shot type updated:', selectedShotType)
+  }, [selectedShotType])
 
   // Auto-advance logic (optional - can be enabled if needed)
   const handleProjectCreated = () => {
@@ -94,6 +116,17 @@ const ProjectWorkflow = () => {
         type: 'error',
         title: 'Validation Error',
         description: 'Please select a shot type before submitting',
+        duration: 3000,
+      })
+      return
+    }
+
+    // Validate that at least one category with parameters exists
+    if (!hasCategoryInParameters) {
+      addToast({
+        type: 'error',
+        title: 'Validation Error',
+        description: 'Please make at least one parameter inside a category',
         duration: 3000,
       })
       return
@@ -179,6 +212,7 @@ const ProjectWorkflow = () => {
               onProjectChange={handleProjectChange}
               onShotTypeSelect={handleShotTypeChange}
               onShotTypeCreated={handleShotTypeCreated}
+              onShotTypesStatusChange={setHasShotTypes}
             />
           )}
 
@@ -189,6 +223,7 @@ const ProjectWorkflow = () => {
               selectedShotType={selectedShotType}
               onProjectChange={handleProjectChange}
               onShotTypeChange={handleShotTypeChange}
+              onCategoryStatusChange={setHasCategoryInParameters}
             />
           )}
         </div>
