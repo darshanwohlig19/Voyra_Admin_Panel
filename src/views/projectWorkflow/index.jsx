@@ -113,196 +113,120 @@ const ProjectWorkflow = () => {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {/* Stepper at Top */}
+      <div className="bg-white shadow-sm">
+        <Stepper
+          steps={steps}
+          currentStep={currentStep}
+          onStepClick={handleStepClick}
+          isWorkflowCompleted={isWorkflowCompleted}
+        />
 
-      {/* Stepper */}
-      <Stepper
-        steps={steps}
-        currentStep={currentStep}
-        onStepClick={handleStepClick}
-        isWorkflowCompleted={isWorkflowCompleted}
-      />
+        {/* Top Navigation Buttons */}
+        <div className="border-t border-gray-100 bg-white px-8 py-4">
+          <div className="mx-auto flex max-w-7xl items-center justify-between">
+            <button
+              onClick={handlePrevious}
+              disabled={currentStep === 1}
+              className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+            >
+              <FaArrowLeft className="text-xs" />
+              Previous
+            </button>
 
-      {/* Step Content */}
-      <div className="w-full">
-        <div className="overflow-hidden bg-white">
-          <div className="p-6">
-            {/* Step 1: Projects */}
-            {currentStep === 1 && (
-              <>
-                <ProjectsStep
-                  selectedProject={selectedProject}
-                  onProjectSelect={handleProjectChange}
-                  onProjectCreated={handleProjectCreated}
-                  navigationButtons={
-                    <div className="flex items-center justify-between border-b border-gray-200 pb-6">
-                      <button
-                        onClick={handlePrevious}
-                        disabled={true}
-                        className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-                      >
-                        <FaArrowLeft className="text-xs" />
-                        Previous
-                      </button>
+            <div className="text-sm font-medium text-gray-600">
+              Step {currentStep} of {steps.length}
+            </div>
 
-                      <div className="text-sm text-gray-600">
-                        Step {currentStep} of {steps.length}
-                      </div>
-
-                      <button
-                        onClick={handleNext}
-                        className="flex items-center gap-2 rounded-lg bg-indigo px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo/30 transition-all hover:bg-indigo hover:shadow-xl hover:shadow-indigo/40"
-                      >
-                        Next
-                        <FaArrowRight className="text-xs" />
-                      </button>
-                    </div>
-                  }
-                />
-
-                {/* Navigation Buttons for Step 1 - Bottom */}
-                <div className="mt-8 flex items-center justify-between pt-6">
-                  <button
-                    onClick={handlePrevious}
-                    disabled={true}
-                    className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
-                  >
-                    <FaArrowLeft className="text-xs" />
-                    Previous
-                  </button>
-
-                  <div className="text-sm text-gray-600">
-                    Step {currentStep} of {steps.length}
-                  </div>
-
-                  <button
-                    onClick={handleNext}
-                    className="flex items-center gap-2 rounded-lg bg-indigo px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo/30 transition-all hover:bg-indigo hover:shadow-xl hover:shadow-indigo/40"
-                  >
-                    Next
-                    <FaArrowRight className="text-xs" />
-                  </button>
-                </div>
-              </>
-            )}
-
-            {/* Step 2: Shot Types */}
-            {currentStep === 2 && (
-              <>
-                <ShotTypesStep
-                  selectedProject={selectedProject}
-                  selectedShotType={selectedShotType}
-                  onProjectChange={handleProjectChange}
-                  onShotTypeSelect={handleShotTypeChange}
-                  onShotTypeCreated={handleShotTypeCreated}
-                  navigationButtons={
-                    <div className="flex items-center justify-between border-b border-gray-200 pb-6">
-                      <button
-                        onClick={handlePrevious}
-                        className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50"
-                      >
-                        <FaArrowLeft className="text-xs" />
-                        Previous
-                      </button>
-
-                      <div className="text-sm text-gray-600">
-                        Step {currentStep} of {steps.length}
-                      </div>
-
-                      <button
-                        onClick={handleNext}
-                        className="flex items-center gap-2 rounded-lg bg-indigo px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo/30 transition-all hover:bg-indigo hover:shadow-xl hover:shadow-indigo/40"
-                      >
-                        Next
-                        <FaArrowRight className="text-xs" />
-                      </button>
-                    </div>
-                  }
-                />
-
-                {/* Navigation Buttons for Step 2 - Bottom */}
-                <div className="mt-8 flex items-center justify-between pt-6">
-                  <button
-                    onClick={handlePrevious}
-                    className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50"
-                  >
-                    <FaArrowLeft className="text-xs" />
-                    Previous
-                  </button>
-
-                  <div className="text-sm text-gray-600">
-                    Step {currentStep} of {steps.length}
-                  </div>
-
-                  <button
-                    onClick={handleNext}
-                    className="flex items-center gap-2 rounded-lg bg-indigo px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo/30 transition-all hover:bg-indigo hover:shadow-xl hover:shadow-indigo/40"
-                  >
-                    Next
-                    <FaArrowRight className="text-xs" />
-                  </button>
-                </div>
-              </>
-            )}
-
-            {/* Step 3: Parameters */}
-            {currentStep === 3 && (
-              <>
-                <ParametersStep
-                  selectedProject={selectedProject}
-                  selectedShotType={selectedShotType}
-                  onProjectChange={handleProjectChange}
-                  onShotTypeChange={handleShotTypeChange}
-                  navigationButtons={
-                    <div className="flex items-center justify-between border-b border-gray-200 pb-6">
-                      <button
-                        onClick={handlePrevious}
-                        className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50"
-                      >
-                        <FaArrowLeft className="text-xs" />
-                        Previous
-                      </button>
-
-                      <div className="text-sm text-gray-600">
-                        Step {currentStep} of {steps.length}
-                      </div>
-
-                      <button
-                        onClick={handleSubmit}
-                        className="flex items-center gap-2 rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-green-600/30 transition-all hover:bg-green-700 hover:shadow-xl hover:shadow-green-600/40 active:scale-95"
-                      >
-                        <FaCheck className="text-xs" />
-                        Submit
-                      </button>
-                    </div>
-                  }
-                />
-
-                {/* Navigation Buttons for Step 3 - Bottom */}
-                <div className="mt-8 flex items-center justify-between pt-6">
-                  <button
-                    onClick={handlePrevious}
-                    className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50"
-                  >
-                    <FaArrowLeft className="text-xs" />
-                    Previous
-                  </button>
-
-                  <div className="text-sm text-gray-600">
-                    Step {currentStep} of {steps.length}
-                  </div>
-
-                  <button
-                    onClick={handleSubmit}
-                    className="flex items-center gap-2 rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-green-600/30 transition-all hover:bg-green-700 hover:shadow-xl hover:shadow-green-600/40 active:scale-95"
-                  >
-                    <FaCheck className="text-xs" />
-                    Submit
-                  </button>
-                </div>
-              </>
+            {currentStep === steps.length ? (
+              <button
+                onClick={handleSubmit}
+                className="flex items-center gap-2 rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-green-600/30 transition-all hover:bg-green-700 hover:shadow-xl hover:shadow-green-600/40 active:scale-95"
+              >
+                <FaCheck className="text-xs" />
+                Submit
+              </button>
+            ) : (
+              <button
+                onClick={handleNext}
+                className="flex items-center gap-2 rounded-lg bg-indigo px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo/30 transition-all hover:bg-indigo hover:shadow-xl hover:shadow-indigo/40"
+              >
+                Next
+                <FaArrowRight className="text-xs" />
+              </button>
             )}
           </div>
+        </div>
+      </div>
+
+      {/* Step Content - Page Scroll */}
+      <div className="bg-white">
+        <div className="mx-auto max-w-7xl p-6">
+          {/* Step 1: Projects */}
+          {currentStep === 1 && (
+            <ProjectsStep
+              selectedProject={selectedProject}
+              onProjectSelect={handleProjectChange}
+              onProjectCreated={handleProjectCreated}
+            />
+          )}
+
+          {/* Step 2: Shot Types */}
+          {currentStep === 2 && (
+            <ShotTypesStep
+              selectedProject={selectedProject}
+              selectedShotType={selectedShotType}
+              onProjectChange={handleProjectChange}
+              onShotTypeSelect={handleShotTypeChange}
+              onShotTypeCreated={handleShotTypeCreated}
+            />
+          )}
+
+          {/* Step 3: Parameters */}
+          {currentStep === 3 && (
+            <ParametersStep
+              selectedProject={selectedProject}
+              selectedShotType={selectedShotType}
+              onProjectChange={handleProjectChange}
+              onShotTypeChange={handleShotTypeChange}
+            />
+          )}
+        </div>
+      </div>
+
+      {/* Bottom Navigation Buttons */}
+      <div className="border-t border-gray-200 bg-white px-8 py-4 shadow-lg">
+        <div className="mx-auto flex max-w-7xl items-center justify-between">
+          <button
+            onClick={handlePrevious}
+            disabled={currentStep === 1}
+            className="flex items-center gap-2 rounded-lg border border-gray-300 bg-white px-5 py-2.5 text-sm font-medium text-gray-700 transition-all hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40"
+          >
+            <FaArrowLeft className="text-xs" />
+            Previous
+          </button>
+
+          <div className="text-sm font-medium text-gray-600">
+            Step {currentStep} of {steps.length}
+          </div>
+
+          {currentStep === steps.length ? (
+            <button
+              onClick={handleSubmit}
+              className="flex items-center gap-2 rounded-lg bg-green-600 px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-green-600/30 transition-all hover:bg-green-700 hover:shadow-xl hover:shadow-green-600/40 active:scale-95"
+            >
+              <FaCheck className="text-xs" />
+              Submit
+            </button>
+          ) : (
+            <button
+              onClick={handleNext}
+              className="flex items-center gap-2 rounded-lg bg-indigo px-5 py-2.5 text-sm font-medium text-white shadow-lg shadow-indigo/30 transition-all hover:bg-indigo hover:shadow-xl hover:shadow-indigo/40"
+            >
+              Next
+              <FaArrowRight className="text-xs" />
+            </button>
+          )}
         </div>
       </div>
     </div>
