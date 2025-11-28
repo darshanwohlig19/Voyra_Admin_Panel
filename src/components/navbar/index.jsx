@@ -16,6 +16,7 @@ import { IoMdNotificationsOutline } from 'react-icons/io'
 import { BsArrowBarUp } from 'react-icons/bs'
 import TooltipHorizon from 'components/tooltip'
 import { IoIosArrowDropdown } from 'react-icons/io'
+import { FiAlignJustify } from 'react-icons/fi'
 import { clearAuthCookies } from 'common/utils/cookieUtils'
 
 const { TOAST, HEY, SUBSCRIPTION_EXPIRED, KEYCLOAK_INIT } = appConstants
@@ -210,7 +211,14 @@ const Navbar = (props) => {
             ))}
         </div>
       </div>
-      <div className="relative mt-[3px] flex h-[61px] w-[80px] flex-grow items-center justify-around gap-2 rounded-full bg-white px-4 py-2 shadow-xl shadow-shadow-500 dark:!bg-darkGrayishBlue dark:shadow-none md:w-[80px] md:flex-grow-0 md:gap-1 xl:w-[80px] xl:gap-2">
+      <div className="relative mt-[3px] flex h-[61px] w-[120px] flex-grow items-center justify-around gap-2 rounded-full bg-white px-4 py-2 shadow-xl shadow-shadow-500 dark:!bg-darkGrayishBlue dark:shadow-none md:w-[120px] md:flex-grow-0 md:gap-1 xl:w-[80px] xl:gap-2">
+        {/* Hamburger Menu Icon for screens <= 1240px */}
+        <span
+          className="flex cursor-pointer text-xl text-navy-700 dark:text-white xl:hidden"
+          onClick={onOpenSidenav}
+        >
+          <FiAlignJustify className="h-5 w-5" />
+        </span>
         {/* start Notification */}
         {/* <Dropdown
           button={
