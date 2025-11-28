@@ -2,28 +2,32 @@ import React, { useState, useEffect } from 'react'
 
 const EditDomainBlockModal = ({ isOpen, onClose, onSave, domainBlock }) => {
   console.log(domainBlock, 'domainBlockdomainBlock')
-  const [isCreditBlocked, setIsCreditBlocked] = useState(true)
-  const [isBlocked, setIsBlocked] = useState(true)
+  const [domainName, setDomainName] = useState('')
+  const [isCreditBlocked, setIsCreditBlocked] = useState(false)
+  const [isBlocked, setIsBlocked] = useState(false)
 
   useEffect(() => {
     if (isOpen && domainBlock) {
       // Pre-populate with existing values
+      setDomainName(domainBlock.domain || '')
       setIsCreditBlocked(domainBlock.isCreditBlocked || false)
+      setIsBlocked(domainBlock.isBlocked || false)
     }
   }, [isOpen, domainBlock])
 
   const handleSubmit = (e) => {
     e.preventDefault()
     onSave({
-      domain: domainBlock.domain,
-
+      domain: domainName,
       isCreditBlocked,
       isBlocked,
     })
   }
 
   const handleClose = () => {
-    setIsCreditBlocked(true)
+    setDomainName('')
+    setIsCreditBlocked(false)
+    setIsBlocked(false)
     onClose()
   }
 
@@ -68,7 +72,8 @@ const EditDomainBlockModal = ({ isOpen, onClose, onSave, domainBlock }) => {
             <input
               type="text"
               id="domainName"
-              value={domainBlock?.domain}
+              value={domainName}
+              onChange={(e) => setDomainName(e.target.value)}
               placeholder="Enter domain name (e.g., example.com)"
               className="focus:border-indigo-500 focus:ring-indigo-500 w-full rounded-lg border border-gray-300 bg-white px-4 py-2.5 text-sm text-gray-900 shadow-sm transition-all focus:outline-none focus:ring-2"
               required
