@@ -1,0 +1,51 @@
+name: PocketStudio Admin Panel CI
+on:
+  push:
+    branches:
+      - master
+
+jobs:
+  gcp-uat:
+    runs-on: ubuntu-latest
+
+    permissions:
+      id-token: write
+      contents: read
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+
+      - name: Authenticate to Google Cloud
+        uses: google-github-actions/auth@v2
+        with:
+          credentials_json: ${{ secrets.GCP_SA_KEY }}   # Service Account JSON key
+
+      - name: Connect to Google Cloud Artifact Registry
+        env:
+          GCP_SA_KEY: ${{ secrets.GCP_SA_KEY }}
+        run: |
+          echo "$GCP_SA_KEY" | docker login -u _json_key --password-stdin https://${{ secrets.GCP_REPOSITORY_REGION }}-docker.pkg.dev
+
+      - name: Build and Push Deployment Docker Image to GCP Artifact Registry
+        run: |
+          docker build -t asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gen-ai-gar/${{ secrets.GCP_IMAGE_NAME }}:$GITHUB_REF_NAME-$GITHUB_SHA .
+          docker push asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gen-ai-gar/${{ secrets.GCP_IMAGE_NAME }}:$GITHUB_REF_NAME-$GITHUB_SHA
+
+      - name: Set env
+        run: echo "GITHUB_BRANCH=$(echo $GITHUB_REF_NAME-$GITHUB_SHA)" >> $GITHUB_ENV
+
+      - name: Update Deployment Image in Git Repository
+        run: |
+          git clone https://${{ secrets.GITOPS_GITHUB_USER }}:${{ secrets.GITOPS_GITHUB_TOKEN }}@github.com/wohlig/AskUs-GitOps
+          cd AskUs-GitOps
+          git checkout pocketstudio-uat
+
+          git config user.name "$GITHUB_ACTOR"
+          git config user.email "$GITHUB_ACTOR@wohlig.com"
+
+          yq e '.spec.template.spec.containers[0].image = "asia-south1-docker.pkg.dev/${{ secrets.GCP_PROJECT_ID }}/gen-ai-gar/${{ secrets.GCP_IMAGE_NAME }}:${{ env.GITHUB_BRANCH }}"' -i deployment.apps/pocketstudio-admin-panel.yaml
+
+          git add .
+          git commit -m "Updating deployment image"
+          git push --set-upstream origin pocketstudio-uat
