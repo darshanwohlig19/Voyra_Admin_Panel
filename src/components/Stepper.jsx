@@ -3,7 +3,7 @@ import { FaCheck } from 'react-icons/fa'
 
 const Stepper = ({ steps, currentStep, onStepClick, isWorkflowCompleted }) => {
   return (
-    <div className="w-full border-b border-gray-100 bg-gradient-to-b from-white to-gray-50/50 px-8 py-8">
+    <div className="mt-8 w-full border-b border-gray-100 bg-gradient-to-b from-white to-gray-50/50 px-8 py-8">
       <div className="mx-auto w-full">
         <div className="relative flex items-start justify-between">
           {steps.map((step, index) => {
