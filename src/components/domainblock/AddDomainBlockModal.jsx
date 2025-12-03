@@ -4,6 +4,7 @@ const AddDomainBlockModal = ({ isOpen, onClose, onSave }) => {
   const [domainName, setDomainName] = useState('')
   const [isCreditBlocked, setIsCreditBlocked] = useState(false)
   const [isBlocked, setIsBlocked] = useState(false)
+  const [isDashboard, setIsDashboardBlocked] = useState(false)
 
   useEffect(() => {
     if (!isOpen) {
@@ -11,6 +12,7 @@ const AddDomainBlockModal = ({ isOpen, onClose, onSave }) => {
       setDomainName('')
       setIsCreditBlocked(false)
       setIsBlocked(false)
+      setIsDashboardBlocked(false)
     }
   }, [isOpen])
 
@@ -20,6 +22,7 @@ const AddDomainBlockModal = ({ isOpen, onClose, onSave }) => {
       domain: domainName,
       isCreditBlocked,
       isBlocked,
+      isDashboard,
     })
   }
 
@@ -27,6 +30,7 @@ const AddDomainBlockModal = ({ isOpen, onClose, onSave }) => {
     setDomainName('')
     setIsCreditBlocked(false)
     setIsBlocked(false)
+    setIsDashboardBlocked(false)
     onClose()
   }
 
@@ -135,6 +139,38 @@ const AddDomainBlockModal = ({ isOpen, onClose, onSave }) => {
                 <span
                   className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
                     isBlocked ? 'translate-x-6' : 'translate-x-1'
+                  }`}
+                />
+              </button>
+            </div>
+          </div>
+
+          {/* Dashboard Page Toggle */}
+          <div className="mb-6">
+            <div className="flex items-center justify-between">
+              <div>
+                <label
+                  htmlFor="isDashboard"
+                  className="block text-sm font-medium text-gray-700"
+                >
+                  Dashboard Page
+                </label>
+                <p className="text-xs text-gray-500">
+                  Enable dashboard page blocking
+                </p>
+              </div>
+              <button
+                type="button"
+                role="switch"
+                aria-checked={isDashboard}
+                onClick={() => setIsDashboardBlocked(!isDashboard)}
+                className={`focus:ring-indigo-500 relative inline-flex h-6 w-11 items-center rounded-full transition-colors focus:outline-none focus:ring-2 focus:ring-offset-2 ${
+                  isDashboard ? 'bg-indigo' : 'bg-gray-300'
+                }`}
+              >
+                <span
+                  className={`inline-block h-4 w-4 transform rounded-full bg-white transition-transform ${
+                    isDashboard ? 'translate-x-6' : 'translate-x-1'
                   }`}
                 />
               </button>

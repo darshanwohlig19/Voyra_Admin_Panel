@@ -231,6 +231,25 @@ const DomainBlock = () => {
       },
     },
     {
+      key: 'isDashboard',
+      label: 'Dashboard Page',
+      width: '120px',
+      render: (_, value) => {
+        const isEnabled = value === true
+        return (
+          <span
+            className={`inline-block rounded-md px-2 py-1 text-base ${
+              isEnabled
+                ? 'bg-green-100 text-green-800'
+                : 'bg-gray-100 text-gray-800'
+            }`}
+          >
+            {isEnabled ? 'Enabled' : 'Disabled'}
+          </span>
+        )
+      },
+    },
+    {
       key: 'createdAt',
       label: 'Created At',
       width: '150px',
