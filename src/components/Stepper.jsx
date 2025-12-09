@@ -3,7 +3,7 @@ import { FaCheck } from 'react-icons/fa'
 
 const Stepper = ({ steps, currentStep, onStepClick, isWorkflowCompleted }) => {
   return (
-    <div className="mt-8 w-full border-b border-gray-100 bg-gradient-to-b from-white to-gray-50/50 px-8 py-8">
+    <div className="mt-8 w-full border-b border-gray-100 bg-gradient-to-b from-white to-gray-50/50 py-8">
       <div className="mx-auto w-full">
         <div className="relative flex items-start justify-between">
           {steps.map((step, index) => {
@@ -25,7 +25,7 @@ const Stepper = ({ steps, currentStep, onStepClick, isWorkflowCompleted }) => {
                         <div
                           className={`absolute inset-0 h-full transition-all duration-500 ease-in-out ${
                             currentStep > stepNumber
-                              ? 'to-indigo-600 w-full bg-gradient-to-r from-indigo'
+                              ? 'w-full bg-gradient-to-r from-indigo to-indigo'
                               : 'w-0'
                           }`}
                         />
@@ -37,9 +37,9 @@ const Stepper = ({ steps, currentStep, onStepClick, isWorkflowCompleted }) => {
                   <div
                     className={`relative z-10 flex h-16 w-16 items-center justify-center rounded-full border-4 transition-all duration-300 ${
                       isActive
-                        ? 'to-indigo-600 scale-110 border-white bg-gradient-to-br from-indigo shadow-xl shadow-indigo/40'
+                        ? 'scale-110 border-white bg-gradient-to-br from-indigo to-indigo shadow-xl'
                         : isCompleted
-                        ? 'to-indigo-600 border-white bg-gradient-to-br from-indigo shadow-lg shadow-indigo/30'
+                        ? 'border-white bg-gradient-to-br from-indigo to-indigo shadow-lg shadow-indigo/30'
                         : 'border-gray-200 bg-white shadow-sm'
                     }`}
                   >

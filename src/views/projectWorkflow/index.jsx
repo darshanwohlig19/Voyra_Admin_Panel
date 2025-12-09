@@ -157,7 +157,7 @@ const ProjectWorkflow = () => {
 
         {/* Top Navigation Buttons */}
         <div className="border-t border-gray-100 bg-white px-8 py-4">
-          <div className="mx-auto flex max-w-7xl items-center justify-between">
+          <div className="max-w-8xl mx-auto flex items-center justify-between">
             <button
               onClick={handlePrevious}
               disabled={currentStep === 1}
@@ -194,7 +194,7 @@ const ProjectWorkflow = () => {
 
       {/* Step Content - Page Scroll */}
       <div className="bg-white">
-        <div className="mx-auto max-w-7xl p-6">
+        <div className="max-w-8xl mx-auto p-6">
           {/* Step 1: Projects */}
           {currentStep === 1 && (
             <ProjectsStep
@@ -231,7 +231,7 @@ const ProjectWorkflow = () => {
 
       {/* Bottom Navigation Buttons */}
       <div className="border-t border-gray-200 bg-white px-8 py-4 shadow-lg">
-        <div className="mx-auto flex max-w-7xl items-center justify-between">
+        <div className="max-w-8xl mx-auto flex items-center justify-between">
           <button
             onClick={handlePrevious}
             disabled={currentStep === 1}
