@@ -89,5 +89,8 @@ const config = {
     'http://localhost:3000/api/adminSubscriptionPlans/getSubscriptionFields',
   UPDATE_SUBSCRIPTION_STATUS:
     'http://localhost:3000/api/adminSubscriptionPlans/updatesubscriptionPlan/status',
+
+  // Logs APIs
+  GET_ALL_LOGS: 'http://localhost:3000/api/adminLog/getAllLogs',
 }
 export default config

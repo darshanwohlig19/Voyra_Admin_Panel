@@ -4,8 +4,10 @@ import SignIn from 'views/signIn/signIn'
 import SignUp from 'views/signIn/signUp'
 import { FiTrash2 } from 'react-icons/fi'
 import { IoMdPricetags } from 'react-icons/io'
-
+import Logs from 'views/logs'
 import { useParams } from 'react-router-dom'
+import { NotepadText } from 'lucide-react'
+
 import { FaYoutube, FaCog, FaGlobe } from 'react-icons/fa'
 import { ChartNoAxesCombined } from 'lucide-react'
 import { FaFolderOpen } from 'react-icons/fa'
@@ -116,6 +118,15 @@ const RoutesComponent = () => {
         layout: '/afterLogin',
         icon: <IoMdPricetags className="h-6 w-6" />,
         component: <Pricing />,
+        isComing: false,
+        isVisible: isSuperAdmin, // Only visible to superadmin
+      },
+      {
+        name: 'Logs',
+        path: 'logs',
+        layout: '/afterLogin',
+        icon: <NotepadText className="h-6 w-6" />,
+        component: <Logs />,
         isComing: false,
         isVisible: isSuperAdmin, // Only visible to superadmin
       },
