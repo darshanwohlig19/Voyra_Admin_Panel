@@ -3,6 +3,8 @@ import { MdOutlineFolderOpen, MdMovie, MdDashboard } from 'react-icons/md'
 import SignIn from 'views/signIn/signIn'
 import SignUp from 'views/signIn/signUp'
 import { FiTrash2 } from 'react-icons/fi'
+import { IoMdPricetags } from 'react-icons/io'
+
 import { useParams } from 'react-router-dom'
 import { FaYoutube, FaCog, FaGlobe } from 'react-icons/fa'
 import { ChartNoAxesCombined } from 'lucide-react'
@@ -14,6 +16,7 @@ import OrganizationDetail from 'views/organizations/OrganizationDetail'
 import ProjectWorkflow from 'views/projectWorkflow'
 import Config from 'views/config'
 import DomainBlock from 'views/domainblock'
+import Pricing from 'views/pricing'
 import { getEncryptedCookie } from 'common/utils/cookieUtils'
 
 const RoutesComponent = () => {
@@ -104,6 +107,15 @@ const RoutesComponent = () => {
         layout: '/afterLogin',
         icon: <FaCog className="h-6 w-6" />,
         component: <Config />,
+        isComing: false,
+        isVisible: isSuperAdmin, // Only visible to superadmin
+      },
+      {
+        name: 'Pricing',
+        path: 'pricing',
+        layout: '/afterLogin',
+        icon: <IoMdPricetags className="h-6 w-6" />,
+        component: <Pricing />,
         isComing: false,
         isVisible: isSuperAdmin, // Only visible to superadmin
       },

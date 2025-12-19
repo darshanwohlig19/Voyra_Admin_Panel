@@ -75,5 +75,19 @@ const config = {
   GET_MEDIA_MODELS: baseUrl + '/api/admin/getMediaModels',
   ENABLE_MODEL_BULK: baseUrl + '/api/admin/enableModelBulk',
   GET_ORG_NAME: baseUrl + '/api/admin/getOrgName',
+
+  // Pricing APIs
+  GET_SUBSCRIPTION_PLANS:
+    'http://localhost:3000/api/adminSubscriptionPlans/getAllSubscriptionPlans',
+  ADD_SUBSCRIPTION_PLAN:
+    'http://localhost:3000/api/adminSubscriptionPlans/addSubscriptionPlans',
+  UPDATE_SUBSCRIPTION_PLAN:
+    'http://localhost:3000/api/adminSubscriptionPlans/updateSubscriptionPlan',
+  DELETE_SUBSCRIPTION_PLAN:
+    'http://localhost:3000/api/adminSubscriptionPlans/deleteSubscriptionPlan',
+  GET_SUBSCRIPTION_FIELDS:
+    'http://localhost:3000/api/adminSubscriptionPlans/getSubscriptionFields',
+  UPDATE_SUBSCRIPTION_STATUS:
+    'http://localhost:3000/api/adminSubscriptionPlans/updatesubscriptionPlan/status',
 }
 export default config
