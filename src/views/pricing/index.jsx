@@ -66,7 +66,7 @@ const Pricing = () => {
           planType: plan.pricingDetails.billingCycle.name.toLowerCase(),
           currency: 'INR',
           features: plan.planFeatures,
-          isActive: plan.status === 'Inactive',
+          isActive: plan.status === 'Active',
           isPopular: plan.planSettings.popularPlan,
           isTestMode: false,
           tier: plan.basicInfo.tier,
@@ -320,47 +320,59 @@ const Pricing = () => {
     })
   }
 
-  // Since we're using API filtering, we don't need local filtering
-  const handleActiveChange = async (plan) => {
-    try {
-      setLoading(true)
-      const response = await apiCall(
-        'put',
-        `${config.UPDATE_SUBSCRIPTION_STATUS}?subscriptionPlanId=${plan._id}`
-      )
+  const handleToggleStatus = (plan) => {
+    setConfirmModal({
+      isOpen: true,
+      title: plan.isActive ? 'Hide Plan' : 'Unhide Plan',
+      message: `Are you sure you want to ${
+        plan.isActive ? 'hide' : 'unhide'
+      } "${plan.name}"?`,
+      confirmText: plan.isActive ? 'Hide' : 'Unhide',
+      colorScheme: plan.isActive ? 'orange' : 'green',
+      icon: plan.isActive ? 'warning' : 'info',
+      onConfirm: async () => {
+        setConfirmModal((prev) => ({ ...prev, isOpen: false }))
+        try {
+          setLoading(true)
+          const response = await apiCall(
+            'put',
+            `${config.UPDATE_SUBSCRIPTION_STATUS}?subscriptionPlanId=${plan._id}`
+          )
 
-      if (response.status === 200) {
-        addToast({
-          type: 'success',
-          title: 'Status Updated',
-          description: `You have successfully ${
-            plan.isActive ? 'unhidden' : 'hidden'
-          } the pricing for "${plan.name}"`,
-          duration: 3000,
-        })
-        fetchPlans(getCurrentCategory())
-      } else {
-        addToast({
-          type: 'error',
-          title: 'Error',
-          description:
-            response?.data?.msg ||
-            response?.data?.message ||
-            'Failed to update plan status',
-          duration: 3000,
-        })
-      }
-    } catch (error) {
-      console.error('Error updating plan status:', error)
-      addToast({
-        type: 'error',
-        title: 'Error',
-        description: error?.message || 'Failed to update plan status',
-        duration: 3000,
-      })
-    } finally {
-      setLoading(false)
-    }
+          if (response.status === 200) {
+            addToast({
+              type: 'success',
+              title: 'Status Updated',
+              description: `You have successfully ${
+                plan.isActive ? 'hidden' : 'unhidden'
+              } the pricing for "${plan.name}"`,
+              duration: 3000,
+            })
+            fetchPlans(getCurrentCategory())
+          } else {
+            addToast({
+              type: 'error',
+              title: 'Error',
+              description:
+                response?.data?.msg ||
+                response?.data?.message ||
+                'Failed to update plan status',
+              duration: 3000,
+            })
+          }
+        } catch (error) {
+          console.error('Error updating plan status:', error)
+          addToast({
+            type: 'error',
+            title: 'Error',
+            description: error?.message || 'Failed to update plan status',
+            duration: 3000,
+          })
+        } finally {
+          setLoading(false)
+        }
+      },
+    })
   }
 
   const filteredPlans = plans
@@ -493,7 +505,7 @@ const Pricing = () => {
                 plan={plan}
                 onEdit={() => openModal(plan)}
                 onDelete={() => handleDelete(plan._id)}
-                onActiveChange={() => handleActiveChange(plan)}
+                onActiveChange={() => handleToggleStatus(plan)}
               />
             ))}
           </div>
