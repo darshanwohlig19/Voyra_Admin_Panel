@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
 import { FaSearch } from 'react-icons/fa'
+import { HiChevronDown } from 'react-icons/hi'
 import ApiCaller from '../../common/services/apiServices'
 import config from '../../common/config/apiConfig'
 import { useSpinner } from '../../common/SpinnerLoader'
@@ -12,9 +13,29 @@ const Logs = () => {
   const [currentPage, setCurrentPage] = useState(1)
   const [itemsPerPage] = useState(10)
   const [searchTerm, setSearchTerm] = useState('')
+  const [logEvents, setLogEvents] = useState([])
+  const [selectedLogEvent, setSelectedLogEvent] = useState('')
   const { apiCall } = ApiCaller()
   const { showSpinner, hideSpinner } = useSpinner()
   const { addToast } = useToaster()
+
+  // Fetch log events for dropdown
+  useEffect(() => {
+    const fetchLogEvents = async () => {
+      try {
+        const response = await apiCall('get', config.GET_LOGS_EVENTS_FILTER)
+        if (response.status === 200 && response.data) {
+          const responseData = response.data
+          if (responseData?.type?.status_code === 200 && responseData?.data) {
+            setLogEvents(responseData.data)
+          }
+        }
+      } catch (error) {
+        console.error('Failed to fetch log events:', error)
+      }
+    }
+    fetchLogEvents()
+  }, [])
 
   useEffect(() => {
     const debounceTimer = setTimeout(() => {
@@ -24,6 +45,9 @@ const Logs = () => {
           let url = `${config.GET_ALL_LOGS}?page=${currentPage}&limit=${itemsPerPage}`
           if (searchTerm) {
             url += `&search=${encodeURIComponent(searchTerm)}`
+          }
+          if (selectedLogEvent) {
+            url += `&events=${encodeURIComponent(selectedLogEvent)}`
           }
 
           const response = await apiCall('get', url)
@@ -50,7 +74,7 @@ const Logs = () => {
     }, 300)
 
     return () => clearTimeout(debounceTimer)
-  }, [currentPage, itemsPerPage, searchTerm])
+  }, [currentPage, itemsPerPage, searchTerm, selectedLogEvent])
 
   // Format date
   const formatDate = (dateString) => {
@@ -150,8 +174,9 @@ const Logs = () => {
 
   return (
     <div className="mt-5 h-full w-full px-4">
-      {/* Search Input */}
-      <div className="mb-4">
+      {/* Search and Filter Section */}
+      <div className="mb-4 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
+        {/* Search Input */}
         <div className="relative w-full max-w-md">
           <div className="pointer-events-none absolute inset-y-0 left-0 flex items-center pl-3">
             <FaSearch className="text-gray-400" size={16} />
@@ -163,6 +188,28 @@ const Logs = () => {
             onChange={handleSearchChange}
             className="w-full rounded-lg border border-gray-300 py-2 pl-10 pr-4 text-base focus:border-indigo focus:outline-none focus:ring-2 focus:ring-indigo focus:ring-opacity-50"
           />
+        </div>
+
+        {/* Event Type Filter Dropdown */}
+        <div className="relative">
+          <select
+            value={selectedLogEvent}
+            onChange={(e) => {
+              setSelectedLogEvent(e.target.value)
+              setCurrentPage(1) // Reset to first page when filtering
+            }}
+            className="appearance-none rounded-lg border border-gray-300 bg-white px-4 py-2 pr-10 text-base font-medium text-gray-700 shadow-sm transition-all hover:border-gray-400 focus:border-indigo focus:outline-none focus:ring-1 focus:ring-indigo"
+          >
+            <option value="">All Events</option>
+            {logEvents.map((event) => (
+              <option key={event} value={event}>
+                {event}
+              </option>
+            ))}
+          </select>
+          <div className="pointer-events-none absolute right-3 top-1/2 -translate-y-1/2">
+            <HiChevronDown className="h-4 w-4 text-gray-400" />
+          </div>
         </div>
       </div>
 

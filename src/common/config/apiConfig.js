@@ -92,5 +92,7 @@ const config = {
 
   // Logs APIs
   GET_ALL_LOGS: 'http://localhost:3000/api/adminLog/getAllLogs',
+  GET_LOGS_EVENTS_FILTER:
+    'http://localhost:3000/api/adminLog/getLogsEventsfilter',
 }
 export default config
