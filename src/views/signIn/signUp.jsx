@@ -1,7 +1,7 @@
 import { useForm } from 'react-hook-form'
 import { useNavigate } from 'react-router-dom'
 import { useToaster } from 'common/Toaster'
-import dmsConstants from 'common/config/PocketStudioConstants.js'
+import dmsConstants from 'common/config/AppConstants'
 import InputField from 'components/fields/InputField'
 import { useState } from 'react'
 import { FaRegEye, FaEyeSlash } from 'react-icons/fa'

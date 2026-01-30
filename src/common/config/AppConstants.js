@@ -29,9 +29,9 @@ const fixaConstants = {
     NAME: 'Name',
     PROJECT_ID: 'Project ID',
   },
-  POCKETSTUDIO: {
-    POCKET_STUDIO: 'POCKET STUDIO AI',
-  },
+  // POCKETSTUDIO: {
+  //   POCKET_STUDIO: 'POCKET STUDIO AI',
+  // },
   BUTTON_TEXT: {
     EDIT: 'Edit',
     VERIFY: 'Verify',
@@ -56,10 +56,10 @@ const fixaConstants = {
     COMING_SOON: 'Coming Soon',
   },
   SIGNIN: {
-    WELCOMETEXT: `Welcome to PocketStudio.ai `,
+    WELCOMETEXT: `Welcome to Voyra Events `,
     SIGNINBUTTONTEXT: 'Click here to Sign In',
-    LEARNMORE: 'Learn more about PocketStudioAI on',
-    DOMAIN: 'https://PocketStudio.ai/',
+    LEARNMORE: 'Learn more about Voyra Events on',
+    // DOMAIN: 'https://PocketStudio.ai/',
   },
   AUTH: {
     PASSWORD_REGEX: /^(?=.*?[A-Z])(?=.*?[a-z])(?=.*?[0-9])(?=.*?[^\w\s]).{8,}$/,

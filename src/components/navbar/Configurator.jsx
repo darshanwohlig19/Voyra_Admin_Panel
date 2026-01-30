@@ -9,7 +9,7 @@ import {
 import { useDisclosure } from '@chakra-ui/hooks'
 import React, { useEffect, useState } from 'react'
 import { useTheme } from '../../contexts/ThemeContext'
-import dmsConstants from 'common/config/PocketStudioConstants.js'
+import dmsConstants from 'common/config/AppConstants'
 // Assets
 import { IoSunny, IoMoon } from 'react-icons/io5'
 

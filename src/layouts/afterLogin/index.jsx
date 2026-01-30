@@ -7,7 +7,7 @@ import Sidebar from 'components/sidebar'
 import RoutesComponent from 'routes'
 import AuthGuard from 'common/guard/authGuard'
 import PageNotFound from 'views/others/404'
-import appConstants from 'common/config/PocketStudioConstants.js'
+import appConstants from 'common/config/AppConstants'
 import 'assets/css/App.css'
 import { useNavigate } from 'react-router-dom'
 

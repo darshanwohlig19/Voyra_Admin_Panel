@@ -130,11 +130,11 @@ function Sidebar(props) {
                   <Link to="/" className="ml-4 flex items-center gap-2">
                     <img
                       src={require('../../assets/webp/logo.webp')}
-                      alt="PocketStudio.ai Logo"
+                      alt="Voyra Logo"
                       className="h-9 w-9"
                     />
                     <span className="font-xs text-[24px] text-indigo dark:text-white">
-                      PocketStudio.ai
+                      Voyra Events
                     </span>
                   </Link>
                 </div>

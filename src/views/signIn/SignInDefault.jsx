@@ -1,7 +1,7 @@
 // import loginImg from 'assets/img/layers/sachai-layers.webp'
 import { useNavigate, useLocation, Link } from 'react-router-dom'
 import { useToaster } from 'common/Toaster'
-import dmsConstants from 'common/config/PocketStudioConstants.js'
+import dmsConstants from 'common/config/AppConstants'
 import { useSpinner } from 'common/SpinnerLoader'
 import ApiCaller from 'common/services/apiServices'
 import apiConfig from 'common/config/apiConfig'

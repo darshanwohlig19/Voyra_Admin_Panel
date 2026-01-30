@@ -1,4 +1,4 @@
-import dmsConstants from 'common/config/PocketStudioConstants.js'
+import dmsConstants from 'common/config/AppConstants'
 
 const { DMS } = dmsConstants
 

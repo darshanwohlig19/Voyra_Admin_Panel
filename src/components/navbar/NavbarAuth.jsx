@@ -8,7 +8,7 @@ import dropdownMain from 'assets/img/layout/dropdownMain.png'
 // Assets
 import { GoChevronDown } from 'react-icons/go'
 import RoutesComponent from 'routes.js'
-import dmsConstants from 'common/config/PocketStudioConstants.js'
+import dmsConstants from 'common/config/AppConstants'
 const { DMS } = dmsConstants
 
 /**

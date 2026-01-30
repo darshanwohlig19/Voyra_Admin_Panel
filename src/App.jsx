@@ -10,7 +10,7 @@ import { useTheme } from './contexts/ThemeContext'
 import RoutesComponent from './routes'
 import { useSpinner } from 'common/SpinnerLoader'
 import { useToaster } from 'common/Toaster'
-import dmsConstants from 'common/config/PocketStudioConstants.js'
+import dmsConstants from 'common/config/AppConstants'
 import NotFound from 'views/others/404'
 
 const App = () => {

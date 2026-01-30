@@ -1,1 +1,1 @@
-PocketStudioAdminPanel
+VoyraEventsAdminPanel
