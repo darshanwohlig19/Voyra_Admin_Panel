@@ -1,98 +1,24 @@
 const baseUrl = process.env.REACT_APP_API_BASE_URL
 
 const config = {
-  // Organization APIs
-  GET_ORGANIZATIONS: baseUrl + '/api/organizations/getOrganizations',
-  CHANGE_ORGANIZATION_STATUS:
-    baseUrl + '/api/organizations/changeOrganizationStatus',
-  DELETE_ORGANIZATION: baseUrl + '/api/organizations/deleteOrganization',
-  UPDATE_ORGANIZATION: baseUrl + '/api/organizations/updateOrganization',
-  GET_ALL_PLANS_DROPDOWN: baseUrl + '/api/organizations/getAllPlansDropdown',
-  GET_ORG_USERS: baseUrl + '/api/orgUsers',
+  // Auth APIs
+  SIGNIN_API: baseUrl + '/api/auth/login',
+  LOGOUT_API: baseUrl + '/api/auth/logout',
 
-  // Domain Block APIs
-  BLOCK_DOMAIN_CREDIT: baseUrl + '/api/domainCreditBlock/domainBlock',
-  GET_DOMAIN_CREDIT_BLOCKS: baseUrl + '/api/domainCreditBlock/getDomains',
-  DELETE_DOMAIN: baseUrl + '/api/domainCreditBlock/deleteDomain',
+  // Home APIs
 
-  // SIGNUP_API
+  // About APIs
 
-  SIGNIN_API: baseUrl + '/api/userAuth/login',
+  // Celebrities APIs
 
-  // Dashboard APIs
-  GET_USER_STATS: baseUrl + '/api/adminDashboard/getUserStats',
-  GET_SUBSCRIBER_STATS: baseUrl + '/api/adminDashboard/getSubscriberStats',
+  // Gallery APIs
 
-  GET_USER_ACTIVITY_STATS: baseUrl + '/api/adminDashboard/getUserActivityStats',
-  GET_REVENUE_STATS: baseUrl + '/api/adminDashboard/getRevenueStats',
-  GET_SALES_COUNT: baseUrl + '/api/adminDashboard/getSalesCount',
-  IS_LOGIN: baseUrl + 'isLoggedIn',
-  IS_LOGOUT: baseUrl + 'refresh/logout',
-  BLOCK_USER: baseUrl + 'block_user',
-  NEW_FOLDER: baseUrl + 'new_folder',
-  USER_LIST: baseUrl + 'get_all_users',
-  GET_ALL_DEPARTMENTS: baseUrl + 'get_all_departments',
-  UPDATE_FOLDER: baseUrl + 'update_folder/{folder_id}',
-  DELETE_FOLDER: baseUrl + 'delete_folder/{folder_id}',
-  VIEW_FOLDER: baseUrl + 'view_folder/{folder_id}',
-  LOCK_FOLDER: baseUrl + 'lock_folder/{folder_id}',
-  UPLOAD_FILES: baseUrl + 'upload_files',
-  DOWNLOAD: baseUrl + '/download/{s3_key}',
-  UPDATE_FILES: baseUrl + 'update_file/{file_id}',
-  DELETE_FILES: baseUrl + 'delete_file/{file_id}',
-  GET_ALL_DELETED_FILES: baseUrl + 'get_all_deleted_files',
-  IS_LOGOUT: baseUrl + 'refresh/logout',
+  // Testimonials APIs
+  GET_TESTIMONIALS: baseUrl + '/api/testimonial/getTestimonial',
 
-  // Short Type API
-  ADD_SHORT_TYPE: baseUrl + '/api/adminShotType/addShotType',
+  // Blog APIs
 
-  // Shot Type API
-  GET_PROJECT_TYPES: baseUrl + '/api/adminShotType/projectType',
-  GET_SHOT_TYPE_DATA: baseUrl + '/api/adminShotType/getShotTypeData',
-  GET_SHOT_TYPES: baseUrl + '/api/adminShotType/getShotTypes',
-  GET_SHOT_TYPE_BY_ID: baseUrl + '/api/adminShotType/getShotType',
-  ADD_SHOT_TYPE: baseUrl + '/api/adminShotType/addShotType',
-  UPDATE_SHOT_TYPE: baseUrl + '/api/adminShotType/updateShotType',
-  DELETE_SHOT_TYPE: baseUrl + '/api/adminShotType/deleteShotType',
-  UPDATE_SHOT_TYPE_STATUS: baseUrl + '/api/adminShotType/shotType/status',
-
-  // Parameters API
-  GET_SHOT_TYPE_IN_PARAMS: baseUrl + '/api/adminParameters/getShotTypes',
-  GET_PARAMETERS: baseUrl + '/api/adminParameters/getParameters',
-  ADD_PARAMETERS: baseUrl + '/api/adminParameters/addParameters',
-  UPDATE_PARAMETER: baseUrl + '/api/adminParameters/UpdateParameter',
-  DELETE_PARAMETER: baseUrl + '/api/adminParameters/deleteParameter',
-  UPDATE_PARAMETER_STATUS: baseUrl + '/api/adminParameters/status',
-  UPDATE_SECTION_STATUS: baseUrl + '/api/adminParameters/status',
-
-  // Projects API (Service Types)
-  GET_SERVICE_TYPES: baseUrl + '/api/adminProjectType/ProjectType',
-  ADD_SERVICE_TYPE: baseUrl + '/api/adminProjectType/ProjectType',
-  DELETE_SERVICE_TYPE: baseUrl + '/api/adminProjectType/projectType',
-  UPDATE_PROJECT_STATUS: baseUrl + '/api/adminProjectType/projectType/status',
-
-  // Config API
-  GET_MEDIA_MODELS: baseUrl + '/api/admin/getMediaModels',
-  ENABLE_MODEL_BULK: baseUrl + '/api/admin/enableModelBulk',
-  GET_ORG_NAME: baseUrl + '/api/admin/getOrgName',
-
-  // Pricing APIs
-  GET_SUBSCRIPTION_PLANS:
-    'http://localhost:3000/api/adminSubscriptionPlans/getAllSubscriptionPlans',
-  ADD_SUBSCRIPTION_PLAN:
-    'http://localhost:3000/api/adminSubscriptionPlans/addSubscriptionPlans',
-  UPDATE_SUBSCRIPTION_PLAN:
-    'http://localhost:3000/api/adminSubscriptionPlans/updateSubscriptionPlan',
-  DELETE_SUBSCRIPTION_PLAN:
-    'http://localhost:3000/api/adminSubscriptionPlans/deleteSubscriptionPlan',
-  GET_SUBSCRIPTION_FIELDS:
-    'http://localhost:3000/api/adminSubscriptionPlans/getSubscriptionFields',
-  UPDATE_SUBSCRIPTION_STATUS:
-    'http://localhost:3000/api/adminSubscriptionPlans/updatesubscriptionPlan/status',
-
-  // Logs APIs
-  GET_ALL_LOGS: 'http://localhost:3000/api/adminLog/getAllLogs',
-  GET_LOGS_EVENTS_FILTER:
-    'http://localhost:3000/api/adminLog/getLogsEventsfilter',
+  // Contact APIs
 }
+
 export default config

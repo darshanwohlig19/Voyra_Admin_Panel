@@ -1,33 +1,30 @@
 import React, { useState, useEffect } from 'react'
-import { MdOutlineFolderOpen, MdMovie, MdDashboard } from 'react-icons/md'
+import {
+  MdDashboard,
+  MdHome,
+  MdInfo,
+  MdImage,
+  MdContactMail,
+} from 'react-icons/md'
+import { FaStar, FaBlog } from 'react-icons/fa'
+import { BsPeopleFill } from 'react-icons/bs'
 import SignIn from 'views/signIn/signIn'
 import SignUp from 'views/signIn/signUp'
-import { FiTrash2 } from 'react-icons/fi'
-import { IoMdPricetags } from 'react-icons/io'
-import { useParams } from 'react-router-dom'
-import { NotepadText } from 'lucide-react'
-
-import { FaYoutube, FaCog, FaGlobe } from 'react-icons/fa'
-import { ChartNoAxesCombined } from 'lucide-react'
-import { FaFolderOpen } from 'react-icons/fa'
-import { FaUsers } from 'react-icons/fa'
 import Dashboard from 'views/dashboard'
+import Home from 'views/home'
+import About from 'views/about'
+import Celebrities from 'views/celebrities'
+import Gallery from 'views/gallery'
+import Testimonials from 'views/testimonials'
+import Blog from 'views/blog'
+import Contact from 'views/contact'
 
 import { getEncryptedCookie } from 'common/utils/cookieUtils'
 
 const RoutesComponent = () => {
-  const { id } = useParams()
-  const [projectName, setProjectName] = useState()
-  const [serviceName, setServiceName] = useState()
   const [routes, setRoutes] = useState([])
 
   useEffect(() => {
-    const storedProjectName = localStorage.getItem('projectName')
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [localStorage.getItem('projectName')])
-
-  useEffect(() => {
-    // Get user role from encrypted cookie
     const userRole = getEncryptedCookie('userRole')
     const isSuperAdmin = userRole === 'superadmin'
 
@@ -50,14 +47,77 @@ const RoutesComponent = () => {
         isComing: false,
         isVisible: false,
       },
+      // {
+      //   name: 'Dashboard',
+      //   path: 'dashboard',
+      //   layout: '/afterLogin',
+      //   icon: <MdDashboard className="h-6 w-6" />,
+      //   component: <Dashboard />,
+      //   isComing: false,
+      //   isVisible: isSuperAdmin,
+      // },
       {
-        name: 'Dashboard',
+        name: 'Home',
         path: '',
         layout: '/afterLogin',
-        icon: <MdDashboard className="h-6 w-6" />,
-        component: <Dashboard />,
+        icon: <MdHome className="h-6 w-6" />,
+        component: <Home />,
         isComing: false,
-        isVisible: isSuperAdmin, // Only visible to superadmin
+        isVisible: true,
+      },
+      {
+        name: 'About',
+        path: 'about',
+        layout: '/afterLogin',
+        icon: <MdInfo className="h-6 w-6" />,
+        component: <About />,
+        isComing: false,
+        isVisible: true,
+      },
+      {
+        name: 'Celebrities',
+        path: 'celebrities',
+        layout: '/afterLogin',
+        icon: <BsPeopleFill className="h-6 w-6" />,
+        component: <Celebrities />,
+        isComing: false,
+        isVisible: true,
+      },
+      {
+        name: 'Gallery',
+        path: 'gallery',
+        layout: '/afterLogin',
+        icon: <MdImage className="h-6 w-6" />,
+        component: <Gallery />,
+        isComing: false,
+        isVisible: true,
+      },
+      {
+        name: 'Testimonials',
+        path: 'testimonials',
+        layout: '/afterLogin',
+        icon: <FaStar className="h-6 w-6" />,
+        component: <Testimonials />,
+        isComing: false,
+        isVisible: true,
+      },
+      {
+        name: 'Blog',
+        path: 'blog',
+        layout: '/afterLogin',
+        icon: <FaBlog className="h-6 w-6" />,
+        component: <Blog />,
+        isComing: false,
+        isVisible: true,
+      },
+      {
+        name: 'Contact',
+        path: 'contact',
+        layout: '/afterLogin',
+        icon: <MdContactMail className="h-6 w-6" />,
+        component: <Contact />,
+        isComing: false,
+        isVisible: true,
       },
     ])
   }, [])
