@@ -15,7 +15,7 @@ import Checkbox from 'components/checkbox'
 import bgLoginImage from '../../assets/svg/dmslogin.svg'
 import loginBgIcon from '../../assets/svg/login.svg'
 import Capa from '../../assets/img/layers/Capa.webp'
-import Logo from '../../assets/webp/signin.webp'
+import Logo from '../../assets/webp/signin.jpg'
 // import LogoIcon from '../../assets/svg/Line1.svg'
 // import demo from '../../assets/svg/demo.jpg'
 const { TOAST, SIGNIN } = dmsConstants

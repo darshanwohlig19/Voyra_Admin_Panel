@@ -115,7 +115,7 @@ function SignInPage({ onSignIn }) {
               </div>
               <button
                 type="submit"
-                className="mt-10 flex h-10 w-full items-center justify-center rounded-md bg-[#6E56FB] font-medium text-white disabled:cursor-not-allowed disabled:opacity-50"
+                className="mt-10 flex h-10 w-full items-center justify-center rounded-md bg-[#f7e9cf] font-medium text-black disabled:cursor-not-allowed disabled:opacity-50"
               >
                 Sign In
               </button>
