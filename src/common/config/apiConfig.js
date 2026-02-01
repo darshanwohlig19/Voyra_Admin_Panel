@@ -12,6 +12,7 @@ const config = {
   // Celebrities APIs
 
   // Gallery APIs
+  GET_GALLERY: baseUrl + '/api/snapshotGallery/getSnapshotGallery',
 
   // Testimonials APIs
   GET_TESTIMONIALS: baseUrl + '/api/testimonial/getTestimonial',
