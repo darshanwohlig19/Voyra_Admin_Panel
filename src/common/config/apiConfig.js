@@ -17,6 +17,7 @@ const config = {
   GET_TESTIMONIALS: baseUrl + '/api/testimonial/getTestimonial',
 
   // Blog APIs
+  GET_BLOGS: baseUrl + '/api/blog/getBlog',
 
   // Contact APIs
 }
