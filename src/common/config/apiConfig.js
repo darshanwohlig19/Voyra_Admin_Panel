@@ -5,6 +5,9 @@ const config = {
   SIGNIN_API: baseUrl + '/api/auth/login',
   LOGOUT_API: baseUrl + '/api/auth/logout',
 
+  // Hero Section API
+  GET_HERO_SECTION: baseUrl + '/api/heroSection/getHeroSection',
+
   // Home APIs
   GET_CRAFTED_DESIGN: baseUrl + '/api/craftedDesign/getCraftedDesign',
   GET_CATEGORY_GALLERY: baseUrl + '/api/categoryGallery/getCategoryGallery',

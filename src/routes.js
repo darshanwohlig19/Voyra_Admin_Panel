@@ -5,6 +5,7 @@ import {
   MdInfo,
   MdImage,
   MdContactMail,
+  MdViewCarousel,
 } from 'react-icons/md'
 import { FaStar, FaBlog } from 'react-icons/fa'
 import { BsPeopleFill } from 'react-icons/bs'
@@ -18,6 +19,7 @@ import Gallery from 'views/gallery'
 import Testimonials from 'views/testimonials'
 import Blog from 'views/blog'
 import Contact from 'views/contact'
+import HeroSections from 'views/hero-sections'
 
 import { getEncryptedCookie } from 'common/utils/cookieUtils'
 
@@ -116,6 +118,15 @@ const RoutesComponent = () => {
         layout: '/afterLogin',
         icon: <MdContactMail className="h-6 w-6" />,
         component: <Contact />,
+        isComing: false,
+        isVisible: true,
+      },
+      {
+        name: 'Hero Sections',
+        path: 'hero-sections',
+        layout: '/afterLogin',
+        icon: <MdViewCarousel className="h-6 w-6" />,
+        component: <HeroSections />,
         isComing: false,
         isVisible: true,
       },
