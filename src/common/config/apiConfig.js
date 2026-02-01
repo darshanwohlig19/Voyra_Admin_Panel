@@ -6,6 +6,11 @@ const config = {
   LOGOUT_API: baseUrl + '/api/auth/logout',
 
   // Home APIs
+  GET_CRAFTED_DESIGN: baseUrl + '/api/craftedDesign/getCraftedDesign',
+  GET_CATEGORY_GALLERY: baseUrl + '/api/categoryGallery/getCategoryGallery',
+  GET_BRAND_VALUE: baseUrl + '/api/brandValue/getBrandValue',
+  GET_BRAND_PARTNER: baseUrl + '/api/brandPartner/getBrandPartner',
+  GET_PORTFOLIO_GALLERY: baseUrl + '/api/portfolioGallery/getPortfolioGallery',
 
   // About APIs
   GET_STORY: baseUrl + '/api/storySection/getStory',
