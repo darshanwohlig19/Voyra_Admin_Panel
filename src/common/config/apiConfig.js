@@ -10,6 +10,12 @@ const config = {
   // About APIs
 
   // Celebrities APIs
+  GET_CURRENT_LIMELIGHT:
+    baseUrl + '/api/currentLimelightSection/getCurrentLimelight',
+  GET_ARTIST_COLLECTION:
+    baseUrl + '/api/artistCollectionSection/getArtistCollection',
+  GET_STARDOM: baseUrl + '/api/stardomSection/getStardom',
+  GET_CELEBRITY_CAROUSEL: baseUrl + '/api/celebrityCarouselSection/getCarousel',
 
   // Gallery APIs
   GET_GALLERY: baseUrl + '/api/snapshotGallery/getSnapshotGallery',
