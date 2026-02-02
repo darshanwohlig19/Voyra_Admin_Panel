@@ -7,6 +7,7 @@ const config = {
 
   // Hero Section API
   GET_HERO_SECTION: baseUrl + '/api/heroSection/getHeroSection',
+  UPDATE_HERO_SECTION: baseUrl + '/api/heroSection/updateHeroSection',
 
   // Home APIs
   GET_CRAFTED_DESIGN: baseUrl + '/api/craftedDesign/getCraftedDesign',

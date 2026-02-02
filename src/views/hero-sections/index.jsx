@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import ApiCaller from 'common/services/apiServices'
 import apiConfig from 'common/config/apiConfig'
 import { FaEdit, FaTimes } from 'react-icons/fa'
+import EditHeroSectionModal from 'components/hero-section/EditHeroSectionModal'
+import { useToaster } from 'common/Toaster'
 
 const PAGE_KEYS = [
   { key: 'home', label: 'Home' },
@@ -17,7 +19,11 @@ const HeroSections = () => {
   const [heroData, setHeroData] = useState({})
   const [loading, setLoading] = useState(true)
   const [lightboxImage, setLightboxImage] = useState(null)
+  const [editModalOpen, setEditModalOpen] = useState(false)
+  const [selectedPageKey, setSelectedPageKey] = useState(null)
+  const [updateLoading, setUpdateLoading] = useState(false)
   const { apiCall } = ApiCaller()
+  const { addToast } = useToaster()
 
   useEffect(() => {
     fetchAllHeroSections()
@@ -43,6 +49,64 @@ const HeroSections = () => {
       console.error('Error fetching hero sections:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleEditClick = (pageKey) => {
+    setSelectedPageKey(pageKey)
+    setEditModalOpen(true)
+  }
+
+  const handleCloseModal = () => {
+    setEditModalOpen(false)
+    setSelectedPageKey(null)
+  }
+
+  const handleUpdateHeroSection = async (formData) => {
+    try {
+      setUpdateLoading(true)
+      const response = await apiCall(
+        'put',
+        `${apiConfig.UPDATE_HERO_SECTION}?pageKey=${selectedPageKey}`,
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
+      )
+
+      if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Hero section updated successfully',
+        })
+        handleCloseModal()
+        // Refresh the data for the updated page
+        const refreshResponse = await apiCall(
+          'get',
+          `${apiConfig.GET_HERO_SECTION}?pageKey=${selectedPageKey}`
+        )
+        if (refreshResponse?.data?.code === 2000) {
+          setHeroData((prev) => ({
+            ...prev,
+            [selectedPageKey]: refreshResponse.data.data,
+          }))
+        }
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update hero section',
+        })
+      }
+    } catch (error) {
+      console.error('Error updating hero section:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating hero section',
+      })
+    } finally {
+      setUpdateLoading(false)
     }
   }
 
@@ -109,9 +173,7 @@ const HeroSections = () => {
                   {/* Overlay with Edit Button */}
                   <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
-                      onClick={() =>
-                        console.log('Edit hero', page.key, hero?._id)
-                      }
+                      onClick={() => handleEditClick(page.key)}
                       className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
                     >
                       <FaEdit className="h-4 w-4" />
@@ -162,6 +224,18 @@ const HeroSections = () => {
           />
         </div>
       )}
+
+      {/* Edit Hero Section Modal */}
+      <EditHeroSectionModal
+        isOpen={editModalOpen}
+        onClose={handleCloseModal}
+        onSubmit={handleUpdateHeroSection}
+        loading={updateLoading}
+        heroData={selectedPageKey ? heroData[selectedPageKey] : null}
+        pageLabel={
+          PAGE_KEYS.find((p) => p.key === selectedPageKey)?.label || ''
+        }
+      />
     </div>
   )
 }
