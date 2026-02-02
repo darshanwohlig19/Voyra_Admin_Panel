@@ -37,6 +37,10 @@ const config = {
 
   // Blog APIs
   GET_BLOGS: baseUrl + '/api/blog/getBlog',
+  CREATE_BLOG: baseUrl + '/api/blog/createBlog',
+  UPDATE_BLOG_SECTION: baseUrl + '/api/blog/updateBlog',
+  UPDATE_BLOG_ITEM: baseUrl + '/api/blog/updateBlogItem',
+  DELETE_BLOG_ITEM: baseUrl + '/api/blog/deleteBlogItem',
 
   // Contact APIs
 }

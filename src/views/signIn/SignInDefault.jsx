@@ -50,7 +50,8 @@ function SignInDefault() {
         const userRole = response.data.data.user.role
         setEncryptedCookie('userRole', userRole, 7)
 
-        // Store userName in localStorage
+        // Store token and userName in localStorage
+        localStorage.setItem('authToken', response.data.data.token)
         const userName = response.data.data.user.name || 'User'
         localStorage.setItem('userName', userName)
 

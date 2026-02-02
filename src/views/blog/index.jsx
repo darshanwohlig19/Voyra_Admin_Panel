@@ -2,11 +2,28 @@ import React, { useState, useEffect } from 'react'
 import ApiCaller from 'common/services/apiServices'
 import apiConfig from 'common/config/apiConfig'
 import { FaEdit, FaTrash, FaPlus, FaTimes, FaCalendarAlt } from 'react-icons/fa'
+import AddBlogModal from 'components/blog/AddBlogModal'
+import EditBlogModal from 'components/blog/EditBlogModal'
+import EditSectionModal from 'components/blog/EditSectionModal'
+import ConfirmationModal from 'components/modal/ConfirmationModal'
 
 const Blog = () => {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [lightboxImage, setLightboxImage] = useState(null)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [submitLoading, setSubmitLoading] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState({
+    open: false,
+    id: null,
+    title: '',
+  })
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editBlogData, setEditBlogData] = useState(null)
+  const [editLoading, setEditLoading] = useState(false)
+  const [isSectionModalOpen, setIsSectionModalOpen] = useState(false)
+  const [sectionLoading, setSectionLoading] = useState(false)
   const { apiCall } = ApiCaller()
 
   useEffect(() => {
@@ -24,6 +41,101 @@ const Blog = () => {
       console.error('Error fetching blogs:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleAddBlog = async (formData) => {
+    try {
+      setSubmitLoading(true)
+      const response = await apiCall('post', apiConfig.CREATE_BLOG, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      if (response?.data?.code === 2000) {
+        setIsAddModalOpen(false)
+        fetchBlogs()
+      } else {
+        console.error('Failed to create blog:', response?.data?.message)
+      }
+    } catch (error) {
+      console.error('Error creating blog:', error)
+    } finally {
+      setSubmitLoading(false)
+    }
+  }
+
+  const handleDeleteBlog = async () => {
+    if (!deleteConfirm.id) return
+    try {
+      setDeleteLoading(true)
+      const response = await apiCall(
+        'delete',
+        `${apiConfig.DELETE_BLOG_ITEM}/${deleteConfirm.id}`
+      )
+      if (response?.data?.code === 2000) {
+        setDeleteConfirm({ open: false, id: null, title: '' })
+        fetchBlogs()
+      } else {
+        console.error('Failed to delete blog:', response?.data?.message)
+      }
+    } catch (error) {
+      console.error('Error deleting blog:', error)
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
+
+  const openEditModal = (blog) => {
+    setEditBlogData(blog)
+    setIsEditModalOpen(true)
+  }
+
+  const handleEditBlog = async (blogId, formData) => {
+    try {
+      setEditLoading(true)
+      const response = await apiCall(
+        'put',
+        `${apiConfig.UPDATE_BLOG_ITEM}/${blogId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000) {
+        setIsEditModalOpen(false)
+        setEditBlogData(null)
+        fetchBlogs()
+      } else {
+        console.error('Failed to update blog:', response?.data?.message)
+      }
+    } catch (error) {
+      console.error('Error updating blog:', error)
+    } finally {
+      setEditLoading(false)
+    }
+  }
+
+  const handleEditSection = async (formData) => {
+    try {
+      setSectionLoading(true)
+      const response = await apiCall(
+        'put',
+        apiConfig.UPDATE_BLOG_SECTION,
+        formData
+      )
+      if (response?.data?.code === 2000) {
+        setIsSectionModalOpen(false)
+        fetchBlogs()
+      } else {
+        console.error('Failed to update section:', response?.data?.message)
+      }
+    } catch (error) {
+      console.error('Error updating section:', error)
+    } finally {
+      setSectionLoading(false)
     }
   }
 
@@ -61,14 +173,14 @@ const Blog = () => {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => console.log('Edit header')}
+              onClick={() => setIsSectionModalOpen(true)}
               className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
             >
               <FaEdit className="h-4 w-4" />
               Edit
             </button>
             <button
-              onClick={() => console.log('Add blog')}
+              onClick={() => setIsAddModalOpen(true)}
               className="flex items-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600"
             >
               <FaPlus className="h-4 w-4" />
@@ -117,14 +229,20 @@ const Blog = () => {
               {/* Actions */}
               <div className="mt-4 flex justify-end gap-2">
                 <button
-                  onClick={() => console.log('Edit', blog._id)}
+                  onClick={() => openEditModal(blog)}
                   className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit
                 </button>
                 <button
-                  onClick={() => console.log('Delete', blog._id)}
+                  onClick={() =>
+                    setDeleteConfirm({
+                      open: true,
+                      id: blog._id,
+                      title: blog.title,
+                    })
+                  }
                   className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
                 >
                   <FaTrash className="h-3 w-3" />
@@ -163,6 +281,48 @@ const Blog = () => {
           />
         </div>
       )}
+
+      {/* Add Blog Modal */}
+      <AddBlogModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={handleAddBlog}
+        loading={submitLoading}
+      />
+
+      {/* Edit Blog Modal */}
+      <EditBlogModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false)
+          setEditBlogData(null)
+        }}
+        onSubmit={handleEditBlog}
+        loading={editLoading}
+        blogData={editBlogData}
+      />
+
+      {/* Edit Section Modal */}
+      <EditSectionModal
+        isOpen={isSectionModalOpen}
+        onClose={() => setIsSectionModalOpen(false)}
+        onSubmit={handleEditSection}
+        loading={sectionLoading}
+        sectionData={data}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteConfirm.open}
+        onClose={() => setDeleteConfirm({ open: false, id: null, title: '' })}
+        onConfirm={handleDeleteBlog}
+        title="Delete Blog"
+        message={`Are you sure you want to delete "${deleteConfirm.title}"? This action cannot be undone.`}
+        confirmText={deleteLoading ? 'Deleting...' : 'Delete'}
+        cancelText="Cancel"
+        confirmColorScheme="red"
+        icon="delete"
+      />
     </div>
   )
 }
