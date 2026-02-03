@@ -18,9 +18,13 @@ const config = {
 
   // About APIs
   GET_STORY: baseUrl + '/api/storySection/getStory',
+  UPDATE_STORY: baseUrl + '/api/storySection/updateStory',
   GET_VISION: baseUrl + '/api/visionSection/getVisionSection',
+  UPDATE_VISION: baseUrl + '/api/visionSection/updateVision',
   GET_TEAM: baseUrl + '/api/teamSection/getTeamSection',
+  UPDATE_TEAM: baseUrl + '/api/teamSection/updateTeam',
   GET_CTA_SECTION: baseUrl + '/api/ctaSection/getCtaSection',
+  UPDATE_CTA_SECTION: baseUrl + '/api/ctaSection/updateCtaSection',
 
   // Celebrities APIs
   GET_CURRENT_LIMELIGHT:

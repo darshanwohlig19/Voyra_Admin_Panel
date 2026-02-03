@@ -1,7 +1,13 @@
 import React, { useState, useEffect } from 'react'
 import ApiCaller from 'common/services/apiServices'
 import apiConfig from 'common/config/apiConfig'
-import { FaEdit, FaTrash, FaTimes } from 'react-icons/fa'
+import { FaEdit, FaTimes } from 'react-icons/fa'
+import { useToaster } from 'common/Toaster'
+import EditStoryModal from 'components/about/EditStoryModal'
+import EditStoryImageModal from 'components/about/EditStoryImageModal'
+import EditVisionModal from 'components/about/EditVisionModal'
+import EditTeamModal from 'components/about/EditTeamModal'
+import EditCtaModal from 'components/about/EditCtaModal'
 
 const About = () => {
   const [storyData, setStoryData] = useState(null)
@@ -11,6 +17,31 @@ const About = () => {
   const [loading, setLoading] = useState(true)
   const [lightboxImage, setLightboxImage] = useState(null)
   const { apiCall } = ApiCaller()
+  const { addToast } = useToaster()
+
+  // Edit story section modal state
+  const [isEditStoryModalOpen, setIsEditStoryModalOpen] = useState(false)
+  const [editStoryLoading, setEditStoryLoading] = useState(false)
+
+  // Edit story image modal state
+  const [isEditStoryImageModalOpen, setIsEditStoryImageModalOpen] =
+    useState(false)
+  const [editStoryImageData, setEditStoryImageData] = useState(null)
+  const [editStoryImageLoading, setEditStoryImageLoading] = useState(false)
+
+  // Edit vision modal state
+  const [isEditVisionModalOpen, setIsEditVisionModalOpen] = useState(false)
+  const [editVisionData, setEditVisionData] = useState(null)
+  const [editVisionLoading, setEditVisionLoading] = useState(false)
+
+  // Edit team modal state
+  const [isEditTeamModalOpen, setIsEditTeamModalOpen] = useState(false)
+  const [editTeamData, setEditTeamData] = useState(null)
+  const [editTeamLoading, setEditTeamLoading] = useState(false)
+
+  // Edit CTA modal state
+  const [isEditCtaModalOpen, setIsEditCtaModalOpen] = useState(false)
+  const [editCtaLoading, setEditCtaLoading] = useState(false)
 
   useEffect(() => {
     fetchAllSections()
@@ -45,6 +76,218 @@ const About = () => {
     }
   }
 
+  // Handle edit story section submit
+  const handleEditStorySubmit = async (formData) => {
+    try {
+      setEditStoryLoading(true)
+      const response = await apiCall('put', apiConfig.UPDATE_STORY, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      if (response?.data?.code === 2000) {
+        setIsEditStoryModalOpen(false)
+        fetchAllSections()
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Story section updated successfully',
+        })
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update story section',
+        })
+      }
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating story section',
+      })
+    } finally {
+      setEditStoryLoading(false)
+    }
+  }
+
+  // Handle edit story image
+  const openEditStoryImageModal = (image) => {
+    setEditStoryImageData(image)
+    setIsEditStoryImageModalOpen(true)
+  }
+
+  const handleEditStoryImageSubmit = async (_imageId, formData) => {
+    try {
+      setEditStoryImageLoading(true)
+      const response = await apiCall('put', apiConfig.UPDATE_STORY, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
+      if (response?.data?.code === 2000) {
+        setIsEditStoryImageModalOpen(false)
+        setEditStoryImageData(null)
+        fetchAllSections()
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Story image updated successfully',
+        })
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update story image',
+        })
+      }
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating story image',
+      })
+    } finally {
+      setEditStoryImageLoading(false)
+    }
+  }
+
+  // Handle edit vision item
+  const openEditVisionModal = (item) => {
+    setEditVisionData(item)
+    setIsEditVisionModalOpen(true)
+  }
+
+  const handleEditVisionSubmit = async (visionId, formData) => {
+    try {
+      setEditVisionLoading(true)
+      const response = await apiCall(
+        'put',
+        `${apiConfig.UPDATE_VISION}/${visionId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000) {
+        setIsEditVisionModalOpen(false)
+        setEditVisionData(null)
+        fetchAllSections()
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Vision item updated successfully',
+        })
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update vision item',
+        })
+      }
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating vision item',
+      })
+    } finally {
+      setEditVisionLoading(false)
+    }
+  }
+
+  // Handle edit team item
+  const openEditTeamModal = (item) => {
+    setEditTeamData(item)
+    setIsEditTeamModalOpen(true)
+  }
+
+  const handleEditTeamSubmit = async (teamId, formData) => {
+    try {
+      setEditTeamLoading(true)
+      const response = await apiCall(
+        'put',
+        `${apiConfig.UPDATE_TEAM}/${teamId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000) {
+        setIsEditTeamModalOpen(false)
+        setEditTeamData(null)
+        fetchAllSections()
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Team item updated successfully',
+        })
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to update team item',
+        })
+      }
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating team item',
+      })
+    } finally {
+      setEditTeamLoading(false)
+    }
+  }
+
+  // Handle edit CTA section
+  const handleEditCtaSubmit = async (formData) => {
+    try {
+      setEditCtaLoading(true)
+      const response = await apiCall(
+        'put',
+        `${apiConfig.UPDATE_CTA_SECTION}?pageKey=about`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000) {
+        setIsEditCtaModalOpen(false)
+        fetchAllSections()
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'CTA section updated successfully',
+        })
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update CTA section',
+        })
+      }
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating CTA section',
+      })
+    } finally {
+      setEditCtaLoading(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="mt-3 h-full w-full">
@@ -69,7 +312,7 @@ const About = () => {
             </p>
           </div>
           <button
-            onClick={() => console.log('Edit story section')}
+            onClick={() => setIsEditStoryModalOpen(true)}
             className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           >
             <FaEdit className="h-4 w-4" />
@@ -96,18 +339,11 @@ const About = () => {
               {/* Overlay with Actions */}
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
-                  onClick={() => console.log('Edit image', image._id)}
+                  onClick={() => openEditStoryImageModal(image)}
                   className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit
-                </button>
-                <button
-                  onClick={() => console.log('Delete image', image._id)}
-                  className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
-                >
-                  <FaTrash className="h-3 w-3" />
-                  Delete
                 </button>
               </div>
 
@@ -130,13 +366,6 @@ const About = () => {
               Manage why choose us and what we do sections.
             </p>
           </div>
-          <button
-            onClick={() => console.log('Edit vision section')}
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          >
-            <FaEdit className="h-4 w-4" />
-            Edit
-          </button>
         </div>
 
         <hr className="my-4 border-gray-200 dark:border-navy-600" />
@@ -161,20 +390,11 @@ const About = () => {
                   {/* Overlay with Actions */}
                   <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
-                      onClick={() => console.log('Edit vision item', item._id)}
+                      onClick={() => openEditVisionModal(item)}
                       className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                     >
                       <FaEdit className="h-3 w-3" />
                       Edit
-                    </button>
-                    <button
-                      onClick={() =>
-                        console.log('Delete vision item', item._id)
-                      }
-                      className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
-                    >
-                      <FaTrash className="h-3 w-3" />
-                      Delete
                     </button>
                   </div>
                 </div>
@@ -208,13 +428,6 @@ const About = () => {
               Manage our approach and team sections.
             </p>
           </div>
-          <button
-            onClick={() => console.log('Edit team section')}
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          >
-            <FaEdit className="h-4 w-4" />
-            Edit
-          </button>
         </div>
 
         <hr className="my-4 border-gray-200 dark:border-navy-600" />
@@ -239,18 +452,11 @@ const About = () => {
                   {/* Overlay with Actions */}
                   <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
-                      onClick={() => console.log('Edit team item', item._id)}
+                      onClick={() => openEditTeamModal(item)}
                       className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                     >
                       <FaEdit className="h-3 w-3" />
                       Edit
-                    </button>
-                    <button
-                      onClick={() => console.log('Delete team item', item._id)}
-                      className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
-                    >
-                      <FaTrash className="h-3 w-3" />
-                      Delete
                     </button>
                   </div>
                 </div>
@@ -284,13 +490,6 @@ const About = () => {
               Manage call to action section for about page.
             </p>
           </div>
-          <button
-            onClick={() => console.log('Edit CTA section')}
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          >
-            <FaEdit className="h-4 w-4" />
-            Edit
-          </button>
         </div>
 
         <hr className="my-4 border-gray-200 dark:border-navy-600" />
@@ -320,18 +519,11 @@ const About = () => {
               {/* Overlay with Actions on Hover */}
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
-                  onClick={() => console.log('Edit CTA', ctaData._id)}
+                  onClick={() => setIsEditCtaModalOpen(true)}
                   className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit
-                </button>
-                <button
-                  onClick={() => console.log('Delete CTA', ctaData._id)}
-                  className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
-                >
-                  <FaTrash className="h-3 w-3" />
-                  Delete
                 </button>
               </div>
             </div>
@@ -359,6 +551,60 @@ const About = () => {
           />
         </div>
       )}
+
+      {/* Edit Story Section Modal */}
+      <EditStoryModal
+        isOpen={isEditStoryModalOpen}
+        onClose={() => setIsEditStoryModalOpen(false)}
+        onSubmit={handleEditStorySubmit}
+        loading={editStoryLoading}
+        storyData={storyData}
+      />
+
+      {/* Edit Story Image Modal */}
+      <EditStoryImageModal
+        isOpen={isEditStoryImageModalOpen}
+        onClose={() => {
+          setIsEditStoryImageModalOpen(false)
+          setEditStoryImageData(null)
+        }}
+        onSubmit={handleEditStoryImageSubmit}
+        loading={editStoryImageLoading}
+        imageData={editStoryImageData}
+      />
+
+      {/* Edit Vision Modal */}
+      <EditVisionModal
+        isOpen={isEditVisionModalOpen}
+        onClose={() => {
+          setIsEditVisionModalOpen(false)
+          setEditVisionData(null)
+        }}
+        onSubmit={handleEditVisionSubmit}
+        loading={editVisionLoading}
+        visionData={editVisionData}
+      />
+
+      {/* Edit Team Modal */}
+      <EditTeamModal
+        isOpen={isEditTeamModalOpen}
+        onClose={() => {
+          setIsEditTeamModalOpen(false)
+          setEditTeamData(null)
+        }}
+        onSubmit={handleEditTeamSubmit}
+        loading={editTeamLoading}
+        teamData={editTeamData}
+      />
+
+      {/* Edit CTA Modal */}
+      <EditCtaModal
+        isOpen={isEditCtaModalOpen}
+        onClose={() => setIsEditCtaModalOpen(false)}
+        onSubmit={handleEditCtaSubmit}
+        loading={editCtaLoading}
+        ctaData={ctaData}
+      />
     </div>
   )
 }
