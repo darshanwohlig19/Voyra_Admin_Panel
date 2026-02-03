@@ -2,9 +2,14 @@ import React, { useState, useEffect } from 'react'
 import ApiCaller from 'common/services/apiServices'
 import apiConfig from 'common/config/apiConfig'
 import { FaEdit, FaTrash, FaPlus, FaTimes } from 'react-icons/fa'
+import AddCelebrityCarouselModal from 'components/celebrities/AddCelebrityCarouselModal'
+import EditCelebrityCarouselModal from 'components/celebrities/EditCelebrityCarouselModal'
+import { useToaster } from 'common/Toaster'
+import ConfirmationModal from 'components/modal/ConfirmationModal'
 
 const Celebrities = () => {
   const [limelightData, setLimelightData] = useState(null)
+  const [deleteLoading, setDeleteLoading] = useState(false)
   const [artistData, setArtistData] = useState(null)
   const [spotlightData, setSpotlightData] = useState(null)
   const [spotlightCelebrities, setSpotlightCelebrities] = useState([])
@@ -14,7 +19,18 @@ const Celebrities = () => {
   const [carouselData, setCarouselData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [lightboxImage, setLightboxImage] = useState(null)
+  const [isAddCarouselModalOpen, setIsAddCarouselModalOpen] = useState(false)
+  const [addCarouselLoading, setAddCarouselLoading] = useState(false)
+  const [isEditCarouselModalOpen, setIsEditCarouselModalOpen] = useState(false)
+  const [editCarouselLoading, setEditCarouselLoading] = useState(false)
+  const [selectedCarouselItem, setSelectedCarouselItem] = useState(null)
+  const [deleteConfirm, setDeleteConfirm] = useState({
+    open: false,
+    id: null,
+    title: '',
+  })
   const { apiCall } = ApiCaller()
+  const { addToast } = useToaster()
 
   useEffect(() => {
     fetchAllSections()
@@ -25,7 +41,26 @@ const Celebrities = () => {
       fetchSpotlightByType(selectedType)
     }
   }, [selectedType])
-
+  const handleDeleteCarouselItem = async () => {
+    if (!deleteConfirm.id) return
+    try {
+      setDeleteLoading(true)
+      const response = await apiCall(
+        'delete',
+        `${apiConfig.DELETE_CELEBRITY_CAROUSEL}/${deleteConfirm.id}`
+      )
+      if (response?.data?.code === 2000) {
+        setDeleteConfirm({ open: false, id: null, title: '' })
+        fetchAllSections()
+      } else {
+        console.error('Failed to delete blog:', response?.data?.message)
+      }
+    } catch (error) {
+      console.error('Error deleting blog:', error)
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
   const fetchAllSections = async () => {
     try {
       setLoading(true)
@@ -80,6 +115,93 @@ const Celebrities = () => {
     } finally {
       setSpotlightLoading(false)
     }
+  }
+
+  const handleAddCarouselItem = async (formData) => {
+    try {
+      setAddCarouselLoading(true)
+      const response = await apiCall(
+        'post',
+        apiConfig.CREATE_CELEBRITY_CAROUSEL,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Carousel item added successfully',
+        })
+        setIsAddCarouselModalOpen(false)
+        fetchAllSections()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to add carousel item',
+        })
+      }
+    } catch (error) {
+      console.error('Error adding carousel item:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error adding carousel item',
+      })
+    } finally {
+      setAddCarouselLoading(false)
+    }
+  }
+
+  const handleEditCarouselItem = async (id, formData) => {
+    try {
+      setEditCarouselLoading(true)
+      const response = await apiCall(
+        'put',
+        `${apiConfig.UPDATE_CELEBRITY_CAROUSEL}/${id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Carousel item updated successfully',
+        })
+        setIsEditCarouselModalOpen(false)
+        setSelectedCarouselItem(null)
+        fetchAllSections()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update carousel item',
+        })
+      }
+    } catch (error) {
+      console.error('Error updating carousel item:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating carousel item',
+      })
+    } finally {
+      setEditCarouselLoading(false)
+    }
+  }
+
+  const openEditCarouselModal = (item) => {
+    setSelectedCarouselItem(item)
+    setIsEditCarouselModalOpen(true)
   }
 
   if (loading) {
@@ -156,10 +278,6 @@ const Celebrities = () => {
                   Delete
                 </button>
               </div>
-
-              <div className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium text-navy-700">
-                #{image.order + 1}
-              </div>
             </div>
           ))}
         </div>
@@ -216,10 +334,6 @@ const Celebrities = () => {
                     <FaTrash className="h-3 w-3" />
                     Delete
                   </button>
-                </div>
-
-                <div className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium text-navy-700">
-                  #{artist.order + 1}
                 </div>
               </div>
 
@@ -432,14 +546,7 @@ const Celebrities = () => {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => console.log('Edit carousel section')}
-              className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-            >
-              <FaEdit className="h-4 w-4" />
-              Edit
-            </button>
-            <button
-              onClick={() => console.log('Add carousel item')}
+              onClick={() => setIsAddCarouselModalOpen(true)}
               className="flex items-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600"
             >
               <FaPlus className="h-4 w-4" />
@@ -469,7 +576,7 @@ const Celebrities = () => {
                 {/* Overlay with Actions */}
                 <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                   <button
-                    onClick={() => console.log('Edit carousel item', item._id)}
+                    onClick={() => openEditCarouselModal(item)}
                     className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                   >
                     <FaEdit className="h-3 w-3" />
@@ -477,18 +584,17 @@ const Celebrities = () => {
                   </button>
                   <button
                     onClick={() =>
-                      console.log('Delete carousel item', item._id)
+                      setDeleteConfirm({
+                        open: true,
+                        id: item._id,
+                        title: item.author,
+                      })
                     }
                     className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
                   >
                     <FaTrash className="h-3 w-3" />
                     Delete
                   </button>
-                </div>
-
-                {/* Order Badge */}
-                <div className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium text-navy-700">
-                  #{item.order}
                 </div>
               </div>
 
@@ -531,6 +637,37 @@ const Celebrities = () => {
           />
         </div>
       )}
+
+      {/* Add Celebrity Carousel Modal */}
+      <AddCelebrityCarouselModal
+        isOpen={isAddCarouselModalOpen}
+        onClose={() => setIsAddCarouselModalOpen(false)}
+        onSubmit={handleAddCarouselItem}
+        loading={addCarouselLoading}
+      />
+
+      {/* Edit Celebrity Carousel Modal */}
+      <EditCelebrityCarouselModal
+        isOpen={isEditCarouselModalOpen}
+        onClose={() => {
+          setIsEditCarouselModalOpen(false)
+          setSelectedCarouselItem(null)
+        }}
+        onSubmit={handleEditCarouselItem}
+        loading={editCarouselLoading}
+        data={selectedCarouselItem}
+      />
+      <ConfirmationModal
+        isOpen={deleteConfirm.open}
+        onClose={() => setDeleteConfirm({ open: false, id: null, title: '' })}
+        onConfirm={handleDeleteCarouselItem}
+        title="Delete Carousel Item"
+        message={`Are you sure you want to delete "${deleteConfirm.title}"? This action cannot be undone.`}
+        confirmText={deleteLoading ? 'Deleting...' : 'Delete'}
+        cancelText="Cancel"
+        confirmColorScheme="red"
+        icon="delete"
+      />
     </div>
   )
 }
