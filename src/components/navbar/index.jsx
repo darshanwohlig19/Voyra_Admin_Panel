@@ -279,7 +279,7 @@ const Navbar = (props) => {
         {/* Profile & Dropdown */}
         <Dropdown
           button={
-            <span className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-indigo uppercase text-white dark:bg-shadeBlue">
+            <span className="flex h-10 w-10 cursor-pointer items-center justify-center rounded-full bg-black uppercase text-white dark:bg-shadeBlue">
               {userName?.charAt(0)}
             </span>
           }

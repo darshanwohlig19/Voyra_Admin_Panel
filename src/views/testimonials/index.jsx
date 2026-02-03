@@ -10,12 +10,31 @@ import {
   FaPlus,
   FaTimes,
 } from 'react-icons/fa'
+import AddTestimonialModal from 'components/testimonial/AddTestimonialModal'
+import EditTestimonialModal from 'components/testimonial/EditTestimonialModal'
+import EditSectionModal from 'components/testimonial/EditSectionModal'
+import ConfirmationModal from 'components/modal/ConfirmationModal'
+import { useToaster } from 'common/Toaster'
 
 const Testimonials = () => {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [lightboxImage, setLightboxImage] = useState(null)
+  const [isAddModalOpen, setIsAddModalOpen] = useState(false)
+  const [submitLoading, setSubmitLoading] = useState(false)
+  const [deleteConfirm, setDeleteConfirm] = useState({
+    open: false,
+    id: null,
+    name: '',
+  })
+  const [deleteLoading, setDeleteLoading] = useState(false)
+  const [isEditModalOpen, setIsEditModalOpen] = useState(false)
+  const [editTestimonialData, setEditTestimonialData] = useState(null)
+  const [editLoading, setEditLoading] = useState(false)
+  const [isSectionModalOpen, setIsSectionModalOpen] = useState(false)
+  const [sectionLoading, setSectionLoading] = useState(false)
   const { apiCall } = ApiCaller()
+  const { addToast } = useToaster()
 
   useEffect(() => {
     fetchTestimonials()
@@ -32,6 +51,197 @@ const Testimonials = () => {
       console.error('Error fetching testimonials:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleAddTestimonial = async (formData) => {
+    try {
+      setSubmitLoading(true)
+      const response = await apiCall(
+        'post',
+        apiConfig.CREATE_TESTIMONIAL,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Testimonial created successfully',
+        })
+        setIsAddModalOpen(false)
+        fetchTestimonials()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to create testimonial',
+        })
+      }
+    } catch (error) {
+      console.error('Error creating testimonial:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error creating testimonial',
+      })
+    } finally {
+      setSubmitLoading(false)
+    }
+  }
+
+  const handleDeleteTestimonial = async () => {
+    if (!deleteConfirm.id) return
+    try {
+      setDeleteLoading(true)
+      const response = await apiCall(
+        'delete',
+        `${apiConfig.DELETE_TESTIMONIAL_ITEM}/${deleteConfirm.id}`
+      )
+      if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Testimonial deleted successfully',
+        })
+        setDeleteConfirm({ open: false, id: null, name: '' })
+        fetchTestimonials()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to delete testimonial',
+        })
+      }
+    } catch (error) {
+      console.error('Error deleting testimonial:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error deleting testimonial',
+      })
+    } finally {
+      setDeleteLoading(false)
+    }
+  }
+
+  const openEditModal = (testimonial) => {
+    setEditTestimonialData(testimonial)
+    setIsEditModalOpen(true)
+  }
+
+  const handleEditTestimonial = async (testimonialId, formData) => {
+    try {
+      setEditLoading(true)
+      const response = await apiCall(
+        'put',
+        `${apiConfig.UPDATE_TESTIMONIAL_ITEM}/${testimonialId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Testimonial updated successfully',
+        })
+        setIsEditModalOpen(false)
+        setEditTestimonialData(null)
+        fetchTestimonials()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update testimonial',
+        })
+      }
+    } catch (error) {
+      console.error('Error updating testimonial:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating testimonial',
+      })
+    } finally {
+      setEditLoading(false)
+    }
+  }
+
+  const handleDeleteTestimonialImage = async (testimonialId, fileId) => {
+    try {
+      const response = await apiCall(
+        'delete',
+        `${apiConfig.DELETE_TESTIMONIAL_IMAGE}/${testimonialId}/${fileId}`
+      )
+      if (response?.data?.code === 2000 || response?.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Image deleted successfully',
+        })
+        return true
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to delete image',
+        })
+        return false
+      }
+    } catch (error) {
+      console.error('Error deleting image:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error deleting image',
+      })
+      return false
+    }
+  }
+
+  const handleEditSection = async (formData) => {
+    try {
+      setSectionLoading(true)
+      const response = await apiCall(
+        'put',
+        apiConfig.UPDATE_TESTIMONIAL_SECTION,
+        formData
+      )
+      if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Section updated successfully',
+        })
+        setIsSectionModalOpen(false)
+        fetchTestimonials()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to update section',
+        })
+      }
+    } catch (error) {
+      console.error('Error updating section:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating section',
+      })
+    } finally {
+      setSectionLoading(false)
     }
   }
 
@@ -85,14 +295,14 @@ const Testimonials = () => {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => console.log('Edit header')}
+              onClick={() => setIsSectionModalOpen(true)}
               className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
             >
               <FaEdit className="h-4 w-4" />
               Edit
             </button>
             <button
-              onClick={() => console.log('Add testimonial')}
+              onClick={() => setIsAddModalOpen(true)}
               className="flex items-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600"
             >
               <FaPlus className="h-4 w-4" />
@@ -123,14 +333,20 @@ const Testimonials = () => {
                 </div>
                 <div className="flex gap-2">
                   <button
-                    onClick={() => console.log('Edit', testimonial._id)}
+                    onClick={() => openEditModal(testimonial)}
                     className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                   >
                     <FaEdit className="h-3 w-3" />
                     Edit
                   </button>
                   <button
-                    onClick={() => console.log('Delete', testimonial._id)}
+                    onClick={() =>
+                      setDeleteConfirm({
+                        open: true,
+                        id: testimonial._id,
+                        name: testimonial.clientName,
+                      })
+                    }
                     className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
                   >
                     <FaTrash className="h-3 w-3" />
@@ -203,6 +419,49 @@ const Testimonials = () => {
           />
         </div>
       )}
+
+      {/* Add Testimonial Modal */}
+      <AddTestimonialModal
+        isOpen={isAddModalOpen}
+        onClose={() => setIsAddModalOpen(false)}
+        onSubmit={handleAddTestimonial}
+        loading={submitLoading}
+      />
+
+      {/* Edit Testimonial Modal */}
+      <EditTestimonialModal
+        isOpen={isEditModalOpen}
+        onClose={() => {
+          setIsEditModalOpen(false)
+          setEditTestimonialData(null)
+        }}
+        onSubmit={handleEditTestimonial}
+        onDeleteImage={handleDeleteTestimonialImage}
+        loading={editLoading}
+        testimonialData={editTestimonialData}
+      />
+
+      {/* Edit Section Modal */}
+      <EditSectionModal
+        isOpen={isSectionModalOpen}
+        onClose={() => setIsSectionModalOpen(false)}
+        onSubmit={handleEditSection}
+        loading={sectionLoading}
+        sectionData={data}
+      />
+
+      {/* Delete Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteConfirm.open}
+        onClose={() => setDeleteConfirm({ open: false, id: null, name: '' })}
+        onConfirm={handleDeleteTestimonial}
+        title="Delete Testimonial"
+        message={`Are you sure you want to delete testimonial from "${deleteConfirm.name}"? This action cannot be undone.`}
+        confirmText={deleteLoading ? 'Deleting...' : 'Delete'}
+        cancelText="Cancel"
+        confirmColorScheme="red"
+        icon="delete"
+      />
     </div>
   )
 }

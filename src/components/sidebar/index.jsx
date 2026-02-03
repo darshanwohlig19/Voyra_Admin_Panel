@@ -133,7 +133,7 @@ function Sidebar(props) {
                       alt="Voyra Logo"
                       className="h-9 w-9"
                     />
-                    <span className="font-xs text-[24px] text-indigo dark:text-white">
+                    <span className="font-xs text-[24px] text-black dark:text-white">
                       Voyra Events
                     </span>
                   </Link>

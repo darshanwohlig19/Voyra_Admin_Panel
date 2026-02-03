@@ -35,6 +35,11 @@ const config = {
 
   // Testimonials APIs
   GET_TESTIMONIALS: baseUrl + '/api/testimonial/getTestimonial',
+  CREATE_TESTIMONIAL: baseUrl + '/api/testimonial/createTestimonial',
+  UPDATE_TESTIMONIAL_SECTION: baseUrl + '/api/testimonial/updateTestimonial',
+  UPDATE_TESTIMONIAL_ITEM: baseUrl + '/api/testimonial/updateTestimonialItem',
+  DELETE_TESTIMONIAL_ITEM: baseUrl + '/api/testimonial/deleteTestimonialItem',
+  DELETE_TESTIMONIAL_IMAGE: baseUrl + '/api/testimonial/deleteTestimonialImage',
 
   // Blog APIs
   GET_BLOGS: baseUrl + '/api/blog/getBlog',
