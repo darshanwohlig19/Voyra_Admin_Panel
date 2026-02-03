@@ -30,6 +30,13 @@ const config = {
   GET_STARDOM: baseUrl + '/api/stardomSection/getStardom',
   GET_CELEBRITY_CAROUSEL: baseUrl + '/api/celebrityCarouselSection/getCarousel',
 
+  // Spotlight Section APIs
+  GET_SPOTLIGHT: baseUrl + '/api/spotlightSection/getSpotlight',
+  UPDATE_SPOTLIGHT_SECTION: baseUrl + '/api/spotlightSection/updateSpotlight',
+  ADD_SPOTLIGHT_CELEBRITY: baseUrl + '/api/spotlightSection/addCelebrity',
+  UPDATE_SPOTLIGHT_CELEBRITY: baseUrl + '/api/spotlightSection/updateCelebrity',
+  DELETE_SPOTLIGHT_CELEBRITY: baseUrl + '/api/spotlightSection/deleteCelebrity',
+
   // Gallery APIs
   GET_GALLERY: baseUrl + '/api/snapshotGallery/getSnapshotGallery',
 

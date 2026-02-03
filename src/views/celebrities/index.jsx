@@ -6,6 +6,10 @@ import { FaEdit, FaTrash, FaPlus, FaTimes } from 'react-icons/fa'
 const Celebrities = () => {
   const [limelightData, setLimelightData] = useState(null)
   const [artistData, setArtistData] = useState(null)
+  const [spotlightData, setSpotlightData] = useState(null)
+  const [spotlightCelebrities, setSpotlightCelebrities] = useState([])
+  const [selectedType, setSelectedType] = useState(null)
+  const [spotlightLoading, setSpotlightLoading] = useState(false)
   const [stardomData, setStardomData] = useState(null)
   const [carouselData, setCarouselData] = useState(null)
   const [loading, setLoading] = useState(true)
@@ -16,13 +20,20 @@ const Celebrities = () => {
     fetchAllSections()
   }, [])
 
+  useEffect(() => {
+    if (selectedType) {
+      fetchSpotlightByType(selectedType)
+    }
+  }, [selectedType])
+
   const fetchAllSections = async () => {
     try {
       setLoading(true)
-      const [limelightRes, artistRes, stardomRes, carouselRes] =
+      const [limelightRes, artistRes, spotlightRes, stardomRes, carouselRes] =
         await Promise.all([
           apiCall('get', apiConfig.GET_CURRENT_LIMELIGHT),
           apiCall('get', apiConfig.GET_ARTIST_COLLECTION),
+          apiCall('get', apiConfig.GET_SPOTLIGHT),
           apiCall('get', apiConfig.GET_STARDOM),
           apiCall('get', apiConfig.GET_CELEBRITY_CAROUSEL),
         ])
@@ -32,6 +43,13 @@ const Celebrities = () => {
       }
       if (artistRes?.data?.code === 2000) {
         setArtistData(artistRes.data.data[0])
+      }
+      if (spotlightRes?.data?.code === 2000) {
+        const data = spotlightRes.data.data[0]
+        setSpotlightData(data)
+        if (data?.types?.length > 0) {
+          setSelectedType(data.types[0])
+        }
       }
       if (stardomRes?.data?.code === 2000) {
         setStardomData(stardomRes.data.data[0])
@@ -43,6 +61,24 @@ const Celebrities = () => {
       console.error('Error fetching celebrities data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const fetchSpotlightByType = async (type) => {
+    try {
+      setSpotlightLoading(true)
+      const response = await apiCall(
+        'get',
+        `${apiConfig.GET_SPOTLIGHT}?celebrityType=${type}`
+      )
+      if (response?.data?.code === 2000) {
+        const data = response.data.data[0]
+        setSpotlightCelebrities(data?.celebrity || [])
+      }
+    } catch (error) {
+      console.error('Error fetching spotlight celebrities:', error)
+    } finally {
+      setSpotlightLoading(false)
     }
   }
 
@@ -200,7 +236,120 @@ const Celebrities = () => {
         </div>
       </div>
 
-      {/* Section 3: Where Stardom Meets Your Story */}
+      {/* Section 3: Behind the Spotlight */}
+      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+        <div className="flex items-start justify-between">
+          <div>
+            <h2 className="text-xl font-bold text-navy-700 dark:text-white">
+              {spotlightData?.title || 'Behind the Spotlight'}
+            </h2>
+            <p className="mt-2 text-gray-600 dark:text-gray-400">
+              {spotlightData?.description ||
+                'Manage spotlight celebrities here.'}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <button
+              onClick={() => console.log('Edit spotlight section')}
+              className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            >
+              <FaEdit className="h-4 w-4" />
+              Edit
+            </button>
+            <button
+              onClick={() => console.log('Add spotlight celebrity')}
+              className="flex items-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+            >
+              <FaPlus className="h-4 w-4" />
+              Add
+            </button>
+          </div>
+        </div>
+
+        <hr className="my-4 border-gray-200 dark:border-navy-600" />
+
+        {/* Type Filter Tabs */}
+        <div className="mb-4 flex flex-wrap gap-2">
+          {spotlightData?.types?.map((type) => (
+            <button
+              key={type}
+              onClick={() => setSelectedType(type)}
+              className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
+                selectedType === type
+                  ? 'bg-blue-500 text-white'
+                  : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-navy-600 dark:text-gray-300 dark:hover:bg-navy-500'
+              }`}
+            >
+              {type}
+            </button>
+          ))}
+        </div>
+
+        {/* Celebrity Cards Grid */}
+        {spotlightLoading ? (
+          <div className="flex items-center justify-center py-8">
+            <p className="text-gray-600 dark:text-gray-400">Loading...</p>
+          </div>
+        ) : (
+          <div className="grid grid-cols-2 gap-4 md:grid-cols-3 lg:grid-cols-4 xl:grid-cols-6">
+            {spotlightCelebrities.map((celeb, index) => (
+              <div
+                key={celeb._id || index}
+                className="group overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              >
+                {/* Celebrity Image */}
+                <div className="relative">
+                  <img
+                    src={celeb.image?.url}
+                    alt={celeb.image?.altText || celeb.name}
+                    className="h-40 w-full cursor-pointer object-cover transition-transform duration-300 group-hover:scale-105"
+                    onClick={() => setLightboxImage(celeb.image?.url)}
+                  />
+
+                  {/* Overlay with Actions */}
+                  <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                    <button
+                      onClick={() => console.log('Edit celebrity', celeb._id)}
+                      className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                    >
+                      <FaEdit className="h-3 w-3" />
+                      Edit
+                    </button>
+                    <button
+                      onClick={() => console.log('Delete celebrity', celeb._id)}
+                      className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
+                    >
+                      <FaTrash className="h-3 w-3" />
+                      Delete
+                    </button>
+                  </div>
+
+                  {/* Type Badge */}
+                  <div className="absolute left-2 top-2 rounded-full bg-blue-500 px-2 py-0.5 text-xs font-medium text-white">
+                    {celeb.type}
+                  </div>
+                </div>
+
+                {/* Celebrity Name */}
+                <div className="p-3">
+                  <h3 className="text-center text-sm font-semibold text-navy-700 dark:text-white">
+                    {celeb.name}
+                  </h3>
+                </div>
+              </div>
+            ))}
+          </div>
+        )}
+
+        {/* Empty State */}
+        {!spotlightLoading && spotlightCelebrities.length === 0 && (
+          <p className="text-center text-gray-500 dark:text-gray-400">
+            No celebrities found for this type.
+          </p>
+        )}
+      </div>
+
+      {/* Section 4: Where Stardom Meets Your Story */}
       <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
@@ -270,7 +419,7 @@ const Celebrities = () => {
         </div>
       </div>
 
-      {/* Section 4: Celebrity Carousel */}
+      {/* Section 5: Celebrity Carousel */}
       <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
