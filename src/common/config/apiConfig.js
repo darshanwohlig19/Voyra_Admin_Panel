@@ -31,6 +31,8 @@ const config = {
     baseUrl + '/api/currentLimelightSection/getCurrentLimelight',
   GET_ARTIST_COLLECTION:
     baseUrl + '/api/artistCollectionSection/getArtistCollection',
+  UPDATE_ARTIST_COLLECTION:
+    baseUrl + '/api/artistCollectionSection/updateArtistCollection',
   GET_STARDOM: baseUrl + '/api/stardomSection/getStardom',
   UPDATE_STARDOM: baseUrl + '/api/stardomSection/updateStardom',
   GET_CELEBRITY_CAROUSEL: baseUrl + '/api/celebrityCarouselSection/getCarousel',

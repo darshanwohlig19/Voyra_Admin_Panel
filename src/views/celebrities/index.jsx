@@ -6,6 +6,8 @@ import AddCelebrityCarouselModal from 'components/celebrities/AddCelebrityCarous
 import EditCelebrityCarouselModal from 'components/celebrities/EditCelebrityCarouselModal'
 import EditStardomModal from 'components/celebrities/EditStardomModal'
 import EditStardomEventModal from 'components/celebrities/EditStardomEventModal'
+import EditArtistCollectionModal from 'components/celebrities/EditArtistCollectionModal'
+import EditArtistCollectionImageModal from 'components/celebrities/EditArtistCollectionImageModal'
 import { useToaster } from 'common/Toaster'
 import ConfirmationModal from 'components/modal/ConfirmationModal'
 
@@ -37,6 +39,12 @@ const Celebrities = () => {
     useState(false)
   const [editStardomEventLoading, setEditStardomEventLoading] = useState(false)
   const [selectedStardomEvent, setSelectedStardomEvent] = useState(null)
+  const [isEditArtistModalOpen, setIsEditArtistModalOpen] = useState(false)
+  const [editArtistLoading, setEditArtistLoading] = useState(false)
+  const [isEditArtistImageModalOpen, setIsEditArtistImageModalOpen] =
+    useState(false)
+  const [editArtistImageLoading, setEditArtistImageLoading] = useState(false)
+  const [selectedArtistImage, setSelectedArtistImage] = useState(null)
   const { apiCall } = ApiCaller()
   const { addToast } = useToaster()
 
@@ -310,6 +318,94 @@ const Celebrities = () => {
     setIsEditStardomEventModalOpen(true)
   }
 
+  const handleEditArtistCollection = async (formData) => {
+    try {
+      setEditArtistLoading(true)
+      const response = await apiCall(
+        'put',
+        apiConfig.UPDATE_ARTIST_COLLECTION,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000 || response?.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Artist collection updated successfully',
+        })
+        setIsEditArtistModalOpen(false)
+        fetchAllSections()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update artist collection',
+        })
+      }
+    } catch (error) {
+      console.error('Error updating artist collection:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating artist collection',
+      })
+    } finally {
+      setEditArtistLoading(false)
+    }
+  }
+
+  const handleEditArtistImage = async (formData) => {
+    try {
+      setEditArtistImageLoading(true)
+      const response = await apiCall(
+        'put',
+        apiConfig.UPDATE_ARTIST_COLLECTION,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000 || response?.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Artist image updated successfully',
+        })
+        setIsEditArtistImageModalOpen(false)
+        setSelectedArtistImage(null)
+        fetchAllSections()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update artist image',
+        })
+      }
+    } catch (error) {
+      console.error('Error updating artist image:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating artist image',
+      })
+    } finally {
+      setEditArtistImageLoading(false)
+    }
+  }
+
+  const openEditArtistImageModal = (image) => {
+    setSelectedArtistImage(image)
+    setIsEditArtistImageModalOpen(true)
+  }
+
   if (loading) {
     return (
       <div className="mt-3 h-full w-full">
@@ -398,7 +494,7 @@ const Celebrities = () => {
             </h2>
           </div>
           <button
-            onClick={() => console.log('Edit artist section')}
+            onClick={() => setIsEditArtistModalOpen(true)}
             className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           >
             <FaEdit className="h-4 w-4" />
@@ -427,18 +523,11 @@ const Celebrities = () => {
                 {/* Overlay with Actions */}
                 <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                   <button
-                    onClick={() => console.log('Edit artist', artist._id)}
+                    onClick={() => openEditArtistImageModal(artist)}
                     className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                   >
                     <FaEdit className="h-3 w-3" />
                     Edit
-                  </button>
-                  <button
-                    onClick={() => console.log('Delete artist', artist._id)}
-                    className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
-                  >
-                    <FaTrash className="h-3 w-3" />
-                    Delete
                   </button>
                 </div>
               </div>
@@ -787,6 +876,27 @@ const Celebrities = () => {
         onSubmit={handleEditStardomEvent}
         loading={editStardomEventLoading}
         eventData={selectedStardomEvent}
+      />
+
+      {/* Edit Artist Collection Modal */}
+      <EditArtistCollectionModal
+        isOpen={isEditArtistModalOpen}
+        onClose={() => setIsEditArtistModalOpen(false)}
+        onSubmit={handleEditArtistCollection}
+        loading={editArtistLoading}
+        artistData={artistData}
+      />
+
+      {/* Edit Artist Collection Image Modal */}
+      <EditArtistCollectionImageModal
+        isOpen={isEditArtistImageModalOpen}
+        onClose={() => {
+          setIsEditArtistImageModalOpen(false)
+          setSelectedArtistImage(null)
+        }}
+        onSubmit={handleEditArtistImage}
+        loading={editArtistImageLoading}
+        imageData={selectedArtistImage}
       />
     </div>
   )
