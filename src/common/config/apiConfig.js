@@ -29,6 +29,10 @@ const config = {
   // Celebrities APIs
   GET_CURRENT_LIMELIGHT:
     baseUrl + '/api/currentLimelightSection/getCurrentLimelight',
+  UPDATE_CURRENT_LIMELIGHT:
+    baseUrl + '/api/currentLimelightSection/updateCurrentLimelight',
+  DELETE_LIMELIGHT_IMAGE:
+    baseUrl + '/api/currentLimelightSection/deleteCurrentLimelight',
   GET_ARTIST_COLLECTION:
     baseUrl + '/api/artistCollectionSection/getArtistCollection',
   UPDATE_ARTIST_COLLECTION:

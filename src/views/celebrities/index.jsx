@@ -8,6 +8,9 @@ import EditStardomModal from 'components/celebrities/EditStardomModal'
 import EditStardomEventModal from 'components/celebrities/EditStardomEventModal'
 import EditArtistCollectionModal from 'components/celebrities/EditArtistCollectionModal'
 import EditArtistCollectionImageModal from 'components/celebrities/EditArtistCollectionImageModal'
+import EditLimelightModal from 'components/celebrities/EditLimelightModal'
+import AddLimelightImageModal from 'components/celebrities/AddLimelightImageModal'
+import EditLimelightImageModal from 'components/celebrities/EditLimelightImageModal'
 import { useToaster } from 'common/Toaster'
 import ConfirmationModal from 'components/modal/ConfirmationModal'
 
@@ -45,6 +48,25 @@ const Celebrities = () => {
     useState(false)
   const [editArtistImageLoading, setEditArtistImageLoading] = useState(false)
   const [selectedArtistImage, setSelectedArtistImage] = useState(null)
+  const [isEditLimelightModalOpen, setIsEditLimelightModalOpen] =
+    useState(false)
+  const [editLimelightLoading, setEditLimelightLoading] = useState(false)
+  const [isAddLimelightImageModalOpen, setIsAddLimelightImageModalOpen] =
+    useState(false)
+  const [addLimelightImageLoading, setAddLimelightImageLoading] =
+    useState(false)
+  const [isEditLimelightImageModalOpen, setIsEditLimelightImageModalOpen] =
+    useState(false)
+  const [editLimelightImageLoading, setEditLimelightImageLoading] =
+    useState(false)
+  const [selectedLimelightImage, setSelectedLimelightImage] = useState(null)
+  const [deleteLimelightImageConfirm, setDeleteLimelightImageConfirm] =
+    useState({
+      open: false,
+      id: null,
+    })
+  const [deleteLimelightImageLoading, setDeleteLimelightImageLoading] =
+    useState(false)
   const { apiCall } = ApiCaller()
   const { addToast } = useToaster()
 
@@ -406,6 +428,168 @@ const Celebrities = () => {
     setIsEditArtistImageModalOpen(true)
   }
 
+  const handleEditLimelight = async (formData) => {
+    try {
+      setEditLimelightLoading(true)
+      const response = await apiCall(
+        'put',
+        apiConfig.UPDATE_CURRENT_LIMELIGHT,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000 || response?.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Limelight section updated successfully',
+        })
+        setIsEditLimelightModalOpen(false)
+        fetchAllSections()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update limelight section',
+        })
+      }
+    } catch (error) {
+      console.error('Error updating limelight section:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating limelight section',
+      })
+    } finally {
+      setEditLimelightLoading(false)
+    }
+  }
+
+  const handleAddLimelightImage = async (formData) => {
+    try {
+      setAddLimelightImageLoading(true)
+      const response = await apiCall(
+        'put',
+        apiConfig.UPDATE_CURRENT_LIMELIGHT,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000 || response?.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Image added successfully',
+        })
+        setIsAddLimelightImageModalOpen(false)
+        fetchAllSections()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to add image',
+        })
+      }
+    } catch (error) {
+      console.error('Error adding limelight image:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error adding image',
+      })
+    } finally {
+      setAddLimelightImageLoading(false)
+    }
+  }
+
+  const handleEditLimelightImage = async (formData) => {
+    try {
+      setEditLimelightImageLoading(true)
+      const response = await apiCall(
+        'put',
+        apiConfig.UPDATE_CURRENT_LIMELIGHT,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000 || response?.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Image updated successfully',
+        })
+        setIsEditLimelightImageModalOpen(false)
+        setSelectedLimelightImage(null)
+        fetchAllSections()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to update image',
+        })
+      }
+    } catch (error) {
+      console.error('Error updating limelight image:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating image',
+      })
+    } finally {
+      setEditLimelightImageLoading(false)
+    }
+  }
+
+  const openEditLimelightImageModal = (image) => {
+    setSelectedLimelightImage(image)
+    setIsEditLimelightImageModalOpen(true)
+  }
+
+  const handleDeleteLimelightImage = async () => {
+    if (!deleteLimelightImageConfirm.id) return
+    try {
+      setDeleteLimelightImageLoading(true)
+      const response = await apiCall(
+        'delete',
+        `${apiConfig.DELETE_LIMELIGHT_IMAGE}/${deleteLimelightImageConfirm.id}`
+      )
+      if (response?.data?.code === 2000 || response?.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Image deleted successfully',
+        })
+        setDeleteLimelightImageConfirm({ open: false, id: null })
+        fetchAllSections()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to delete image',
+        })
+      }
+    } catch (error) {
+      console.error('Error deleting limelight image:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error deleting image',
+      })
+    } finally {
+      setDeleteLimelightImageLoading(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="mt-3 h-full w-full">
@@ -431,14 +615,14 @@ const Celebrities = () => {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => console.log('Edit limelight section')}
+              onClick={() => setIsEditLimelightModalOpen(true)}
               className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
             >
               <FaEdit className="h-4 w-4" />
               Edit
             </button>
             <button
-              onClick={() => console.log('Add limelight image')}
+              onClick={() => setIsAddLimelightImageModalOpen(true)}
               className="flex items-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600"
             >
               <FaPlus className="h-4 w-4" />
@@ -466,14 +650,19 @@ const Celebrities = () => {
               {/* Overlay with Actions */}
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
-                  onClick={() => console.log('Edit image', image._id)}
+                  onClick={() => openEditLimelightImageModal(image)}
                   className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit
                 </button>
                 <button
-                  onClick={() => console.log('Delete image', image._id)}
+                  onClick={() =>
+                    setDeleteLimelightImageConfirm({
+                      open: true,
+                      id: image._id,
+                    })
+                  }
                   className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
                 >
                   <FaTrash className="h-3 w-3" />
@@ -897,6 +1086,50 @@ const Celebrities = () => {
         onSubmit={handleEditArtistImage}
         loading={editArtistImageLoading}
         imageData={selectedArtistImage}
+      />
+
+      {/* Edit Limelight Section Modal */}
+      <EditLimelightModal
+        isOpen={isEditLimelightModalOpen}
+        onClose={() => setIsEditLimelightModalOpen(false)}
+        onSubmit={handleEditLimelight}
+        loading={editLimelightLoading}
+        limelightData={limelightData}
+      />
+
+      {/* Add Limelight Image Modal */}
+      <AddLimelightImageModal
+        isOpen={isAddLimelightImageModalOpen}
+        onClose={() => setIsAddLimelightImageModalOpen(false)}
+        onSubmit={handleAddLimelightImage}
+        loading={addLimelightImageLoading}
+      />
+
+      {/* Edit Limelight Image Modal */}
+      <EditLimelightImageModal
+        isOpen={isEditLimelightImageModalOpen}
+        onClose={() => {
+          setIsEditLimelightImageModalOpen(false)
+          setSelectedLimelightImage(null)
+        }}
+        onSubmit={handleEditLimelightImage}
+        loading={editLimelightImageLoading}
+        imageData={selectedLimelightImage}
+      />
+
+      {/* Delete Limelight Image Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteLimelightImageConfirm.open}
+        onClose={() =>
+          setDeleteLimelightImageConfirm({ open: false, id: null })
+        }
+        onConfirm={handleDeleteLimelightImage}
+        title="Delete Limelight Image"
+        message="Are you sure you want to delete this image? This action cannot be undone."
+        confirmText={deleteLimelightImageLoading ? 'Deleting...' : 'Delete'}
+        cancelText="Cancel"
+        confirmColorScheme="red"
+        icon="delete"
       />
     </div>
   )
