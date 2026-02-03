@@ -141,24 +141,54 @@ const Navbar = (props) => {
    */
   const handleLogout = async () => {
     try {
-      // Clear all auth data from localStorage
+      // Call logout API
+      const response = await apiService.apiCall('post', apiConfig.LOGOUT_API)
+
+      if (response?.data?.code === 2000) {
+        // Clear all auth data from localStorage
+        localStorage.removeItem('userData')
+        localStorage.removeItem('darkMode')
+        localStorage.removeItem('bearerToken')
+        localStorage.removeItem('appType')
+        localStorage.removeItem('userName')
+
+        // Clear all auth-related cookies
+        clearAuthCookies()
+
+        // Navigate and add a success notification
+        navigate('/sign-in')
+        addToast({
+          title: 'Successfully logged out',
+          type: 'success',
+        })
+      } else {
+        // Even if API fails, clear local data and redirect
+        localStorage.removeItem('userData')
+        localStorage.removeItem('darkMode')
+        localStorage.removeItem('bearerToken')
+        localStorage.removeItem('appType')
+        localStorage.removeItem('userName')
+        clearAuthCookies()
+        navigate('/sign-in')
+        addToast({
+          title: 'Successfully logged out',
+          type: 'success',
+        })
+      }
+    } catch (error) {
+      console.error('Logout error:', error)
+      // Even if API call fails, clear local data and redirect
       localStorage.removeItem('userData')
       localStorage.removeItem('darkMode')
       localStorage.removeItem('bearerToken')
       localStorage.removeItem('appType')
       localStorage.removeItem('userName')
-
-      // Clear all auth-related cookies
       clearAuthCookies()
-
-      // Navigate and add a success notification
       navigate('/sign-in')
       addToast({
         title: 'Successfully logged out',
         type: 'success',
       })
-    } catch (error) {
-      console.error('Logout error:', error)
     }
   }
 
