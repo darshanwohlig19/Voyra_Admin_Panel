@@ -50,13 +50,28 @@ const Celebrities = () => {
         `${apiConfig.DELETE_CELEBRITY_CAROUSEL}/${deleteConfirm.id}`
       )
       if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Carousel item deleted successfully',
+        })
         setDeleteConfirm({ open: false, id: null, title: '' })
         fetchAllSections()
       } else {
-        console.error('Failed to delete blog:', response?.data?.message)
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to delete carousel item',
+        })
       }
     } catch (error) {
-      console.error('Error deleting blog:', error)
+      console.error('Error deleting carousel item:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error deleting carousel item',
+      })
     } finally {
       setDeleteLoading(false)
     }

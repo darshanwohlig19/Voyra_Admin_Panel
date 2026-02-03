@@ -218,15 +218,16 @@ const EditCelebrityCarouselModal = ({
                 />
               </label>
             ) : (
-              <div className="relative">
+              <div className="group relative">
                 <img
                   src={imagePreview}
                   alt="Preview"
                   className="h-48 w-full rounded-lg object-cover"
                 />
-                <div className="absolute right-2 top-2 flex gap-2">
-                  <label className="cursor-pointer rounded-full bg-blue-500 p-1 text-white hover:bg-blue-600">
-                    <Upload className="h-4 w-4" />
+                {/* Hover Overlay with Change Image Button */}
+                <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                  <label className="cursor-pointer rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+                    Change Image
                     <input
                       type="file"
                       accept="image/*"
@@ -234,15 +235,6 @@ const EditCelebrityCarouselModal = ({
                       className="hidden"
                     />
                   </label>
-                  {image && (
-                    <button
-                      type="button"
-                      onClick={removeImage}
-                      className="rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
-                    >
-                      <X className="h-4 w-4" />
-                    </button>
-                  )}
                 </div>
               </div>
             )}
