@@ -32,6 +32,7 @@ const config = {
   GET_ARTIST_COLLECTION:
     baseUrl + '/api/artistCollectionSection/getArtistCollection',
   GET_STARDOM: baseUrl + '/api/stardomSection/getStardom',
+  UPDATE_STARDOM: baseUrl + '/api/stardomSection/updateStardom',
   GET_CELEBRITY_CAROUSEL: baseUrl + '/api/celebrityCarouselSection/getCarousel',
   CREATE_CELEBRITY_CAROUSEL:
     baseUrl + '/api/celebrityCarouselSection/createCarousel',

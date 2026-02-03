@@ -4,6 +4,8 @@ import apiConfig from 'common/config/apiConfig'
 import { FaEdit, FaTrash, FaPlus, FaTimes } from 'react-icons/fa'
 import AddCelebrityCarouselModal from 'components/celebrities/AddCelebrityCarouselModal'
 import EditCelebrityCarouselModal from 'components/celebrities/EditCelebrityCarouselModal'
+import EditStardomModal from 'components/celebrities/EditStardomModal'
+import EditStardomEventModal from 'components/celebrities/EditStardomEventModal'
 import { useToaster } from 'common/Toaster'
 import ConfirmationModal from 'components/modal/ConfirmationModal'
 
@@ -29,6 +31,12 @@ const Celebrities = () => {
     id: null,
     title: '',
   })
+  const [isEditStardomModalOpen, setIsEditStardomModalOpen] = useState(false)
+  const [editStardomLoading, setEditStardomLoading] = useState(false)
+  const [isEditStardomEventModalOpen, setIsEditStardomEventModalOpen] =
+    useState(false)
+  const [editStardomEventLoading, setEditStardomEventLoading] = useState(false)
+  const [selectedStardomEvent, setSelectedStardomEvent] = useState(null)
   const { apiCall } = ApiCaller()
   const { addToast } = useToaster()
 
@@ -217,6 +225,89 @@ const Celebrities = () => {
   const openEditCarouselModal = (item) => {
     setSelectedCarouselItem(item)
     setIsEditCarouselModalOpen(true)
+  }
+
+  const handleEditStardom = async (data) => {
+    try {
+      setEditStardomLoading(true)
+      const response = await apiCall(
+        'put',
+        `${apiConfig.UPDATE_STARDOM}/${stardomData._id}`,
+        data
+      )
+      if (response?.data?.code === 2000 || response?.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Stardom section updated successfully',
+        })
+        setIsEditStardomModalOpen(false)
+        fetchAllSections()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update stardom section',
+        })
+      }
+    } catch (error) {
+      console.error('Error updating stardom section:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating stardom section',
+      })
+    } finally {
+      setEditStardomLoading(false)
+    }
+  }
+
+  const handleEditStardomEvent = async (formData) => {
+    try {
+      setEditStardomEventLoading(true)
+      const response = await apiCall(
+        'put',
+        `${apiConfig.UPDATE_STARDOM}/${stardomData._id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000 || response?.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Stardom event updated successfully',
+        })
+        setIsEditStardomEventModalOpen(false)
+        setSelectedStardomEvent(null)
+        fetchAllSections()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update stardom event',
+        })
+      }
+    } catch (error) {
+      console.error('Error updating stardom event:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating stardom event',
+      })
+    } finally {
+      setEditStardomEventLoading(false)
+    }
+  }
+
+  const openEditStardomEventModal = (event) => {
+    setSelectedStardomEvent(event)
+    setIsEditStardomEventModalOpen(true)
   }
 
   if (loading) {
@@ -490,7 +581,7 @@ const Celebrities = () => {
             </p>
           </div>
           <button
-            onClick={() => console.log('Edit stardom section')}
+            onClick={() => setIsEditStardomModalOpen(true)}
             className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           >
             <FaEdit className="h-4 w-4" />
@@ -529,18 +620,11 @@ const Celebrities = () => {
               {/* Actions */}
               <div className="mt-4 flex justify-center gap-2">
                 <button
-                  onClick={() => console.log('Edit event', event._id)}
+                  onClick={() => openEditStardomEventModal(event)}
                   className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit
-                </button>
-                <button
-                  onClick={() => console.log('Delete event', event._id)}
-                  className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
-                >
-                  <FaTrash className="h-3 w-3" />
-                  Delete
                 </button>
               </div>
             </div>
@@ -682,6 +766,27 @@ const Celebrities = () => {
         cancelText="Cancel"
         confirmColorScheme="red"
         icon="delete"
+      />
+
+      {/* Edit Stardom Section Modal */}
+      <EditStardomModal
+        isOpen={isEditStardomModalOpen}
+        onClose={() => setIsEditStardomModalOpen(false)}
+        onSubmit={handleEditStardom}
+        loading={editStardomLoading}
+        stardomData={stardomData}
+      />
+
+      {/* Edit Stardom Event Modal */}
+      <EditStardomEventModal
+        isOpen={isEditStardomEventModalOpen}
+        onClose={() => {
+          setIsEditStardomEventModalOpen(false)
+          setSelectedStardomEvent(null)
+        }}
+        onSubmit={handleEditStardomEvent}
+        loading={editStardomEventLoading}
+        eventData={selectedStardomEvent}
       />
     </div>
   )
