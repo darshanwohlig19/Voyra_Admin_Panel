@@ -56,6 +56,16 @@ const config = {
   DELETE_BLOG_ITEM: baseUrl + '/api/blog/deleteBlogItem',
 
   // Contact APIs
+  GET_ADDRESS: baseUrl + '/api/address/getMapUrl',
+  GET_COUNTRIES: baseUrl + '/api/country/getCountries',
+  BULK_CREATE_COUNTRIES: baseUrl + '/api/country/bulkCreateCountries',
+  DELETE_COUNTRY: baseUrl + '/api/country/deleteCountry',
+  GET_BUDGETS: baseUrl + '/api/budget/getBudgets',
+  BULK_CREATE_BUDGETS: baseUrl + '/api/budget/bulkCreateBudgets',
+  DELETE_BUDGET: baseUrl + '/api/budget/deleteBudget',
+  GET_EVENT_TYPES: baseUrl + '/api/eventType/getEventTypes',
+  BULK_CREATE_EVENT_TYPES: baseUrl + '/api/eventType/bulkCreateEventTypes',
+  DELETE_EVENT_TYPE: baseUrl + '/api/eventType/deleteEventType',
 }
 
 export default config
