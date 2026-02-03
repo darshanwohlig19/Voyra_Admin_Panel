@@ -1,13 +1,24 @@
 import React, { useState, useEffect } from 'react'
 import ApiCaller from 'common/services/apiServices'
 import apiConfig from 'common/config/apiConfig'
-import { FaEdit, FaTrash, FaTimes } from 'react-icons/fa'
+import { FaEdit, FaTimes } from 'react-icons/fa'
+import EditGalleryModal from 'components/gallery/EditGalleryModal'
+import EditGalleryImageModal from 'components/gallery/EditGalleryImageModal'
 
 const Gallery = () => {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [lightboxImage, setLightboxImage] = useState(null)
   const { apiCall } = ApiCaller()
+
+  // Edit section modal state
+  const [isEditSectionModalOpen, setIsEditSectionModalOpen] = useState(false)
+  const [editSectionLoading, setEditSectionLoading] = useState(false)
+
+  // Edit image modal state
+  const [isEditImageModalOpen, setIsEditImageModalOpen] = useState(false)
+  const [editImageData, setEditImageData] = useState(null)
+  const [editImageLoading, setEditImageLoading] = useState(false)
 
   useEffect(() => {
     fetchGallery()
@@ -24,6 +35,60 @@ const Gallery = () => {
       console.error('Error fetching gallery:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Handle edit section submit
+  const handleEditSectionSubmit = async (formData) => {
+    try {
+      setEditSectionLoading(true)
+      const response = await apiCall('put', apiConfig.UPDATE_GALLERY, formData)
+      if (response?.data?.code === 2000) {
+        setIsEditSectionModalOpen(false)
+        fetchGallery()
+      } else {
+        console.error(
+          'Failed to update gallery section:',
+          response?.data?.message
+        )
+      }
+    } catch (error) {
+      console.error('Error updating gallery section:', error)
+    } finally {
+      setEditSectionLoading(false)
+    }
+  }
+
+  // Handle edit image
+  const openEditImageModal = (image) => {
+    setEditImageData(image)
+    setIsEditImageModalOpen(true)
+  }
+
+  const handleEditImageSubmit = async (_imageId, formData) => {
+    try {
+      setEditImageLoading(true)
+      const response = await apiCall(
+        'put',
+        apiConfig.UPDATE_GALLERY,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000) {
+        setIsEditImageModalOpen(false)
+        setEditImageData(null)
+        fetchGallery()
+      } else {
+        console.error('Failed to update image:', response?.data?.message)
+      }
+    } catch (error) {
+      console.error('Error updating image:', error)
+    } finally {
+      setEditImageLoading(false)
     }
   }
 
@@ -56,7 +121,7 @@ const Gallery = () => {
             )}
           </div>
           <button
-            onClick={() => console.log('Edit header')}
+            onClick={() => setIsEditSectionModalOpen(true)}
             className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           >
             <FaEdit className="h-4 w-4" />
@@ -85,18 +150,11 @@ const Gallery = () => {
               {/* Overlay with Actions */}
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
-                  onClick={() => console.log('Edit', image._id)}
+                  onClick={() => openEditImageModal(image)}
                   className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit
-                </button>
-                <button
-                  onClick={() => console.log('Delete', image._id)}
-                  className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
-                >
-                  <FaTrash className="h-3 w-3" />
-                  Delete
                 </button>
               </div>
 
@@ -143,6 +201,27 @@ const Gallery = () => {
           />
         </div>
       )}
+
+      {/* Edit Section Modal */}
+      <EditGalleryModal
+        isOpen={isEditSectionModalOpen}
+        onClose={() => setIsEditSectionModalOpen(false)}
+        onSubmit={handleEditSectionSubmit}
+        loading={editSectionLoading}
+        galleryData={data}
+      />
+
+      {/* Edit Image Modal */}
+      <EditGalleryImageModal
+        isOpen={isEditImageModalOpen}
+        onClose={() => {
+          setIsEditImageModalOpen(false)
+          setEditImageData(null)
+        }}
+        onSubmit={handleEditImageSubmit}
+        loading={editImageLoading}
+        imageData={editImageData}
+      />
     </div>
   )
 }

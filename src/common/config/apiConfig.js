@@ -44,6 +44,7 @@ const config = {
 
   // Gallery APIs
   GET_GALLERY: baseUrl + '/api/snapshotGallery/getSnapshotGallery',
+  UPDATE_GALLERY: baseUrl + '/api/snapshotGallery/updateSnapshotGallery',
 
   // Testimonials APIs
   GET_TESTIMONIALS: baseUrl + '/api/testimonial/getTestimonial',
