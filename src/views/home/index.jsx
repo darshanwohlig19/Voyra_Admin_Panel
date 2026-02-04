@@ -2,6 +2,8 @@ import React, { useState, useEffect } from 'react'
 import ApiCaller from 'common/services/apiServices'
 import apiConfig from 'common/config/apiConfig'
 import { FaEdit, FaTrash, FaTimes, FaPlus } from 'react-icons/fa'
+import { useToaster } from 'common/Toaster'
+import EditCtaModal from 'components/about/EditCtaModal'
 
 const Home = () => {
   const [craftedData, setCraftedData] = useState(null)
@@ -13,7 +15,10 @@ const Home = () => {
   const [ctaData, setCtaData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [lightboxImage, setLightboxImage] = useState(null)
+  const [isEditCtaModalOpen, setIsEditCtaModalOpen] = useState(false)
+  const [editCtaLoading, setEditCtaLoading] = useState(false)
   const { apiCall } = ApiCaller()
+  const { addToast } = useToaster()
 
   useEffect(() => {
     fetchAllSections()
@@ -63,6 +68,47 @@ const Home = () => {
       console.error('Error fetching home data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Handle edit CTA section
+  const handleEditCtaSubmit = async (formData) => {
+    try {
+      setEditCtaLoading(true)
+      const response = await apiCall(
+        'put',
+        `${apiConfig.UPDATE_CTA_SECTION}?pageKey=home`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000) {
+        setIsEditCtaModalOpen(false)
+        setCtaData(response.data.data)
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'CTA section updated successfully',
+        })
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update CTA section',
+        })
+      }
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating CTA section',
+      })
+    } finally {
+      setEditCtaLoading(false)
     }
   }
 
@@ -440,13 +486,6 @@ const Home = () => {
               Manage call to action section for home page.
             </p>
           </div>
-          <button
-            onClick={() => console.log('Edit CTA section')}
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          >
-            <FaEdit className="h-4 w-4" />
-            Edit
-          </button>
         </div>
 
         <hr className="my-4 border-gray-200 dark:border-navy-600" />
@@ -476,18 +515,11 @@ const Home = () => {
               {/* Overlay with Actions on Hover */}
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
-                  onClick={() => console.log('Edit CTA', ctaData._id)}
+                  onClick={() => setIsEditCtaModalOpen(true)}
                   className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit
-                </button>
-                <button
-                  onClick={() => console.log('Delete CTA', ctaData._id)}
-                  className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
-                >
-                  <FaTrash className="h-3 w-3" />
-                  Delete
                 </button>
               </div>
             </div>
@@ -515,6 +547,15 @@ const Home = () => {
           />
         </div>
       )}
+
+      {/* Edit CTA Modal */}
+      <EditCtaModal
+        isOpen={isEditCtaModalOpen}
+        onClose={() => setIsEditCtaModalOpen(false)}
+        onSubmit={handleEditCtaSubmit}
+        loading={editCtaLoading}
+        ctaData={ctaData}
+      />
     </div>
   )
 }
