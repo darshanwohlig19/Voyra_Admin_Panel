@@ -7,6 +7,7 @@ import EditCtaModal from 'components/about/EditCtaModal'
 import EditPortfolioGalleryModal from 'components/home/EditPortfolioGalleryModal'
 import EditPortfolioImageModal from 'components/home/EditPortfolioImageModal'
 import EditBrandValueModal from 'components/home/EditBrandValueModal'
+import EditCategoryImageModal from 'components/home/EditCategoryImageModal'
 import AddBrandPartnerModal from 'components/home/AddBrandPartnerModal'
 import ConfirmationModal from 'components/modal/ConfirmationModal'
 
@@ -41,6 +42,12 @@ const Home = () => {
     id: null,
     name: '',
   })
+  const [isEditCategoryImageModalOpen, setIsEditCategoryImageModalOpen] =
+    useState(false)
+  const [selectedCategoryImage, setSelectedCategoryImage] = useState(null)
+  const [selectedCategoryId, setSelectedCategoryId] = useState(null)
+  const [editCategoryImageLoading, setEditCategoryImageLoading] =
+    useState(false)
   const [deleteBrandPartnerLoading, setDeleteBrandPartnerLoading] =
     useState(false)
   const { apiCall } = ApiCaller()
@@ -224,6 +231,60 @@ const Home = () => {
   const openEditPortfolioImageModal = (image) => {
     setSelectedPortfolioImage(image)
     setIsEditPortfolioImageModalOpen(true)
+  }
+
+  // Handle edit Category Image
+  const openEditCategoryImageModal = (image, categoryId) => {
+    setSelectedCategoryImage(image)
+    setSelectedCategoryId(categoryId)
+    setIsEditCategoryImageModalOpen(true)
+  }
+
+  const handleEditCategoryImageSubmit = async (formData) => {
+    if (!selectedCategoryId) return
+    try {
+      setEditCategoryImageLoading(true)
+      const response = await apiCall(
+        'put',
+        `${apiConfig.UPDATE_CATEGORY_GALLERY}/${selectedCategoryId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000) {
+        setIsEditCategoryImageModalOpen(false)
+        setSelectedCategoryImage(null)
+        setSelectedCategoryId(null)
+        // Refresh category gallery data
+        const categoryRes = await apiCall('get', apiConfig.GET_CATEGORY_GALLERY)
+        if (categoryRes?.data?.code === 2000) {
+          setCategoryData(categoryRes.data.data)
+        }
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Category image updated successfully',
+        })
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update category image',
+        })
+      }
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating category image',
+      })
+    } finally {
+      setEditCategoryImageLoading(false)
+    }
   }
 
   // Handle edit Brand Value section
@@ -444,13 +505,6 @@ const Home = () => {
               Manage category-wise image galleries.
             </p>
           </div>
-          <button
-            onClick={() => console.log('Edit category gallery')}
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          >
-            <FaEdit className="h-4 w-4" />
-            Edit
-          </button>
         </div>
 
         <hr className="my-4 border-gray-200 dark:border-navy-600" />
@@ -496,18 +550,13 @@ const Home = () => {
                       {/* Overlay with Actions */}
                       <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                         <button
-                          onClick={() => console.log('Edit image', image._id)}
+                          onClick={() =>
+                            openEditCategoryImageModal(image, cat._id)
+                          }
                           className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                         >
                           <FaEdit className="h-3 w-3" />
                           Edit
-                        </button>
-                        <button
-                          onClick={() => console.log('Delete image', image._id)}
-                          className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
-                        >
-                          <FaTrash className="h-3 w-3" />
-                          Delete
                         </button>
                       </div>
 
@@ -792,6 +841,19 @@ const Home = () => {
         onSubmit={handleEditBrandValueSubmit}
         loading={editBrandValueLoading}
         brandValueData={brandValueData}
+      />
+
+      {/* Edit Category Image Modal */}
+      <EditCategoryImageModal
+        isOpen={isEditCategoryImageModalOpen}
+        onClose={() => {
+          setIsEditCategoryImageModalOpen(false)
+          setSelectedCategoryImage(null)
+          setSelectedCategoryId(null)
+        }}
+        onSubmit={handleEditCategoryImageSubmit}
+        loading={editCategoryImageLoading}
+        imageData={selectedCategoryImage}
       />
 
       {/* Add Brand Partner Modal */}
