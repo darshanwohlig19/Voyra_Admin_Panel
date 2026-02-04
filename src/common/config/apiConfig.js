@@ -15,6 +15,8 @@ const config = {
   GET_BRAND_VALUE: baseUrl + '/api/brandValue/getBrandValue',
   UPDATE_BRAND_VALUE: baseUrl + '/api/brandValue/updateBrandValue',
   GET_BRAND_PARTNER: baseUrl + '/api/brandPartner/getBrandPartner',
+  CREATE_BRAND_PARTNER: baseUrl + '/api/brandPartner/createBrandPartner',
+  DELETE_BRAND_PARTNER: baseUrl + '/api/brandPartner/deleteBrandPartner',
   GET_PORTFOLIO_GALLERY: baseUrl + '/api/portfolioGallery/getPortfolioGallery',
   UPDATE_PORTFOLIO_GALLERY:
     baseUrl + '/api/portfolioGallery/updatePortfolioGallery',
