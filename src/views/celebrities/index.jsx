@@ -8,6 +8,9 @@ import EditStardomModal from 'components/celebrities/EditStardomModal'
 import EditStardomEventModal from 'components/celebrities/EditStardomEventModal'
 import EditArtistCollectionModal from 'components/celebrities/EditArtistCollectionModal'
 import EditArtistCollectionImageModal from 'components/celebrities/EditArtistCollectionImageModal'
+import EditSpotlightModal from 'components/celebrities/EditSpotlightModal'
+import EditSpotlightCelebrityModal from 'components/celebrities/EditSpotlightCelebrityModal'
+import AddSpotlightCelebrityModal from 'components/celebrities/AddSpotlightCelebrityModal'
 import EditLimelightModal from 'components/celebrities/EditLimelightModal'
 import AddLimelightImageModal from 'components/celebrities/AddLimelightImageModal'
 import EditLimelightImageModal from 'components/celebrities/EditLimelightImageModal'
@@ -48,6 +51,27 @@ const Celebrities = () => {
     useState(false)
   const [editArtistImageLoading, setEditArtistImageLoading] = useState(false)
   const [selectedArtistImage, setSelectedArtistImage] = useState(null)
+  const [isEditSpotlightModalOpen, setIsEditSpotlightModalOpen] =
+    useState(false)
+  const [editSpotlightLoading, setEditSpotlightLoading] = useState(false)
+  const [
+    isEditSpotlightCelebrityModalOpen,
+    setIsEditSpotlightCelebrityModalOpen,
+  ] = useState(false)
+  const [editSpotlightCelebrityLoading, setEditSpotlightCelebrityLoading] =
+    useState(false)
+  const [selectedSpotlightCelebrity, setSelectedSpotlightCelebrity] =
+    useState(null)
+  const [
+    isAddSpotlightCelebrityModalOpen,
+    setIsAddSpotlightCelebrityModalOpen,
+  ] = useState(false)
+  const [addSpotlightCelebrityLoading, setAddSpotlightCelebrityLoading] =
+    useState(false)
+  const [deleteSpotlightCelebrityConfirm, setDeleteSpotlightCelebrityConfirm] =
+    useState({ open: false, id: null, name: '' })
+  const [deleteSpotlightCelebrityLoading, setDeleteSpotlightCelebrityLoading] =
+    useState(false)
   const [isEditLimelightModalOpen, setIsEditLimelightModalOpen] =
     useState(false)
   const [editLimelightLoading, setEditLimelightLoading] = useState(false)
@@ -167,6 +191,172 @@ const Celebrities = () => {
       console.error('Error fetching spotlight celebrities:', error)
     } finally {
       setSpotlightLoading(false)
+    }
+  }
+
+  const handleEditSpotlight = async (data) => {
+    try {
+      setEditSpotlightLoading(true)
+      const response = await apiCall(
+        'put',
+        `${apiConfig.UPDATE_SPOTLIGHT_SECTION}/${spotlightData._id}`,
+        data
+      )
+      if (response?.data?.code === 2000 || response?.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Spotlight section updated successfully',
+        })
+        setIsEditSpotlightModalOpen(false)
+        fetchAllSections()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update spotlight section',
+        })
+      }
+    } catch (error) {
+      console.error('Error updating spotlight section:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating spotlight section',
+      })
+    } finally {
+      setEditSpotlightLoading(false)
+    }
+  }
+
+  const openEditSpotlightCelebrityModal = (celeb) => {
+    setSelectedSpotlightCelebrity(celeb)
+    setIsEditSpotlightCelebrityModalOpen(true)
+  }
+
+  const handleEditSpotlightCelebrity = async (celebrityId, formData) => {
+    try {
+      setEditSpotlightCelebrityLoading(true)
+      const response = await apiCall(
+        'put',
+        `${apiConfig.UPDATE_SPOTLIGHT_CELEBRITY}/${spotlightData._id}/${celebrityId}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000 || response?.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Celebrity updated successfully',
+        })
+        setIsEditSpotlightCelebrityModalOpen(false)
+        setSelectedSpotlightCelebrity(null)
+        fetchAllSections()
+        if (selectedType) {
+          fetchSpotlightByType(selectedType)
+        }
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to update celebrity',
+        })
+      }
+    } catch (error) {
+      console.error('Error updating spotlight celebrity:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating celebrity',
+      })
+    } finally {
+      setEditSpotlightCelebrityLoading(false)
+    }
+  }
+
+  const handleDeleteSpotlightCelebrity = async () => {
+    if (!deleteSpotlightCelebrityConfirm.id) return
+    try {
+      setDeleteSpotlightCelebrityLoading(true)
+      const response = await apiCall(
+        'delete',
+        `${apiConfig.DELETE_SPOTLIGHT_CELEBRITY}/${spotlightData._id}/byId/${deleteSpotlightCelebrityConfirm.id}`
+      )
+      if (response?.data?.code === 2000 || response?.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Celebrity deleted successfully',
+        })
+        setDeleteSpotlightCelebrityConfirm({ open: false, id: null, name: '' })
+        fetchAllSections()
+        if (selectedType) {
+          fetchSpotlightByType(selectedType)
+        }
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to delete celebrity',
+        })
+      }
+    } catch (error) {
+      console.error('Error deleting spotlight celebrity:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error deleting celebrity',
+      })
+    } finally {
+      setDeleteSpotlightCelebrityLoading(false)
+    }
+  }
+
+  const handleAddSpotlightCelebrity = async (formData) => {
+    try {
+      setAddSpotlightCelebrityLoading(true)
+      const response = await apiCall(
+        'post',
+        `${apiConfig.ADD_SPOTLIGHT_CELEBRITY}/${spotlightData._id}`,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000 || response?.status === 200) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Celebrity added successfully',
+        })
+        setIsAddSpotlightCelebrityModalOpen(false)
+        fetchAllSections()
+        if (selectedType) {
+          fetchSpotlightByType(selectedType)
+        }
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to add celebrity',
+        })
+      }
+    } catch (error) {
+      console.error('Error adding spotlight celebrity:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error adding celebrity',
+      })
+    } finally {
+      setAddSpotlightCelebrityLoading(false)
     }
   }
 
@@ -748,14 +938,14 @@ const Celebrities = () => {
           </div>
           <div className="flex gap-2">
             <button
-              onClick={() => console.log('Edit spotlight section')}
+              onClick={() => setIsEditSpotlightModalOpen(true)}
               className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
             >
               <FaEdit className="h-4 w-4" />
               Edit
             </button>
             <button
-              onClick={() => console.log('Add spotlight celebrity')}
+              onClick={() => setIsAddSpotlightCelebrityModalOpen(true)}
               className="flex items-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600"
             >
               <FaPlus className="h-4 w-4" />
@@ -807,14 +997,20 @@ const Celebrities = () => {
                   {/* Overlay with Actions */}
                   <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
-                      onClick={() => console.log('Edit celebrity', celeb._id)}
+                      onClick={() => openEditSpotlightCelebrityModal(celeb)}
                       className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                     >
                       <FaEdit className="h-3 w-3" />
                       Edit
                     </button>
                     <button
-                      onClick={() => console.log('Delete celebrity', celeb._id)}
+                      onClick={() =>
+                        setDeleteSpotlightCelebrityConfirm({
+                          open: true,
+                          id: celeb._id,
+                          name: celeb.name,
+                        })
+                      }
                       className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
                     >
                       <FaTrash className="h-3 w-3" />
@@ -1044,6 +1240,56 @@ const Celebrities = () => {
         cancelText="Cancel"
         confirmColorScheme="red"
         icon="delete"
+      />
+
+      {/* Edit Spotlight Section Modal */}
+      <EditSpotlightModal
+        isOpen={isEditSpotlightModalOpen}
+        onClose={() => setIsEditSpotlightModalOpen(false)}
+        onSubmit={handleEditSpotlight}
+        loading={editSpotlightLoading}
+        spotlightData={spotlightData}
+      />
+
+      {/* Add Spotlight Celebrity Modal */}
+      <AddSpotlightCelebrityModal
+        isOpen={isAddSpotlightCelebrityModalOpen}
+        onClose={() => setIsAddSpotlightCelebrityModalOpen(false)}
+        onSubmit={handleAddSpotlightCelebrity}
+        loading={addSpotlightCelebrityLoading}
+        types={spotlightData?.types || []}
+      />
+
+      {/* Delete Spotlight Celebrity Confirmation Modal */}
+      <ConfirmationModal
+        isOpen={deleteSpotlightCelebrityConfirm.open}
+        onClose={() =>
+          setDeleteSpotlightCelebrityConfirm({
+            open: false,
+            id: null,
+            name: '',
+          })
+        }
+        onConfirm={handleDeleteSpotlightCelebrity}
+        title="Delete Celebrity"
+        message={`Are you sure you want to delete "${deleteSpotlightCelebrityConfirm.name}"? This action cannot be undone.`}
+        confirmText={deleteSpotlightCelebrityLoading ? 'Deleting...' : 'Delete'}
+        cancelText="Cancel"
+        confirmColorScheme="red"
+        icon="delete"
+      />
+
+      {/* Edit Spotlight Celebrity Modal */}
+      <EditSpotlightCelebrityModal
+        isOpen={isEditSpotlightCelebrityModalOpen}
+        onClose={() => {
+          setIsEditSpotlightCelebrityModalOpen(false)
+          setSelectedSpotlightCelebrity(null)
+        }}
+        onSubmit={handleEditSpotlightCelebrity}
+        loading={editSpotlightCelebrityLoading}
+        celebrityData={selectedSpotlightCelebrity}
+        types={spotlightData?.types || []}
       />
 
       {/* Edit Stardom Section Modal */}
