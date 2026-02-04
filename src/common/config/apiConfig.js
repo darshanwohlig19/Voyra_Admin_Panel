@@ -13,6 +13,7 @@ const config = {
   GET_CRAFTED_DESIGN: baseUrl + '/api/craftedDesign/getCraftedDesign',
   GET_CATEGORY_GALLERY: baseUrl + '/api/categoryGallery/getCategoryGallery',
   GET_BRAND_VALUE: baseUrl + '/api/brandValue/getBrandValue',
+  UPDATE_BRAND_VALUE: baseUrl + '/api/brandValue/updateBrandValue',
   GET_BRAND_PARTNER: baseUrl + '/api/brandPartner/getBrandPartner',
   GET_PORTFOLIO_GALLERY: baseUrl + '/api/portfolioGallery/getPortfolioGallery',
   UPDATE_PORTFOLIO_GALLERY:

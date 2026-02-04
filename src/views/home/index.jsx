@@ -6,6 +6,7 @@ import { useToaster } from 'common/Toaster'
 import EditCtaModal from 'components/about/EditCtaModal'
 import EditPortfolioGalleryModal from 'components/home/EditPortfolioGalleryModal'
 import EditPortfolioImageModal from 'components/home/EditPortfolioImageModal'
+import EditBrandValueModal from 'components/home/EditBrandValueModal'
 
 const Home = () => {
   const [craftedData, setCraftedData] = useState(null)
@@ -27,6 +28,9 @@ const Home = () => {
   const [selectedPortfolioImage, setSelectedPortfolioImage] = useState(null)
   const [editPortfolioImageLoading, setEditPortfolioImageLoading] =
     useState(false)
+  const [isEditBrandValueModalOpen, setIsEditBrandValueModalOpen] =
+    useState(false)
+  const [editBrandValueLoading, setEditBrandValueLoading] = useState(false)
   const { apiCall } = ApiCaller()
   const { addToast } = useToaster()
 
@@ -210,6 +214,47 @@ const Home = () => {
     setIsEditPortfolioImageModalOpen(true)
   }
 
+  // Handle edit Brand Value section
+  const handleEditBrandValueSubmit = async (formData) => {
+    try {
+      setEditBrandValueLoading(true)
+      const response = await apiCall(
+        'put',
+        apiConfig.UPDATE_BRAND_VALUE,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000) {
+        setIsEditBrandValueModalOpen(false)
+        setBrandValueData(response.data.data)
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Brand value updated successfully',
+        })
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update brand value',
+        })
+      }
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating brand value',
+      })
+    } finally {
+      setEditBrandValueLoading(false)
+    }
+  }
+
   if (loading) {
     return (
       <div className="mt-3 h-full w-full">
@@ -385,13 +430,6 @@ const Home = () => {
               Manage brand value section.
             </p>
           </div>
-          <button
-            onClick={() => console.log('Edit brand value')}
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
-          >
-            <FaEdit className="h-4 w-4" />
-            Edit
-          </button>
         </div>
 
         <hr className="my-4 border-gray-200 dark:border-navy-600" />
@@ -410,22 +448,11 @@ const Home = () => {
               {/* Overlay with Actions */}
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
-                  onClick={() =>
-                    console.log('Edit brand value', brandValueData._id)
-                  }
+                  onClick={() => setIsEditBrandValueModalOpen(true)}
                   className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit
-                </button>
-                <button
-                  onClick={() =>
-                    console.log('Delete brand value', brandValueData._id)
-                  }
-                  className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
-                >
-                  <FaTrash className="h-3 w-3" />
-                  Delete
                 </button>
               </div>
             </div>
@@ -663,6 +690,15 @@ const Home = () => {
         onSubmit={handleEditPortfolioImageSubmit}
         loading={editPortfolioImageLoading}
         imageData={selectedPortfolioImage}
+      />
+
+      {/* Edit Brand Value Modal */}
+      <EditBrandValueModal
+        isOpen={isEditBrandValueModalOpen}
+        onClose={() => setIsEditBrandValueModalOpen(false)}
+        onSubmit={handleEditBrandValueSubmit}
+        loading={editBrandValueLoading}
+        brandValueData={brandValueData}
       />
     </div>
   )
