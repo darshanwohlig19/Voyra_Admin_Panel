@@ -313,7 +313,7 @@ const About = () => {
           </div>
           <button
             onClick={() => setIsEditStoryModalOpen(true)}
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
           >
             <FaEdit className="h-4 w-4" />
             Edit
@@ -340,7 +340,7 @@ const About = () => {
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
                   onClick={() => openEditStoryImageModal(image)}
-                  className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                  className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit
@@ -391,7 +391,7 @@ const About = () => {
                   <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
                       onClick={() => openEditVisionModal(item)}
-                      className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                      className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
                     >
                       <FaEdit className="h-3 w-3" />
                       Edit
@@ -453,7 +453,7 @@ const About = () => {
                   <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
                       onClick={() => openEditTeamModal(item)}
-                      className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                      className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
                     >
                       <FaEdit className="h-3 w-3" />
                       Edit
@@ -520,7 +520,7 @@ const About = () => {
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
                   onClick={() => setIsEditCtaModalOpen(true)}
-                  className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                  className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit

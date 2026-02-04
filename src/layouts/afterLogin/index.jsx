@@ -182,7 +182,7 @@ const AfterLoginLayout = (props) => {
     })
   }
   return (
-    <div className="flex h-full w-full bg-graySlightBluish dark:bg-veryDarkBlueGray">
+    <div className="flex h-full w-full bg-[#f7e9cf]/50 dark:bg-veryDarkBlueGray">
       <Sidebar
         onOpenSideBar={() => setSideBar(!sideBar)}
         open={open}
@@ -198,7 +198,7 @@ const AfterLoginLayout = (props) => {
       <div className="font-dm h-full  w-full dark:bg-veryDarkBlueGray">
         {/* Main Content */}
         <main
-          className={`bg-confixaBg mx-2.5 min-h-screen flex-none transition-all dark:bg-veryDarkBlueGray xl:ml-[230px] ${
+          className={`bg-confixaBg mx-2.5 min-h-screen flex-none transition-all dark:bg-veryDarkBlueGray xl:ml-[280px] ${
             location.pathname.includes('/observabilitys')
               ? ''
               : 'md:p-6 md:pr-2'

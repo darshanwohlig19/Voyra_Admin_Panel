@@ -40,7 +40,7 @@ const Notification = () => {
             description="Description here."
             icon={<AiFillExclamationCircle />}
             iconColor="text-white dark:!text-navy-900"
-            bg="bg-blue-500 dark:!bg-blue-300"
+            bg="bg-[#ebd6ac] dark:!bg-blue-300"
             mb="mb-14"
             closeBg="hover:bg-white/20 text-white dark:!text-navy-900"
             solid="solid"
@@ -91,7 +91,7 @@ const Notification = () => {
             justify="justify-center"
             icon={<AiFillExclamationCircle />}
             iconColor="text-white dark:!text-navy-900"
-            bg="bg-blue-500 dark:!bg-blue-300"
+            bg="bg-[#ebd6ac] dark:!bg-blue-300"
             mb="mb-14"
             closeBg="hover:bg-white/20 text-white dark:!text-navy-900"
             solid="solid"
@@ -241,7 +241,7 @@ const Notification = () => {
             description="Description here."
             icon={<AiFillExclamationCircle />}
             iconColor="text-white dark:!text-navy-900"
-            bg="bg-blue-500 dark:!bg-blue-300"
+            bg="bg-[#ebd6ac] dark:!bg-blue-300"
             mb="mb-14"
             closeBg="hover:bg-white/20 text-white dark:!text-navy-900"
             solid="solid"

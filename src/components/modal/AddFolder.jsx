@@ -85,7 +85,7 @@ const AddFolder = ({ isOpen, onClose, onAdd }) => {
           <div className="mt-4 flex justify-end">
             <button
               onClick={handleAdd}
-              className="rounded-md bg-blue-500 px-6 py-3 text-lg text-white hover:bg-blue-600"
+              className="rounded-md bg-[#ebd6ac] px-6 py-3 text-lg text-white hover:bg-[#EDCF93]"
             >
               {buttonText}
             </button>

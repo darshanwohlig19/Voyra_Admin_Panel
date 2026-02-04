@@ -514,7 +514,7 @@ const Home = () => {
   if (loading) {
     return (
       <div className="mt-3 h-full w-full">
-        <div className="h-full w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+        <div className="h-full w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
           <p className="text-gray-600 dark:text-gray-400">Loading...</p>
         </div>
       </div>
@@ -524,7 +524,7 @@ const Home = () => {
   return (
     <div className="mt-3 h-full w-full space-y-6">
       {/* Section 1: Designs Crafted */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -537,7 +537,7 @@ const Home = () => {
           </div>
           <button
             onClick={() => setIsEditCraftedModalOpen(true)}
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
           >
             <FaEdit className="h-4 w-4" />
             Edit
@@ -551,7 +551,7 @@ const Home = () => {
           {craftedData?.images?.map((image, index) => (
             <div
               key={image._id || index}
-              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700"
             >
               <img
                 src={image.url}
@@ -564,7 +564,7 @@ const Home = () => {
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
                   onClick={() => openEditCraftedImageModal(image)}
-                  className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                  className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit
@@ -580,7 +580,7 @@ const Home = () => {
       </div>
 
       {/* Section 2: Category Gallery */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -602,7 +602,7 @@ const Home = () => {
               onClick={() => setSelectedCategory(cat.category)}
               className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
                 selectedCategory === cat.category
-                  ? 'bg-blue-500 text-white'
+                  ? 'bg-[#ebd6ac] text-black'
                   : 'bg-gray-100 text-gray-600 hover:bg-gray-200 dark:bg-navy-700 dark:text-gray-300'
               }`}
             >
@@ -620,7 +620,7 @@ const Home = () => {
                   {cat.images?.map((image, imgIndex) => (
                     <div
                       key={image._id || imgIndex}
-                      className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+                      className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700"
                     >
                       <img
                         src={image.url}
@@ -638,7 +638,7 @@ const Home = () => {
                           onClick={() =>
                             openEditCategoryImageModal(image, cat._id)
                           }
-                          className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                          className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
                         >
                           <FaEdit className="h-3 w-3" />
                           Edit
@@ -657,7 +657,7 @@ const Home = () => {
       </div>
 
       {/* Section 3: Brand Value */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -673,7 +673,7 @@ const Home = () => {
 
         {/* Brand Value Card */}
         {brandValueData && (
-          <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700">
+          <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700">
             <div className="h-64 overflow-hidden">
               <img
                 src={brandValueData.image?.url}
@@ -699,7 +699,7 @@ const Home = () => {
             <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-lg bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
               <button
                 onClick={() => setIsEditBrandValueModalOpen(true)}
-                className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
               >
                 <FaEdit className="h-3 w-3" />
                 Edit
@@ -710,7 +710,7 @@ const Home = () => {
       </div>
 
       {/* Section 4: Brand Partners */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -722,7 +722,7 @@ const Home = () => {
           </div>
           <button
             onClick={() => setIsAddBrandPartnerModalOpen(true)}
-            className="flex items-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+            className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
           >
             <FaPlus className="h-4 w-4" />
             Add
@@ -736,7 +736,7 @@ const Home = () => {
           {brandPartnerData?.map((partner, index) => (
             <div
               key={partner._id || index}
-              className="group relative flex h-48 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-4 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative flex h-48 items-center justify-center overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-4 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700"
             >
               <img
                 src={partner.logo?.url}
@@ -766,7 +766,7 @@ const Home = () => {
       </div>
 
       {/* Section 5: Portfolio Gallery */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -778,7 +778,7 @@ const Home = () => {
           </div>
           <button
             onClick={() => setIsEditPortfolioModalOpen(true)}
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
           >
             <FaEdit className="h-4 w-4" />
             Edit
@@ -792,7 +792,7 @@ const Home = () => {
           {portfolioData?.images?.map((image, index) => (
             <div
               key={image._id || index}
-              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700"
             >
               <img
                 src={image.url}
@@ -805,7 +805,7 @@ const Home = () => {
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
                   onClick={() => openEditPortfolioImageModal(image)}
-                  className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                  className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit
@@ -817,7 +817,7 @@ const Home = () => {
       </div>
 
       {/* Section 6: CTA Section */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -833,7 +833,7 @@ const Home = () => {
 
         {/* CTA Preview Card */}
         {ctaData && (
-          <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700">
+          <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700">
             {/* Background Image */}
             <div className="relative h-64">
               <img
@@ -857,7 +857,7 @@ const Home = () => {
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
                   onClick={() => setIsEditCtaModalOpen(true)}
-                  className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                  className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit

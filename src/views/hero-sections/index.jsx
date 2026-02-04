@@ -166,7 +166,7 @@ const HeroSections = () => {
                   )}
 
                   {/* Page Label Badge */}
-                  <div className="absolute left-2 top-2 rounded-full bg-blue-500 px-3 py-1 text-xs font-semibold text-white">
+                  <div className="absolute left-2 top-2 rounded-full bg-[#EDCF93] px-3 py-1 text-xs font-semibold text-black">
                     {page.label}
                   </div>
 
@@ -174,7 +174,7 @@ const HeroSections = () => {
                   <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
                       onClick={() => handleEditClick(page.key)}
-                      className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+                      className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
                     >
                       <FaEdit className="h-4 w-4" />
                       Edit

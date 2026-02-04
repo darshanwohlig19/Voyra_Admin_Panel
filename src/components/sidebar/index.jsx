@@ -97,7 +97,7 @@ function Sidebar(props) {
         )}
       </div>
       <div
-        className={`sm:none fixed min-h-full w-[230px] transition-all duration-300 ease-in-out ${
+        className={`sm:none fixed min-h-full w-[280px] transition-all duration-300 ease-in-out ${
           variant === 'auth' ? 'xl:hidden' : 'xl:block '
         }  ${open ? '' : '-translate-x-[115%]'} ${
           isSmallScreen ? 'z-index-responsive' : ''
@@ -105,7 +105,9 @@ function Sidebar(props) {
         onMouseEnter={() => setHovered(true)}
         onMouseLeave={() => setHovered(false)}
       >
-        <Card extra={`h-screen w-full`}>
+        <Card
+          extra={`h-screen w-full rounded-r-[2rem] !shadow-[0px_5px_15px_0px_rgba(0,0,0,0.15)]`}
+        >
           <Scrollbars
             autoHide
             renderTrackVertical={renderTrack}
@@ -138,7 +140,6 @@ function Sidebar(props) {
                     </span>
                   </Link>
                 </div>
-                <div className="mb-5 h-px bg-gray-200 dark:bg-white/10" />
               </div>
 
               {/* Nav items */}

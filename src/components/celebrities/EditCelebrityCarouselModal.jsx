@@ -226,7 +226,7 @@ const EditCelebrityCarouselModal = ({
                 />
                 {/* Hover Overlay with Change Image Button */}
                 <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                  <label className="cursor-pointer rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600">
+                  <label className="cursor-pointer rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]">
                     Change Image
                     <input
                       type="file"
@@ -254,7 +254,7 @@ const EditCelebrityCarouselModal = ({
             type="button"
             onClick={handleSubmit}
             disabled={loading}
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? (
               <>

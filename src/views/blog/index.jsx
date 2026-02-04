@@ -174,14 +174,14 @@ const Blog = () => {
           <div className="flex gap-2">
             <button
               onClick={() => setIsSectionModalOpen(true)}
-              className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+              className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
             >
               <FaEdit className="h-4 w-4" />
               Edit
             </button>
             <button
               onClick={() => setIsAddModalOpen(true)}
-              className="flex items-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+              className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
             >
               <FaPlus className="h-4 w-4" />
               Add
@@ -230,7 +230,7 @@ const Blog = () => {
               <div className="mt-4 flex justify-end gap-2">
                 <button
                   onClick={() => openEditModal(blog)}
-                  className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                  className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit

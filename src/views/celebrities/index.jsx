@@ -806,14 +806,14 @@ const Celebrities = () => {
           <div className="flex gap-2">
             <button
               onClick={() => setIsEditLimelightModalOpen(true)}
-              className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+              className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
             >
               <FaEdit className="h-4 w-4" />
               Edit
             </button>
             <button
               onClick={() => setIsAddLimelightImageModalOpen(true)}
-              className="flex items-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+              className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
             >
               <FaPlus className="h-4 w-4" />
               Add
@@ -841,7 +841,7 @@ const Celebrities = () => {
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
                   onClick={() => openEditLimelightImageModal(image)}
-                  className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                  className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit
@@ -874,7 +874,7 @@ const Celebrities = () => {
           </div>
           <button
             onClick={() => setIsEditArtistModalOpen(true)}
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
           >
             <FaEdit className="h-4 w-4" />
             Edit
@@ -903,7 +903,7 @@ const Celebrities = () => {
                 <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                   <button
                     onClick={() => openEditArtistImageModal(artist)}
-                    className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                    className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
                   >
                     <FaEdit className="h-3 w-3" />
                     Edit
@@ -939,14 +939,14 @@ const Celebrities = () => {
           <div className="flex gap-2">
             <button
               onClick={() => setIsEditSpotlightModalOpen(true)}
-              className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+              className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
             >
               <FaEdit className="h-4 w-4" />
               Edit
             </button>
             <button
               onClick={() => setIsAddSpotlightCelebrityModalOpen(true)}
-              className="flex items-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+              className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
             >
               <FaPlus className="h-4 w-4" />
               Add
@@ -964,7 +964,7 @@ const Celebrities = () => {
               onClick={() => setSelectedType(type)}
               className={`rounded-full px-4 py-1.5 text-sm font-medium transition-colors ${
                 selectedType === type
-                  ? 'bg-blue-500 text-white'
+                  ? 'bg-[#ebd6ac] text-white'
                   : 'bg-gray-100 text-gray-700 hover:bg-gray-200 dark:bg-navy-600 dark:text-gray-300 dark:hover:bg-navy-500'
               }`}
             >
@@ -998,7 +998,7 @@ const Celebrities = () => {
                   <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                     <button
                       onClick={() => openEditSpotlightCelebrityModal(celeb)}
-                      className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                      className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
                     >
                       <FaEdit className="h-3 w-3" />
                       Edit
@@ -1019,7 +1019,7 @@ const Celebrities = () => {
                   </div>
 
                   {/* Type Badge */}
-                  <div className="absolute left-2 top-2 rounded-full bg-blue-500 px-2 py-0.5 text-xs font-medium text-white">
+                  <div className="absolute left-2 top-2 rounded-full bg-[#ebd6ac] px-2 py-0.5 text-xs font-medium text-white">
                     {celeb.type}
                   </div>
                 </div>
@@ -1056,7 +1056,7 @@ const Celebrities = () => {
           </div>
           <button
             onClick={() => setIsEditStardomModalOpen(true)}
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
+            className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
           >
             <FaEdit className="h-4 w-4" />
             Edit
@@ -1095,7 +1095,7 @@ const Celebrities = () => {
               <div className="mt-4 flex justify-center gap-2">
                 <button
                   onClick={() => openEditStardomEventModal(event)}
-                  className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                  className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit
@@ -1120,7 +1120,7 @@ const Celebrities = () => {
           <div className="flex gap-2">
             <button
               onClick={() => setIsAddCarouselModalOpen(true)}
-              className="flex items-center gap-2 rounded-lg bg-green-500 px-4 py-2 text-white hover:bg-green-600"
+              className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
             >
               <FaPlus className="h-4 w-4" />
               Add
@@ -1150,7 +1150,7 @@ const Celebrities = () => {
                 <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                   <button
                     onClick={() => openEditCarouselModal(item)}
-                    className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
+                    className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
                   >
                     <FaEdit className="h-3 w-3" />
                     Edit

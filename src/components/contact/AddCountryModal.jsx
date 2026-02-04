@@ -164,7 +164,7 @@ const AddCountryModal = ({ isOpen, onClose, onSubmit, loading }) => {
             type="button"
             onClick={handleSubmit}
             disabled={loading}
-            className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600 disabled:cursor-not-allowed disabled:opacity-50"
+            className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93] disabled:cursor-not-allowed disabled:opacity-50"
           >
             {loading ? (
               <>

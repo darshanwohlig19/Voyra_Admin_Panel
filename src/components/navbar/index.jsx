@@ -194,7 +194,7 @@ const Navbar = (props) => {
 
   return (
     <nav
-      className={`duration-175 linear right-3 top-0 flex flex-row flex-wrap items-center justify-between rounded-xl pt-2 transition-all ${
+      className={`duration-175 linear right-3 top-0 flex flex-row flex-wrap items-center justify-between rounded-xl pt-2 transition-all${
         !mini && isExpand
           ? 'w-[90%] md:w-[calc(100vw_-_8%)] lg:w-[calc(100vw_-_6%)] xl:w-[calc(100vw_-_350px)] 2xl:w-[calc(100vw_-_320px)]'
           : mini && hovered

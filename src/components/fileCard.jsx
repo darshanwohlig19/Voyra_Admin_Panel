@@ -73,7 +73,7 @@ const FileCard = ({ items, onItemClick, onEdit, onDelete }) => {
                 </button>
                 <button
                   onClick={() => handleSaveEdit(item.id)}
-                  className="rounded bg-blue-500 px-2 py-1 text-sm text-white"
+                  className="rounded bg-[#ebd6ac] px-2 py-1 text-sm text-white"
                 >
                   Save
                 </button>
