@@ -82,6 +82,7 @@ const config = {
 
   // Contact APIs
   GET_ADDRESS: baseUrl + '/api/address/getMapUrl',
+  SAVE_ADDRESS: baseUrl + '/api/address/saveAddress',
   GET_COUNTRIES: baseUrl + '/api/country/getCountries',
   BULK_CREATE_COUNTRIES: baseUrl + '/api/country/bulkCreateCountries',
   DELETE_COUNTRY: baseUrl + '/api/country/deleteCountry',

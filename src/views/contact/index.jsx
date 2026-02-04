@@ -13,6 +13,7 @@ import {
   FaPlus,
   FaTrash,
 } from 'react-icons/fa'
+import EditAddressModal from 'components/contact/EditAddressModal'
 import AddCountryModal from 'components/contact/AddCountryModal'
 import AddBudgetModal from 'components/contact/AddBudgetModal'
 import AddEventTypeModal from 'components/contact/AddEventTypeModal'
@@ -38,6 +39,8 @@ const Contact = () => {
     name: '',
     type: '', // 'country', 'budget', or 'eventType'
   })
+  const [isEditAddressModalOpen, setIsEditAddressModalOpen] = useState(false)
+  const [editAddressLoading, setEditAddressLoading] = useState(false)
   const [deleteLoading, setDeleteLoading] = useState(false)
   const { apiCall } = ApiCaller()
   const { addToast } = useToaster()
@@ -74,6 +77,37 @@ const Contact = () => {
       console.error('Error fetching contact data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  const handleEditAddress = async (data) => {
+    try {
+      setEditAddressLoading(true)
+      const response = await apiCall('post', apiConfig.SAVE_ADDRESS, data)
+      if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Address updated successfully',
+        })
+        setIsEditAddressModalOpen(false)
+        fetchAllData()
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to update address',
+        })
+      }
+    } catch (error) {
+      console.error('Error updating address:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating address',
+      })
+    } finally {
+      setEditAddressLoading(false)
     }
   }
 
@@ -487,7 +521,7 @@ const Contact = () => {
             </p>
           </div>
           <button
-            onClick={() => console.log('Edit address')}
+            onClick={() => setIsEditAddressModalOpen(true)}
             className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           >
             <FaEdit className="h-4 w-4" />
@@ -611,6 +645,15 @@ const Contact = () => {
           </div>
         </div>
       </div>
+
+      {/* Edit Address Modal */}
+      <EditAddressModal
+        isOpen={isEditAddressModalOpen}
+        onClose={() => setIsEditAddressModalOpen(false)}
+        onSubmit={handleEditAddress}
+        loading={editAddressLoading}
+        addressData={addressData}
+      />
 
       {/* Add Country Modal */}
       <AddCountryModal
