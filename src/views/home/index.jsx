@@ -7,6 +7,8 @@ import EditCtaModal from 'components/about/EditCtaModal'
 import EditPortfolioGalleryModal from 'components/home/EditPortfolioGalleryModal'
 import EditPortfolioImageModal from 'components/home/EditPortfolioImageModal'
 import EditBrandValueModal from 'components/home/EditBrandValueModal'
+import EditCraftedDesignModal from 'components/home/EditCraftedDesignModal'
+import EditCraftedImageModal from 'components/home/EditCraftedImageModal'
 import EditCategoryImageModal from 'components/home/EditCategoryImageModal'
 import AddBrandPartnerModal from 'components/home/AddBrandPartnerModal'
 import ConfirmationModal from 'components/modal/ConfirmationModal'
@@ -21,6 +23,12 @@ const Home = () => {
   const [ctaData, setCtaData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [lightboxImage, setLightboxImage] = useState(null)
+  const [isEditCraftedModalOpen, setIsEditCraftedModalOpen] = useState(false)
+  const [editCraftedLoading, setEditCraftedLoading] = useState(false)
+  const [isEditCraftedImageModalOpen, setIsEditCraftedImageModalOpen] =
+    useState(false)
+  const [selectedCraftedImage, setSelectedCraftedImage] = useState(null)
+  const [editCraftedImageLoading, setEditCraftedImageLoading] = useState(false)
   const [isEditCtaModalOpen, setIsEditCtaModalOpen] = useState(false)
   const [editCtaLoading, setEditCtaLoading] = useState(false)
   const [isEditPortfolioModalOpen, setIsEditPortfolioModalOpen] =
@@ -101,6 +109,90 @@ const Home = () => {
       console.error('Error fetching home data:', error)
     } finally {
       setLoading(false)
+    }
+  }
+
+  // Handle edit Crafted Design section
+  const handleEditCraftedSubmit = async (data) => {
+    try {
+      setEditCraftedLoading(true)
+      const response = await apiCall(
+        'put',
+        apiConfig.UPDATE_CRAFTED_DESIGN,
+        data
+      )
+      if (response?.data?.code === 2000) {
+        setIsEditCraftedModalOpen(false)
+        setCraftedData(response.data.data)
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Crafted design section updated successfully',
+        })
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message ||
+            'Failed to update crafted design section',
+        })
+      }
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating crafted design section',
+      })
+    } finally {
+      setEditCraftedLoading(false)
+    }
+  }
+
+  // Handle edit Crafted Image
+  const openEditCraftedImageModal = (image) => {
+    setSelectedCraftedImage(image)
+    setIsEditCraftedImageModalOpen(true)
+  }
+
+  const handleEditCraftedImageSubmit = async (formData) => {
+    try {
+      setEditCraftedImageLoading(true)
+      const response = await apiCall(
+        'put',
+        apiConfig.UPDATE_CRAFTED_DESIGN,
+        formData,
+        {
+          headers: {
+            'Content-Type': 'multipart/form-data',
+          },
+        }
+      )
+      if (response?.data?.code === 2000) {
+        setIsEditCraftedImageModalOpen(false)
+        setSelectedCraftedImage(null)
+        setCraftedData(response.data.data)
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Crafted image updated successfully',
+        })
+      } else {
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update crafted image',
+        })
+      }
+    } catch (error) {
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating crafted image',
+      })
+    } finally {
+      setEditCraftedImageLoading(false)
     }
   }
 
@@ -444,7 +536,7 @@ const Home = () => {
             </p>
           </div>
           <button
-            onClick={() => console.log('Edit crafted section')}
+            onClick={() => setIsEditCraftedModalOpen(true)}
             className="flex items-center gap-2 rounded-lg bg-blue-500 px-4 py-2 text-white hover:bg-blue-600"
           >
             <FaEdit className="h-4 w-4" />
@@ -471,23 +563,16 @@ const Home = () => {
               {/* Overlay with Actions */}
               <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
-                  onClick={() => console.log('Edit image', image._id)}
+                  onClick={() => openEditCraftedImageModal(image)}
                   className="flex items-center gap-1 rounded-md bg-blue-500 px-2 py-1 text-sm text-white hover:bg-blue-600"
                 >
                   <FaEdit className="h-3 w-3" />
                   Edit
                 </button>
-                <button
-                  onClick={() => console.log('Delete image', image._id)}
-                  className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
-                >
-                  <FaTrash className="h-3 w-3" />
-                  Delete
-                </button>
               </div>
 
               <div className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium text-navy-700">
-                #{image.order + 1}
+                #{image.order}
               </div>
             </div>
           ))}
@@ -561,7 +646,7 @@ const Home = () => {
                       </div>
 
                       <div className="absolute left-2 top-2 rounded-full bg-white/90 px-2 py-0.5 text-xs font-medium text-navy-700">
-                        #{image.order + 1}
+                        #{image.order}
                       </div>
                     </div>
                   ))}
@@ -803,6 +888,27 @@ const Home = () => {
           />
         </div>
       )}
+
+      {/* Edit Crafted Design Modal */}
+      <EditCraftedDesignModal
+        isOpen={isEditCraftedModalOpen}
+        onClose={() => setIsEditCraftedModalOpen(false)}
+        onSubmit={handleEditCraftedSubmit}
+        loading={editCraftedLoading}
+        craftedData={craftedData}
+      />
+
+      {/* Edit Crafted Image Modal */}
+      <EditCraftedImageModal
+        isOpen={isEditCraftedImageModalOpen}
+        onClose={() => {
+          setIsEditCraftedImageModalOpen(false)
+          setSelectedCraftedImage(null)
+        }}
+        onSubmit={handleEditCraftedImageSubmit}
+        loading={editCraftedImageLoading}
+        imageData={selectedCraftedImage}
+      />
 
       {/* Edit CTA Modal */}
       <EditCtaModal

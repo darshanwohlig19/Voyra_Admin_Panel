@@ -11,6 +11,7 @@ const config = {
 
   // Home APIs
   GET_CRAFTED_DESIGN: baseUrl + '/api/craftedDesign/getCraftedDesign',
+  UPDATE_CRAFTED_DESIGN: baseUrl + '/api/craftedDesign/updateCraftedDesign',
   GET_CATEGORY_GALLERY: baseUrl + '/api/categoryGallery/getCategoryGallery',
   UPDATE_CATEGORY_GALLERY:
     baseUrl + '/api/categoryGallery/updateCategoryGallery',
