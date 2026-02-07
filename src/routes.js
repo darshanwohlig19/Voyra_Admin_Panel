@@ -6,6 +6,7 @@ import {
   MdImage,
   MdContactMail,
   MdViewCarousel,
+  MdWebAsset,
 } from 'react-icons/md'
 import { FaStar, FaBlog } from 'react-icons/fa'
 import { BsPeopleFill } from 'react-icons/bs'
@@ -20,6 +21,7 @@ import Testimonials from 'views/testimonials'
 import Blog from 'views/blog'
 import Contact from 'views/contact'
 import HeroSections from 'views/hero-sections'
+import HeaderFooter from 'views/header-footer'
 
 import { getEncryptedCookie } from 'common/utils/cookieUtils'
 
@@ -127,6 +129,15 @@ const RoutesComponent = () => {
         layout: '/afterLogin',
         icon: <MdViewCarousel className="h-6 w-6" />,
         component: <HeroSections />,
+        isComing: false,
+        isVisible: true,
+      },
+      {
+        name: 'Header & Footer',
+        path: 'header-footer',
+        layout: '/afterLogin',
+        icon: <MdWebAsset className="h-6 w-6" />,
+        component: <HeaderFooter />,
         isComing: false,
         isVisible: true,
       },

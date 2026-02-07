@@ -92,6 +92,12 @@ const config = {
   GET_EVENT_TYPES: baseUrl + '/api/eventType/getEventTypes',
   BULK_CREATE_EVENT_TYPES: baseUrl + '/api/eventType/bulkCreateEventTypes',
   DELETE_EVENT_TYPE: baseUrl + '/api/eventType/deleteEventType',
+
+  // Header & Footer APIs
+  GET_NAVBAR: baseUrl + '/api/navbar/getNavbar',
+  UPDATE_NAVBAR: baseUrl + '/api/navbar/updateNavbar',
+  GET_FOOTER: baseUrl + '/api/footer/getFooter',
+  UPDATE_FOOTER: baseUrl + '/api/footer/updateFooter',
 }
 
 export default config
