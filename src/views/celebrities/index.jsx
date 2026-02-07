@@ -783,7 +783,7 @@ const Celebrities = () => {
   if (loading) {
     return (
       <div className="mt-3 h-full w-full">
-        <div className="h-full w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+        <div className="h-full w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
           <p className="text-gray-600 dark:text-gray-400">Loading...</p>
         </div>
       </div>
@@ -793,7 +793,7 @@ const Celebrities = () => {
   return (
     <div className="mt-3 h-full w-full space-y-6">
       {/* Section 1: Currently in the Limelight */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -828,7 +828,7 @@ const Celebrities = () => {
           {limelightData?.images?.map((image, index) => (
             <div
               key={image._id || index}
-              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700"
             >
               <img
                 src={image.url}
@@ -865,7 +865,7 @@ const Celebrities = () => {
       </div>
 
       {/* Section 2: Artist Collection */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -888,7 +888,7 @@ const Celebrities = () => {
           {artistData?.images?.map((artist, index) => (
             <div
               key={artist._id || index}
-              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700"
             >
               {/* Artist Image */}
               <div className="overflow-hidden">
@@ -925,7 +925,7 @@ const Celebrities = () => {
       </div>
 
       {/* Section 3: Behind the Spotlight */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -983,7 +983,7 @@ const Celebrities = () => {
             {spotlightCelebrities.map((celeb, index) => (
               <div
                 key={celeb._id || index}
-                className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+                className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700"
               >
                 {/* Celebrity Image */}
                 <div className="relative overflow-hidden">
@@ -1044,7 +1044,7 @@ const Celebrities = () => {
       </div>
 
       {/* Section 4: Where Stardom Meets Your Story */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -1070,7 +1070,7 @@ const Celebrities = () => {
           {stardomData?.events?.map((event, index) => (
             <div
               key={event._id || index}
-              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-4 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-4 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700"
             >
               {/* Logo Image */}
               <div className="mb-3 flex justify-center">
@@ -1107,7 +1107,7 @@ const Celebrities = () => {
       </div>
 
       {/* Section 5: Celebrity Carousel */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -1135,7 +1135,7 @@ const Celebrities = () => {
           {carouselData?.map((item, index) => (
             <div
               key={item._id || index}
-              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700"
             >
               {/* Image */}
               <div className="overflow-hidden">

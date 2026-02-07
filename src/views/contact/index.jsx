@@ -327,7 +327,7 @@ const Contact = () => {
   if (loading) {
     return (
       <div className="mt-3 h-full w-full">
-        <div className="h-full w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+        <div className="h-full w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
           <p className="text-gray-600 dark:text-gray-400">Loading...</p>
         </div>
       </div>
@@ -338,7 +338,7 @@ const Contact = () => {
     <div className="mt-3 h-full w-full space-y-6">
       {/* Section 1: Address & Map Settings */}
 
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -394,7 +394,7 @@ const Contact = () => {
       </div>
 
       {/* Section 3: Budget Ranges */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -452,7 +452,7 @@ const Contact = () => {
       </div>
 
       {/* Section 4: Countries */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -510,7 +510,7 @@ const Contact = () => {
       </div>
 
       {/* Section 2: Event Types */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">

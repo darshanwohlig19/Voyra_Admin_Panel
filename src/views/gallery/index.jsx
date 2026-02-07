@@ -95,7 +95,7 @@ const Gallery = () => {
   if (loading) {
     return (
       <div className="mt-3 h-full w-full">
-        <div className="h-full w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+        <div className="h-full w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
           <p className="text-gray-600 dark:text-gray-400">Loading...</p>
         </div>
       </div>
@@ -104,7 +104,7 @@ const Gallery = () => {
 
   return (
     <div className="mt-3 h-full w-full">
-      <div className="h-full w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="h-full w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         {/* Header Section */}
         <div className="flex items-start justify-between">
           <div>
@@ -137,7 +137,7 @@ const Gallery = () => {
           {data?.images?.map((image, index) => (
             <div
               key={image._id || index}
-              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700 dark:hover:border-navy-500"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700 dark:hover:border-navy-500"
             >
               {/* Image */}
               <img

@@ -1355,7 +1355,7 @@ const Dashboard = () => {
           </div>
 
           {/* Right Side - Sales Dynamics Chart */}
-          <div className="min-w-[500px] flex-1 rounded-[20px] bg-white p-6 shadow-md dark:bg-navy-800">
+          <div className="min-w-[500px] flex-1 rounded-[20px] bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
             <div className="mb-6 flex items-center justify-between">
               <div className="flex flex-col gap-1">
                 <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -1389,7 +1389,7 @@ const Dashboard = () => {
         {/* Revenue and Overall User Activity - Side by Side */}
         <div className="flex flex-wrap gap-6">
           {/* Revenue Chart */}
-          <div className="min-w-[400px] flex-1 rounded-[20px] bg-white p-6 shadow-md dark:bg-navy-800">
+          <div className="min-w-[400px] flex-1 rounded-[20px] bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
             <div className="mb-6 flex items-center justify-between">
               <div className="flex flex-col gap-1">
                 <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -1420,7 +1420,7 @@ const Dashboard = () => {
           </div>
 
           {/* Overall User Activity */}
-          <div className="min-w-[400px] flex-1 rounded-[20px] bg-white p-6 shadow-md dark:bg-navy-800">
+          <div className="min-w-[400px] flex-1 rounded-[20px] bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
             <div className="mb-6 flex items-center justify-between">
               <div className="flex flex-col gap-1">
                 <h2 className="text-xl font-bold text-navy-700 dark:text-white">

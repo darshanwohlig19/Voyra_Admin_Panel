@@ -291,7 +291,7 @@ const About = () => {
   if (loading) {
     return (
       <div className="mt-3 h-full w-full">
-        <div className="h-full w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+        <div className="h-full w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
           <p className="text-gray-600 dark:text-gray-400">Loading...</p>
         </div>
       </div>
@@ -301,7 +301,7 @@ const About = () => {
   return (
     <div className="mt-3 h-full w-full space-y-6">
       {/* Section 1: Our Story */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -327,7 +327,7 @@ const About = () => {
           {storyData?.images?.map((image, index) => (
             <div
               key={image._id || index}
-              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700"
             >
               <img
                 src={image.url}
@@ -356,7 +356,7 @@ const About = () => {
       </div>
 
       {/* Section 2: Vision Section */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -375,7 +375,7 @@ const About = () => {
           {visionData?.map((item, index) => (
             <div
               key={item._id || index}
-              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700"
             >
               {/* Image */}
               {item.images?.[0]?.url && (
@@ -418,7 +418,7 @@ const About = () => {
       </div>
 
       {/* Section 3: Team Section */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -437,7 +437,7 @@ const About = () => {
           {teamData?.map((item, index) => (
             <div
               key={item._id || index}
-              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700"
             >
               {/* Image */}
               {item.images?.[0]?.url && (
@@ -480,7 +480,7 @@ const About = () => {
       </div>
 
       {/* Section 4: CTA Section */}
-      <div className="w-full rounded-xl bg-white p-6 shadow-md dark:bg-navy-800">
+      <div className="w-full rounded-xl bg-white p-6 shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:bg-navy-800">
         <div className="flex items-start justify-between">
           <div>
             <h2 className="text-xl font-bold text-navy-700 dark:text-white">
@@ -496,7 +496,7 @@ const About = () => {
 
         {/* CTA Preview Card */}
         {ctaData && (
-          <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700">
+          <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700">
             {/* Background Image */}
             <div className="relative h-64">
               <img
