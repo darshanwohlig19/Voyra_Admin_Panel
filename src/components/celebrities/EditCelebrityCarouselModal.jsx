@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { X, Upload } from 'lucide-react'
+import { X } from 'lucide-react'
+import DropZone from 'components/dropzone/DropZone'
 
 const EditCelebrityCarouselModal = ({
   isOpen,
@@ -42,18 +43,15 @@ const EditCelebrityCarouselModal = ({
     }
   }
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      setImage(file)
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImagePreview(reader.result)
-      }
-      reader.readAsDataURL(file)
-      if (errors.image) {
-        setErrors((prev) => ({ ...prev, image: '' }))
-      }
+  const handleImageChange = (file) => {
+    setImage(file)
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setImagePreview(reader.result)
+    }
+    reader.readAsDataURL(file)
+    if (errors.image) {
+      setErrors((prev) => ({ ...prev, image: '' }))
     }
   }
 
@@ -197,48 +195,14 @@ const EditCelebrityCarouselModal = ({
           </div>
 
           {/* Image Upload */}
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Image
-            </label>
-            {!imagePreview ? (
-              <label className="flex h-48 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition-colors hover:bg-gray-50 dark:border-navy-600 dark:hover:bg-navy-700">
-                <Upload className="mb-2 h-10 w-10 text-gray-400" />
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Click to upload new image
-                </span>
-                <span className="mt-1 text-xs text-gray-400">
-                  PNG, JPG, WEBP up to 10MB
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-              </label>
-            ) : (
-              <div className="group relative">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="h-48 w-full rounded-lg object-cover"
-                />
-                {/* Hover Overlay with Change Image Button */}
-                <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                  <label className="cursor-pointer rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]">
-                    Change Image
-                    <input
-                      type="file"
-                      accept="image/*"
-                      onChange={handleImageChange}
-                      className="hidden"
-                    />
-                  </label>
-                </div>
-              </div>
-            )}
-          </div>
+          <DropZone
+            label="Image"
+            imagePreview={imagePreview}
+            onImageChange={handleImageChange}
+            onRemoveImage={removeImage}
+            placeholder="Click to upload new image"
+            height="h-48"
+          />
         </div>
 
         {/* Footer */}

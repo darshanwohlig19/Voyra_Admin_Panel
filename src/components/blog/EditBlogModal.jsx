@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react'
-import { X, Upload } from 'lucide-react'
+import { X } from 'lucide-react'
+import DropZone from 'components/dropzone/DropZone'
 
 const EditBlogModal = ({ isOpen, onClose, onSubmit, loading, blogData }) => {
   const [formData, setFormData] = useState({
@@ -39,18 +40,15 @@ const EditBlogModal = ({ isOpen, onClose, onSubmit, loading, blogData }) => {
     }
   }
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      setImage(file)
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImagePreview(reader.result)
-      }
-      reader.readAsDataURL(file)
-      if (errors.image) {
-        setErrors((prev) => ({ ...prev, image: '' }))
-      }
+  const handleImageChange = (file) => {
+    setImage(file)
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setImagePreview(reader.result)
+    }
+    reader.readAsDataURL(file)
+    if (errors.image) {
+      setErrors((prev) => ({ ...prev, image: '' }))
     }
   }
 
@@ -195,52 +193,12 @@ const EditBlogModal = ({ isOpen, onClose, onSubmit, loading, blogData }) => {
           {/* Is Active */}
 
           {/* Image Upload */}
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Image
-            </label>
-            {!imagePreview ? (
-              <label className="flex h-56 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed border-gray-300 transition-colors hover:bg-gray-50 dark:border-navy-600 dark:hover:bg-navy-700">
-                <Upload className="mb-2 h-10 w-10 text-gray-400" />
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Click to upload image
-                </span>
-                <span className="mt-1 text-xs text-gray-400">
-                  PNG, JPG, WEBP up to 10MB
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-              </label>
-            ) : (
-              <div className="relative">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="h-56 w-full rounded-lg object-cover"
-                />
-                <button
-                  type="button"
-                  onClick={removeImage}
-                  className="absolute right-2 top-2 rounded-full bg-red-500 p-1 text-white hover:bg-red-600"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-                <label className="absolute bottom-2 right-2 cursor-pointer rounded-lg bg-[#ebd6ac] px-3 py-1 text-sm text-white hover:bg-[#EDCF93]">
-                  Change
-                  <input
-                    type="file"
-                    accept="image/*"
-                    onChange={handleImageChange}
-                    className="hidden"
-                  />
-                </label>
-              </div>
-            )}
-          </div>
+          <DropZone
+            label="Image"
+            imagePreview={imagePreview}
+            onImageChange={handleImageChange}
+            onRemoveImage={removeImage}
+          />
         </div>
 
         {/* Footer */}

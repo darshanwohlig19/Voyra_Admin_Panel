@@ -1,68 +1,70 @@
 import React from 'react'
-import PropTypes from 'prop-types'
-import DropZonefile from './DropZonefile'
-import { MdOutlineCloudUpload, MdClose } from 'react-icons/md'
-import Card from 'components/card'
+import { Upload } from 'lucide-react'
 
 const DropZone = ({
-  message,
-  onDrop,
-  selectedFile,
-  removeFile,
-  registrationProps,
-  errors,
-  accept,
-  multiple,
+  imagePreview,
+  onImageChange,
+  onRemoveImage,
+  label,
+  placeholder = 'Click to upload image',
+  hint = 'PNG, JPG, WEBP up to 10MB',
+  accept = 'image/*',
+  height = 'h-56',
+  error,
 }) => {
+  const handleFileChange = (e) => {
+    const file = e.target.files[0]
+    if (file) {
+      onImageChange(file)
+    }
+  }
+
   return (
-    <div className="mt-2 w-full items-center justify-center rounded-[20px]">
-      {selectedFile?.length > 0 ? (
-        <Card extra={'h-full py-[25px] px-[38px] rounded-xl'}>
-          <div className="flex w-full items-center justify-between text-primary dark:text-brand-400">
-            <p className="text-md ">{selectedFile[0].name}</p>
-            <button onClick={removeFile}>
-              <MdClose className="text-xl" />
-            </button>
-          </div>
-        </Card>
-      ) : (
-        <DropZonefile
-          content={
-            <div
-              className={`flex  h-[77px]  w-full items-center justify-center gap-10 rounded-xl !border border-dashed border-gray-200 bg-gray-100 px-[28px] dark:!border-antiFlashWhite dark:!bg-navy-700`}
-            >
-              <p className={` text-[30px] text-navy-700 dark:text-white`}>
-                <MdOutlineCloudUpload className="text-primary" />
-              </p>
-              <div
-                className={` text-sm font-medium text-navy-700 dark:text-white`}
-              >
-                {message}
-                <div className="pl-2 font-medium text-primary dark:text-brand-400">
-                  Click to browse
-                </div>
-              </div>
-            </div>
-          }
-          onDrop={onDrop}
-          selectedFile={selectedFile}
-          removeFile={removeFile}
-          registrationProps={registrationProps}
-          accept={accept}
-          errors={errors}
-          multiple={multiple}
-        />
+    <div>
+      {label && (
+        <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+          {label}
+        </label>
       )}
+      {!imagePreview ? (
+        <label
+          className={`flex ${height} cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors ${
+            error ? 'border-red-500' : 'border-gray-300 dark:border-navy-600'
+          } hover:bg-gray-50 dark:hover:bg-navy-700`}
+        >
+          <Upload className="mb-2 h-10 w-10 text-gray-400" />
+          <span className="text-sm text-gray-500 dark:text-gray-400">
+            {placeholder}
+          </span>
+          <span className="mt-1 text-xs text-gray-400">{hint}</span>
+          <input
+            type="file"
+            accept={accept}
+            onChange={handleFileChange}
+            className="hidden"
+          />
+        </label>
+      ) : (
+        <div className="relative">
+          <img
+            src={imagePreview}
+            alt="Preview"
+            className={`${height} w-full rounded-lg object-cover`}
+          />
+          <label className="absolute bottom-2 right-2 cursor-pointer rounded-lg bg-[#ebd6ac] px-3 py-1 text-sm text-black hover:bg-[#EDCF93]">
+            Change
+            <input
+              type="file"
+              accept={accept}
+              onChange={handleFileChange}
+              className="hidden"
+            />
+          </label>
+        </div>
+      )}
+      {error && <p className="mt-1 text-sm text-red-500">{error}</p>}
     </div>
   )
 }
-DropZone.propTypes = {
-  message: PropTypes.string.isRequired,
-  onDrop: PropTypes.func.isRequired,
-  selectedFile: PropTypes.array,
-  removeFile: PropTypes.func,
-  registrationProps: PropTypes.object,
-  accept: PropTypes.object,
-  errors: PropTypes.object,
-}
+
 export default DropZone

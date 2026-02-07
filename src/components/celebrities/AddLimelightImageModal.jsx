@@ -1,5 +1,6 @@
 import React, { useState } from 'react'
-import { X, Upload } from 'lucide-react'
+import { X } from 'lucide-react'
+import DropZone from 'components/dropzone/DropZone'
 
 const AddLimelightImageModal = ({ isOpen, onClose, onSubmit, loading }) => {
   const [altText, setAltText] = useState('')
@@ -7,18 +8,15 @@ const AddLimelightImageModal = ({ isOpen, onClose, onSubmit, loading }) => {
   const [imagePreview, setImagePreview] = useState(null)
   const [errors, setErrors] = useState({})
 
-  const handleImageChange = (e) => {
-    const file = e.target.files[0]
-    if (file) {
-      setImage(file)
-      const reader = new FileReader()
-      reader.onloadend = () => {
-        setImagePreview(reader.result)
-      }
-      reader.readAsDataURL(file)
-      if (errors.image) {
-        setErrors((prev) => ({ ...prev, image: '' }))
-      }
+  const handleImageChange = (file) => {
+    setImage(file)
+    const reader = new FileReader()
+    reader.onloadend = () => {
+      setImagePreview(reader.result)
+    }
+    reader.readAsDataURL(file)
+    if (errors.image) {
+      setErrors((prev) => ({ ...prev, image: '' }))
     }
   }
 
@@ -93,48 +91,12 @@ const AddLimelightImageModal = ({ isOpen, onClose, onSubmit, loading }) => {
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
               Image <span className="text-red-500">*</span>
             </label>
-            {!imagePreview ? (
-              <label
-                className={`flex h-56 cursor-pointer flex-col items-center justify-center rounded-lg border-2 border-dashed transition-colors hover:bg-gray-50 dark:hover:bg-navy-700 ${
-                  errors.image
-                    ? 'border-red-500'
-                    : 'border-gray-300 dark:border-navy-600'
-                }`}
-              >
-                <Upload className="mb-2 h-10 w-10 text-gray-400" />
-                <span className="text-sm text-gray-500 dark:text-gray-400">
-                  Click to upload image
-                </span>
-                <span className="mt-1 text-xs text-gray-400">
-                  PNG, JPG, WEBP up to 10MB
-                </span>
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleImageChange}
-                  className="hidden"
-                />
-              </label>
-            ) : (
-              <div className="group relative">
-                <img
-                  src={imagePreview}
-                  alt="Preview"
-                  className="h-56 w-full rounded-lg object-cover"
-                />
-                {/* Remove button */}
-                <button
-                  type="button"
-                  onClick={removeImage}
-                  className="absolute right-2 top-2 rounded-full bg-red-500 p-1 text-white opacity-0 transition-opacity duration-200 hover:bg-red-600 group-hover:opacity-100"
-                >
-                  <X className="h-4 w-4" />
-                </button>
-              </div>
-            )}
-            {errors.image && (
-              <p className="mt-1 text-sm text-red-500">{errors.image}</p>
-            )}
+            <DropZone
+              imagePreview={imagePreview}
+              onImageChange={handleImageChange}
+              onRemoveImage={removeImage}
+              error={errors.image}
+            />
           </div>
         </div>
 
