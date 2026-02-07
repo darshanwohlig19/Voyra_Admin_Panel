@@ -132,6 +132,7 @@ const AddBrandPartnerModal = ({ isOpen, onClose, onSubmit, loading }) => {
               placeholder="Click to upload logo"
               hint="PNG, JPG, WEBP, SVG up to 10MB"
               height="h-40"
+              objectFit="object-contain"
               error={errors.logo}
             />
           </div>

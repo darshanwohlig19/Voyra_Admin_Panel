@@ -140,6 +140,7 @@ const EditStardomEventModal = ({
             onRemoveImage={removeImage}
             placeholder="Click to upload logo image"
             height="h-40"
+            objectFit="object-contain"
             error={errors.image}
           />
         </div>

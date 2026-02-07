@@ -10,6 +10,7 @@ const DropZone = ({
   hint = 'PNG, JPG, WEBP up to 10MB',
   accept = 'image/*',
   height = 'h-56',
+  objectFit = 'object-cover',
   error,
 }) => {
   const handleFileChange = (e) => {
@@ -49,7 +50,11 @@ const DropZone = ({
           <img
             src={imagePreview}
             alt="Preview"
-            className={`${height} w-full rounded-lg object-cover`}
+            className={`${height} w-full rounded-lg ${objectFit} ${
+              objectFit === 'object-contain'
+                ? 'bg-gray-100 dark:bg-navy-700'
+                : ''
+            }`}
           />
           <label className="absolute bottom-2 right-2 cursor-pointer rounded-lg bg-[#ebd6ac] px-3 py-1 text-sm text-black hover:bg-[#EDCF93]">
             Change
