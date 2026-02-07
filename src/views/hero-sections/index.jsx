@@ -146,10 +146,10 @@ const HeroSections = () => {
             return (
               <div
                 key={page.key}
-                className="group overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+                className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
               >
                 {/* Background Image */}
-                <div className="relative h-48">
+                <div className="relative h-48 overflow-hidden">
                   {hero?.backgroundImage?.url ? (
                     <img
                       src={hero.backgroundImage.url}
@@ -169,17 +169,6 @@ const HeroSections = () => {
                   <div className="absolute left-2 top-2 rounded-full bg-[#EDCF93] px-3 py-1 text-xs font-semibold text-black">
                     {page.label}
                   </div>
-
-                  {/* Overlay with Edit Button */}
-                  <div className="absolute inset-0 flex items-center justify-center bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    <button
-                      onClick={() => handleEditClick(page.key)}
-                      className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
-                    >
-                      <FaEdit className="h-4 w-4" />
-                      Edit
-                    </button>
-                  </div>
                 </div>
 
                 {/* Content */}
@@ -197,6 +186,17 @@ const HeroSections = () => {
                       Hero section not configured for this page.
                     </p>
                   )}
+                </div>
+
+                {/* Overlay with Edit Button - covers full card */}
+                <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                  <button
+                    onClick={() => handleEditClick(page.key)}
+                    className="flex items-center gap-2 rounded-lg bg-[#ebd6ac] px-4 py-2 text-black hover:bg-[#EDCF93]"
+                  >
+                    <FaEdit className="h-4 w-4" />
+                    Edit
+                  </button>
                 </div>
               </div>
             )

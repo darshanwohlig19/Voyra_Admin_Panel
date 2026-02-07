@@ -375,28 +375,17 @@ const About = () => {
           {visionData?.map((item, index) => (
             <div
               key={item._id || index}
-              className="group overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
             >
               {/* Image */}
               {item.images?.[0]?.url && (
-                <div className="relative">
+                <div className="overflow-hidden">
                   <img
                     src={item.images[0].url}
                     alt={item.images[0].altText || item.title}
                     className="h-48 w-full cursor-pointer object-cover transition-transform duration-300 group-hover:scale-105"
                     onClick={() => setLightboxImage(item.images[0].url)}
                   />
-
-                  {/* Overlay with Actions */}
-                  <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    <button
-                      onClick={() => openEditVisionModal(item)}
-                      className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
-                    >
-                      <FaEdit className="h-3 w-3" />
-                      Edit
-                    </button>
-                  </div>
                 </div>
               )}
 
@@ -411,6 +400,17 @@ const About = () => {
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                   {item.description}
                 </p>
+              </div>
+
+              {/* Overlay with Actions - covers full card */}
+              <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-lg bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <button
+                  onClick={() => openEditVisionModal(item)}
+                  className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
+                >
+                  <FaEdit className="h-3 w-3" />
+                  Edit
+                </button>
               </div>
             </div>
           ))}
@@ -437,28 +437,17 @@ const About = () => {
           {teamData?.map((item, index) => (
             <div
               key={item._id || index}
-              className="group overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
             >
               {/* Image */}
               {item.images?.[0]?.url && (
-                <div className="relative">
+                <div className="overflow-hidden">
                   <img
                     src={item.images[0].url}
                     alt={item.images[0].altText || item.title}
                     className="h-48 w-full cursor-pointer object-cover transition-transform duration-300 group-hover:scale-105"
                     onClick={() => setLightboxImage(item.images[0].url)}
                   />
-
-                  {/* Overlay with Actions */}
-                  <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    <button
-                      onClick={() => openEditTeamModal(item)}
-                      className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
-                    >
-                      <FaEdit className="h-3 w-3" />
-                      Edit
-                    </button>
-                  </div>
                 </div>
               )}
 
@@ -473,6 +462,17 @@ const About = () => {
                 <p className="mt-2 text-sm text-gray-600 dark:text-gray-300">
                   {item.description}
                 </p>
+              </div>
+
+              {/* Overlay with Actions - covers full card */}
+              <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-lg bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <button
+                  onClick={() => openEditTeamModal(item)}
+                  className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
+                >
+                  <FaEdit className="h-3 w-3" />
+                  Edit
+                </button>
               </div>
             </div>
           ))}

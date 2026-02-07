@@ -888,27 +888,16 @@ const Celebrities = () => {
           {artistData?.images?.map((artist, index) => (
             <div
               key={artist._id || index}
-              className="group overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
             >
               {/* Artist Image */}
-              <div className="relative">
+              <div className="overflow-hidden">
                 <img
                   src={artist.url}
                   alt={artist.altText || `Artist ${index + 1}`}
                   className="h-48 w-full cursor-pointer object-cover transition-transform duration-300 group-hover:scale-105"
                   onClick={() => setLightboxImage(artist.url)}
                 />
-
-                {/* Overlay with Actions */}
-                <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                  <button
-                    onClick={() => openEditArtistImageModal(artist)}
-                    className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
-                  >
-                    <FaEdit className="h-3 w-3" />
-                    Edit
-                  </button>
-                </div>
               </div>
 
               {/* Artist Description */}
@@ -919,6 +908,17 @@ const Celebrities = () => {
                   </p>
                 </div>
               )}
+
+              {/* Overlay with Actions - covers full card */}
+              <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-lg bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <button
+                  onClick={() => openEditArtistImageModal(artist)}
+                  className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
+                >
+                  <FaEdit className="h-3 w-3" />
+                  Edit
+                </button>
+              </div>
             </div>
           ))}
         </div>
@@ -983,40 +983,16 @@ const Celebrities = () => {
             {spotlightCelebrities.map((celeb, index) => (
               <div
                 key={celeb._id || index}
-                className="group overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+                className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
               >
                 {/* Celebrity Image */}
-                <div className="relative">
+                <div className="relative overflow-hidden">
                   <img
                     src={celeb.image?.url}
                     alt={celeb.image?.altText || celeb.name}
                     className="h-40 w-full cursor-pointer object-cover transition-transform duration-300 group-hover:scale-105"
                     onClick={() => setLightboxImage(celeb.image?.url)}
                   />
-
-                  {/* Overlay with Actions */}
-                  <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                    <button
-                      onClick={() => openEditSpotlightCelebrityModal(celeb)}
-                      className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
-                    >
-                      <FaEdit className="h-3 w-3" />
-                      Edit
-                    </button>
-                    <button
-                      onClick={() =>
-                        setDeleteSpotlightCelebrityConfirm({
-                          open: true,
-                          id: celeb._id,
-                          name: celeb.name,
-                        })
-                      }
-                      className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
-                    >
-                      <FaTrash className="h-3 w-3" />
-                      Delete
-                    </button>
-                  </div>
 
                   {/* Type Badge */}
                   <div className="absolute left-2 top-2 rounded-full bg-[#ebd6ac] px-2 py-0.5 text-xs font-medium text-white">
@@ -1029,6 +1005,30 @@ const Celebrities = () => {
                   <h3 className="text-center text-sm font-semibold text-navy-700 dark:text-white">
                     {celeb.name}
                   </h3>
+                </div>
+
+                {/* Overlay with Actions - covers full card */}
+                <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-lg bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                  <button
+                    onClick={() => openEditSpotlightCelebrityModal(celeb)}
+                    className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
+                  >
+                    <FaEdit className="h-3 w-3" />
+                    Edit
+                  </button>
+                  <button
+                    onClick={() =>
+                      setDeleteSpotlightCelebrityConfirm({
+                        open: true,
+                        id: celeb._id,
+                        name: celeb.name,
+                      })
+                    }
+                    className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
+                  >
+                    <FaTrash className="h-3 w-3" />
+                    Delete
+                  </button>
                 </div>
               </div>
             ))}
@@ -1070,7 +1070,7 @@ const Celebrities = () => {
           {stardomData?.events?.map((event, index) => (
             <div
               key={event._id || index}
-              className="group rounded-lg border border-gray-200 bg-gray-50 p-4 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-4 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
             >
               {/* Logo Image */}
               <div className="mb-3 flex justify-center">
@@ -1091,8 +1091,8 @@ const Celebrities = () => {
                 {event.description}
               </p>
 
-              {/* Actions */}
-              <div className="mt-4 flex justify-center gap-2">
+              {/* Overlay with Actions - covers full card */}
+              <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-lg bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
                   onClick={() => openEditStardomEventModal(event)}
                   className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
@@ -1135,40 +1135,16 @@ const Celebrities = () => {
           {carouselData?.map((item, index) => (
             <div
               key={item._id || index}
-              className="group overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700"
             >
               {/* Image */}
-              <div className="relative">
+              <div className="overflow-hidden">
                 <img
                   src={item.image?.url}
                   alt={item.image?.altText || 'Celebrity'}
                   className="h-48 w-full cursor-pointer object-cover transition-transform duration-300 group-hover:scale-105"
                   onClick={() => setLightboxImage(item.image?.url)}
                 />
-
-                {/* Overlay with Actions */}
-                <div className="absolute inset-0 flex items-center justify-center gap-2 bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                  <button
-                    onClick={() => openEditCarouselModal(item)}
-                    className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
-                  >
-                    <FaEdit className="h-3 w-3" />
-                    Edit
-                  </button>
-                  <button
-                    onClick={() =>
-                      setDeleteConfirm({
-                        open: true,
-                        id: item._id,
-                        title: item.author,
-                      })
-                    }
-                    className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
-                  >
-                    <FaTrash className="h-3 w-3" />
-                    Delete
-                  </button>
-                </div>
               </div>
 
               {/* Content */}
@@ -1184,6 +1160,30 @@ const Celebrities = () => {
                     {item.location}
                   </span>
                 </div>
+              </div>
+
+              {/* Overlay with Actions - covers full card */}
+              <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-lg bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
+                <button
+                  onClick={() => openEditCarouselModal(item)}
+                  className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
+                >
+                  <FaEdit className="h-3 w-3" />
+                  Edit
+                </button>
+                <button
+                  onClick={() =>
+                    setDeleteConfirm({
+                      open: true,
+                      id: item._id,
+                      title: item.author,
+                    })
+                  }
+                  className="flex items-center gap-1 rounded-md bg-red-500 px-2 py-1 text-sm text-white hover:bg-red-600"
+                >
+                  <FaTrash className="h-3 w-3" />
+                  Delete
+                </button>
               </div>
             </div>
           ))}

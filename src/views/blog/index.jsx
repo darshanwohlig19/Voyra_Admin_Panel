@@ -197,14 +197,14 @@ const Blog = () => {
           {data?.blogs?.map((blog, index) => (
             <div
               key={blog._id || index}
-              className="rounded-lg border border-gray-200 bg-gray-50 p-4 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700 dark:hover:border-navy-500"
+              className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 p-4 transition-all duration-200 hover:border-gray-300 hover:shadow-md dark:border-navy-600 dark:bg-navy-700 dark:hover:border-navy-500"
             >
               {/* Blog Image */}
               {blog.image?.url && (
                 <img
                   src={blog.image.url}
                   alt={blog.image.altText || blog.title}
-                  className="h-40 w-full cursor-pointer rounded-lg object-cover transition-transform hover:scale-[1.02]"
+                  className="h-40 w-full cursor-pointer rounded-lg object-cover"
                   onClick={() => setLightboxImage(blog.image.url)}
                 />
               )}
@@ -226,8 +226,8 @@ const Blog = () => {
                 </p>
               </div>
 
-              {/* Actions */}
-              <div className="mt-4 flex justify-end gap-2">
+              {/* Overlay with Actions - covers full card */}
+              <div className="absolute inset-0 flex items-center justify-center gap-2 rounded-lg bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
                 <button
                   onClick={() => openEditModal(blog)}
                   className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-2 py-1 text-sm text-black hover:bg-[#EDCF93]"
