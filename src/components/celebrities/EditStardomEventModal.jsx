@@ -56,8 +56,10 @@ const EditStardomEventModal = ({
 
     const formData = new FormData()
     formData.append('replaceEventId', eventData._id)
-    formData.append('events[0][title]', title.trim())
-    formData.append('events[0][description]', description.trim())
+    formData.append(
+      'events',
+      JSON.stringify([{ title: title.trim(), description: description.trim() }])
+    )
     if (image) {
       formData.append('logoImages', image)
     }

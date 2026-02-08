@@ -450,10 +450,14 @@ const Celebrities = () => {
   const handleEditStardom = async (data) => {
     try {
       setEditStardomLoading(true)
+      const formData = new FormData()
+      formData.append('title', data.title)
+      formData.append('description', data.description)
       const response = await apiCall(
         'put',
         `${apiConfig.UPDATE_STARDOM}/${stardomData._id}`,
-        data
+        formData,
+        { headers: { 'Content-Type': 'multipart/form-data' } }
       )
       if (response?.data?.code === 2000 || response?.status === 200) {
         addToast({
