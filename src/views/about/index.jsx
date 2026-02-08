@@ -8,6 +8,7 @@ import EditStoryImageModal from 'components/about/EditStoryImageModal'
 import EditVisionModal from 'components/about/EditVisionModal'
 import EditTeamModal from 'components/about/EditTeamModal'
 import EditCtaModal from 'components/about/EditCtaModal'
+import ModalPortal from 'components/modal/ModalPortal'
 
 const About = () => {
   const [storyData, setStoryData] = useState(null)
@@ -533,23 +534,25 @@ const About = () => {
 
       {/* Lightbox Modal */}
       {lightboxImage && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
-          onClick={() => setLightboxImage(null)}
-        >
-          <button
-            className="absolute right-4 top-4 text-white hover:text-gray-300"
+        <ModalPortal>
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/80"
             onClick={() => setLightboxImage(null)}
           >
-            <FaTimes className="h-8 w-8" />
-          </button>
-          <img
-            src={lightboxImage}
-            alt="Lightbox"
-            className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
-            onClick={(e) => e.stopPropagation()}
-          />
-        </div>
+            <button
+              className="absolute right-4 top-4 text-white hover:text-gray-300"
+              onClick={() => setLightboxImage(null)}
+            >
+              <FaTimes className="h-8 w-8" />
+            </button>
+            <img
+              src={lightboxImage}
+              alt="Lightbox"
+              className="max-h-[90vh] max-w-[90vw] rounded-lg object-contain"
+              onClick={(e) => e.stopPropagation()}
+            />
+          </div>
+        </ModalPortal>
       )}
 
       {/* Edit Story Section Modal */}

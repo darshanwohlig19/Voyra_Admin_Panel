@@ -198,7 +198,7 @@ const AfterLoginLayout = (props) => {
       <div className="font-dm h-full  w-full dark:bg-veryDarkBlueGray">
         {/* Main Content */}
         <main
-          className={`bg-confixaBg mx-2.5 min-h-screen flex-none transition-all dark:bg-veryDarkBlueGray xl:ml-[280px] ${
+          className={`bg-confixaBg mx-2.5 min-h-screen flex-none transition-[margin] duration-150 ease-[cubic-bezier(0.4,0,0.2,1)] dark:bg-veryDarkBlueGray xl:ml-[280px] ${
             location.pathname.includes('/observabilitys')
               ? ''
               : 'md:p-6 md:pr-2'

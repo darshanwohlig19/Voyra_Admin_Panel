@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useState } from 'react'
 import { ThreeDots } from 'react-loader-spinner'
+import ModalPortal from 'components/modal/ModalPortal'
 
 /**
  * @typedef {Object} SpinnerContextValue
@@ -40,21 +41,23 @@ export const SpinnerProvider = ({ children }) => {
     <SpinnerContext.Provider value={{ showSpinner, hideSpinner }}>
       {children}
       {loading && (
-        <div
-          className="fixed inset-0 z-50 flex items-center justify-center"
-          style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
-        >
-          <ThreeDots
-            visible={true}
-            height={80}
-            width={80}
-            color="#4fa94d"
-            radius={9}
-            ariaLabel="three-dots-loading"
-            wrapperStyle={{}}
-            wrapperClass=""
-          />
-        </div>
+        <ModalPortal>
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center"
+            style={{ backgroundColor: 'rgba(0, 0, 0, 0.3)' }}
+          >
+            <ThreeDots
+              visible={true}
+              height={80}
+              width={80}
+              color="#4fa94d"
+              radius={9}
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClass=""
+            />
+          </div>
+        </ModalPortal>
       )}
     </SpinnerContext.Provider>
   )
