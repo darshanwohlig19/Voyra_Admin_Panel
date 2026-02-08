@@ -275,24 +275,13 @@ const HeaderFooter = () => {
 
         {/* Logo Preview Card */}
         {navbarData?.logo?.url && (
-          <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700">
+          <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-navy-600 dark:bg-navy-700">
             <div className="flex h-48 items-center justify-center p-4">
               <img
                 src={navbarData.logo.url}
                 alt="Navbar Logo"
                 className="max-h-full max-w-full object-contain"
               />
-            </div>
-
-            {/* Overlay with Edit Button */}
-            <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-              <button
-                onClick={() => setIsEditNavbarModalOpen(true)}
-                className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-3 py-2 text-sm text-black hover:bg-[#EDCF93]"
-              >
-                <FaEdit className="h-3 w-3" />
-                Edit
-              </button>
             </div>
           </div>
         )}
@@ -326,24 +315,13 @@ const HeaderFooter = () => {
             <h3 className="mb-3 text-lg font-semibold text-navy-700 dark:text-white">
               Logo
             </h3>
-            <div className="group relative overflow-hidden rounded-lg border border-gray-200 bg-gray-50 transition-all duration-200 hover:border-gray-300 hover:shadow-[0px_3px_8px_rgba(0,0,0,0.24)] dark:border-navy-600 dark:bg-navy-700">
+            <div className="overflow-hidden rounded-lg border border-gray-200 bg-gray-50 dark:border-navy-600 dark:bg-navy-700">
               <div className="flex h-48 items-center justify-center p-4">
                 <img
                   src={footerData.logo.url}
                   alt="Footer Logo"
                   className="max-h-full max-w-full object-contain"
                 />
-              </div>
-
-              {/* Overlay with Edit Button */}
-              <div className="absolute inset-0 flex items-center justify-center rounded-lg bg-black/50 opacity-0 transition-opacity duration-200 group-hover:opacity-100">
-                <button
-                  onClick={() => setIsEditFooterModalOpen(true)}
-                  className="flex items-center gap-1 rounded-md bg-[#ebd6ac] px-3 py-2 text-sm text-black hover:bg-[#EDCF93]"
-                >
-                  <FaEdit className="h-3 w-3" />
-                  Edit
-                </button>
               </div>
             </div>
           </div>
