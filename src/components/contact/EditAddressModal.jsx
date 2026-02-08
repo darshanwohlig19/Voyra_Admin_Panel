@@ -16,6 +16,7 @@ const EditAddressModal = ({
     postalCode: '',
     phoneNo: '',
     email: '',
+    eventDate: '',
   })
   const [errors, setErrors] = useState({})
 
@@ -29,6 +30,9 @@ const EditAddressModal = ({
         postalCode: addressData.postalCode || '',
         phoneNo: addressData.phoneNo || '',
         email: addressData.email || '',
+        eventDate: addressData.eventDate
+          ? addressData.eventDate.slice(0, 10)
+          : '',
       })
       setErrors({})
     }
@@ -82,6 +86,7 @@ const EditAddressModal = ({
       postalCode: formData.postalCode.trim(),
       phoneNo: formData.phoneNo.trim(),
       email: formData.email.trim(),
+      eventDate: formData.eventDate || null,
     })
   }
 
@@ -110,6 +115,20 @@ const EditAddressModal = ({
 
         {/* Form Content */}
         <div className="space-y-4 p-6">
+          {/* Event Date */}
+          <div>
+            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
+              Event Date
+            </label>
+            <input
+              type="date"
+              name="eventDate"
+              value={formData.eventDate}
+              onChange={handleChange}
+              className="w-full rounded-lg border border-gray-300 px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-navy-600 dark:bg-navy-700 dark:text-white"
+            />
+          </div>
+
           {/* Address */}
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">

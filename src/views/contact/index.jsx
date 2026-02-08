@@ -539,6 +539,31 @@ const Contact = () => {
             </h3>
 
             <div className="space-y-3">
+              {/* Event Date */}
+              {addressData?.eventDate && (
+                <div className="flex items-start gap-3">
+                  <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-yellow-100 dark:bg-yellow-900/30">
+                    <FaCalendarAlt className="h-5 w-5 text-yellow-500" />
+                  </div>
+                  <div>
+                    <p className="text-sm font-medium text-gray-500 dark:text-gray-400">
+                      Event Date
+                    </p>
+                    <p className="text-navy-700 dark:text-white">
+                      {new Date(addressData.eventDate).toLocaleDateString(
+                        'en-US',
+                        {
+                          weekday: 'long',
+                          year: 'numeric',
+                          month: 'long',
+                          day: 'numeric',
+                        }
+                      )}
+                    </p>
+                  </div>
+                </div>
+              )}
+
               {/* Address */}
               <div className="flex items-start gap-3">
                 <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-blue-100 dark:bg-blue-900/30">
