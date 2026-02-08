@@ -6,6 +6,7 @@ import AddBlogModal from 'components/blog/AddBlogModal'
 import EditBlogModal from 'components/blog/EditBlogModal'
 import EditSectionModal from 'components/blog/EditSectionModal'
 import ConfirmationModal from 'components/modal/ConfirmationModal'
+import { useToaster } from 'common/Toaster'
 
 const Blog = () => {
   const [data, setData] = useState(null)
@@ -25,6 +26,7 @@ const Blog = () => {
   const [isSectionModalOpen, setIsSectionModalOpen] = useState(false)
   const [sectionLoading, setSectionLoading] = useState(false)
   const { apiCall } = ApiCaller()
+  const { addToast } = useToaster()
 
   useEffect(() => {
     fetchBlogs()
@@ -53,13 +55,26 @@ const Blog = () => {
         },
       })
       if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Blog created successfully',
+        })
         setIsAddModalOpen(false)
         fetchBlogs()
       } else {
-        console.error('Failed to create blog:', response?.data?.message)
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to create blog',
+        })
       }
     } catch (error) {
-      console.error('Error creating blog:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error creating blog',
+      })
     } finally {
       setSubmitLoading(false)
     }
@@ -74,13 +89,26 @@ const Blog = () => {
         `${apiConfig.DELETE_BLOG_ITEM}/${deleteConfirm.id}`
       )
       if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Blog deleted successfully',
+        })
         setDeleteConfirm({ open: false, id: null, title: '' })
         fetchBlogs()
       } else {
-        console.error('Failed to delete blog:', response?.data?.message)
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to delete blog',
+        })
       }
     } catch (error) {
-      console.error('Error deleting blog:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error deleting blog',
+      })
     } finally {
       setDeleteLoading(false)
     }
@@ -105,14 +133,27 @@ const Blog = () => {
         }
       )
       if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Blog updated successfully',
+        })
         setIsEditModalOpen(false)
         setEditBlogData(null)
         fetchBlogs()
       } else {
-        console.error('Failed to update blog:', response?.data?.message)
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to update blog',
+        })
       }
     } catch (error) {
-      console.error('Error updating blog:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating blog',
+      })
     } finally {
       setEditLoading(false)
     }
@@ -127,13 +168,26 @@ const Blog = () => {
         formData
       )
       if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Blog section updated successfully',
+        })
         setIsSectionModalOpen(false)
         fetchBlogs()
       } else {
-        console.error('Failed to update section:', response?.data?.message)
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to update section',
+        })
       }
     } catch (error) {
-      console.error('Error updating section:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating blog section',
+      })
     } finally {
       setSectionLoading(false)
     }

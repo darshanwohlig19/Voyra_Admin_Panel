@@ -4,12 +4,14 @@ import apiConfig from 'common/config/apiConfig'
 import { FaEdit, FaTimes } from 'react-icons/fa'
 import EditGalleryModal from 'components/gallery/EditGalleryModal'
 import EditGalleryImageModal from 'components/gallery/EditGalleryImageModal'
+import { useToaster } from 'common/Toaster'
 
 const Gallery = () => {
   const [data, setData] = useState(null)
   const [loading, setLoading] = useState(true)
   const [lightboxImage, setLightboxImage] = useState(null)
   const { apiCall } = ApiCaller()
+  const { addToast } = useToaster()
 
   // Edit section modal state
   const [isEditSectionModalOpen, setIsEditSectionModalOpen] = useState(false)
@@ -44,16 +46,27 @@ const Gallery = () => {
       setEditSectionLoading(true)
       const response = await apiCall('put', apiConfig.UPDATE_GALLERY, formData)
       if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Gallery section updated successfully',
+        })
         setIsEditSectionModalOpen(false)
         fetchGallery()
       } else {
-        console.error(
-          'Failed to update gallery section:',
-          response?.data?.message
-        )
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description:
+            response?.data?.message || 'Failed to update gallery section',
+        })
       }
     } catch (error) {
-      console.error('Error updating gallery section:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating gallery section',
+      })
     } finally {
       setEditSectionLoading(false)
     }
@@ -79,14 +92,27 @@ const Gallery = () => {
         }
       )
       if (response?.data?.code === 2000) {
+        addToast({
+          type: 'success',
+          title: 'Success',
+          description: 'Gallery image updated successfully',
+        })
         setIsEditImageModalOpen(false)
         setEditImageData(null)
         fetchGallery()
       } else {
-        console.error('Failed to update image:', response?.data?.message)
+        addToast({
+          type: 'error',
+          title: 'Error',
+          description: response?.data?.message || 'Failed to update image',
+        })
       }
     } catch (error) {
-      console.error('Error updating image:', error)
+      addToast({
+        type: 'error',
+        title: 'Error',
+        description: 'Error updating gallery image',
+      })
     } finally {
       setEditImageLoading(false)
     }

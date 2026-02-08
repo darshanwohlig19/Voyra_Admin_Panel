@@ -4,8 +4,6 @@ import DropZone from 'components/dropzone/DropZone'
 
 const AddBlogModal = ({ isOpen, onClose, onSubmit, loading }) => {
   const [formData, setFormData] = useState({
-    sectionTitle: '',
-    sectionDescription: '',
     blogTitle: '',
     blogDescription: '',
     blogDate: '',
@@ -42,12 +40,6 @@ const AddBlogModal = ({ isOpen, onClose, onSubmit, loading }) => {
 
   const validate = () => {
     const newErrors = {}
-    if (!formData.sectionTitle.trim()) {
-      newErrors.sectionTitle = 'Section title is required'
-    }
-    if (!formData.sectionDescription.trim()) {
-      newErrors.sectionDescription = 'Section description is required'
-    }
     if (!formData.blogTitle.trim()) {
       newErrors.blogTitle = 'Blog title is required'
     }
@@ -68,8 +60,6 @@ const AddBlogModal = ({ isOpen, onClose, onSubmit, loading }) => {
     if (!validate()) return
 
     const submitData = new FormData()
-    submitData.append('sectionTitle', formData.sectionTitle)
-    submitData.append('sectionDescription', formData.sectionDescription)
     submitData.append('blogTitle', formData.blogTitle)
     submitData.append('blogDescription', formData.blogDescription)
     submitData.append('blogDate', formData.blogDate)
@@ -81,8 +71,6 @@ const AddBlogModal = ({ isOpen, onClose, onSubmit, loading }) => {
 
   const resetForm = () => {
     setFormData({
-      sectionTitle: '',
-      sectionDescription: '',
       blogTitle: '',
       blogDescription: '',
       blogDate: '',
@@ -118,50 +106,6 @@ const AddBlogModal = ({ isOpen, onClose, onSubmit, loading }) => {
 
         {/* Form Content */}
         <div className="space-y-4 p-6">
-          {/* Section Title */}
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Section Title <span className="text-red-500">*</span>
-            </label>
-            <input
-              type="text"
-              name="sectionTitle"
-              value={formData.sectionTitle}
-              onChange={handleChange}
-              placeholder="e.g., Stay in the Loop"
-              className={`w-full rounded-lg border px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-navy-600 dark:bg-navy-700 dark:text-white ${
-                errors.sectionTitle ? 'border-red-500' : 'border-gray-300'
-              }`}
-            />
-            {errors.sectionTitle && (
-              <p className="mt-1 text-sm text-red-500">{errors.sectionTitle}</p>
-            )}
-          </div>
-
-          {/* Section Description */}
-          <div>
-            <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
-              Section Description <span className="text-red-500">*</span>
-            </label>
-            <textarea
-              name="sectionDescription"
-              value={formData.sectionDescription}
-              onChange={handleChange}
-              placeholder="Enter section description"
-              rows={2}
-              className={`w-full rounded-lg border px-4 py-2 text-gray-700 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:border-navy-600 dark:bg-navy-700 dark:text-white ${
-                errors.sectionDescription ? 'border-red-500' : 'border-gray-300'
-              }`}
-            />
-            {errors.sectionDescription && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.sectionDescription}
-              </p>
-            )}
-          </div>
-
-          <hr className="border-gray-200 dark:border-navy-600" />
-
           {/* Blog Title */}
           <div>
             <label className="mb-1 block text-sm font-medium text-gray-700 dark:text-gray-300">
